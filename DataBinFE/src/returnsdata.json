@@ -1,0 +1,233 @@
+{
+  "returnStats": [
+    {
+      "returns_booked": "1076695.55",
+      "npr_value": "4991.78",
+      "return_received_value": "1071703.77",
+      "yet_to_return_value": "0.00",
+      "return_qty_booked": "2367",
+      "received_quantity": "2325",
+      "npr_quantity": "42",
+      "yet_to_receive_quantity": "0"
+    }
+  ],
+  "returnsFulfilledResult": {
+    "total_units_sum": 138318,
+    "total_value_sum": 53944169.669999994,
+    "returnsFulfilled": [
+      {
+        "sales_fulfillment_type": "DC",
+        "total_units": "72001",
+        "total_value": "22936246.08"
+      },
+      {
+        "sales_fulfillment_type": "Store",
+        "total_units": "66041",
+        "total_value": "30967413.77"
+      },
+      {
+        "sales_fulfillment_type": "Vendor",
+        "total_units": "276",
+        "total_value": "40509.82"
+      },
+      {
+        "sales_fulfillment_type": "Online",
+        "total_units": "2300",
+        "total_value": "40986729.82"
+      }
+    ]
+  },
+  "returnByFulfillmentTypeResult": {
+    "total_units": 138318,
+    "total_value": 53944169.67,
+    "returnByFulfillmentType": [
+      {
+        "sales_order_fulfillment_type": "SHIP_2_CUSTOMER",
+        "total_units": "86002",
+        "total_value": "32935894.70"
+      },
+      {
+        "sales_order_fulfillment_type": "PICKUP_IN_STORE",
+        "total_units": "52316",
+        "total_value": "21008274.97"
+      }
+    ]
+  },
+  "exchangeOrderResult": {
+    "order_count_sum": 418,
+    "exchange_book_amount_sum": 297652.38,
+    "pending_refund_to_use_for_exchange_sum": 36032.39,
+    "exchangeOrder": [
+      {
+        "exchange_type": "ADVANCED",
+        "order_count": "187",
+        "exchange_book_amount": "161766.82",
+        "pending_refund_to_use_for_exchange": "20350.35"
+      },
+      {
+        "exchange_type": "REGULAR",
+        "order_count": "231",
+        "exchange_book_amount": "135885.56",
+        "pending_refund_to_use_for_exchange": "15682.04"
+      }
+    ]
+  },
+  "returnReasonResult": {
+    "total_units": 13593,
+    "total_value": 2706364.37,
+    "returnReason": [
+      {
+        "common_code_short_description": "Wrong Item Shipped (210)",
+        "total_units": "1553",
+        "total_value": "488660.26"
+      },
+      {
+        "common_code_short_description": "Warranty Work (211)",
+        "total_units": "55",
+        "total_value": "24155.77"
+      },
+      {
+        "common_code_short_description": "Refused/Undeliverable (213)",
+        "total_units": "3371",
+        "total_value": "519653.29"
+      },
+      {
+        "common_code_short_description": "NPR - Missing Parts (215)",
+        "total_units": "151",
+        "total_value": "8316.52"
+      }
+    ]
+  },
+  "returnsByItemInfoResult": {
+    "line_units": 138315,
+    "line_charge": 53943195.660000004,
+    "returnsByItemInfo": [
+      {
+        "item_info": "Regular",
+        "line_units": "81117",
+        "line_charge": "35224888.05"
+      },
+      {
+        "item_info": "Used-And-Vintage",
+        "line_units": "27654",
+        "line_charge": "17241935.43"
+      },
+      {
+        "item_info": "Warranty Item",
+        "line_units": "117",
+        "line_charge": "19957.17"
+      },
+      {
+        "item_info": "Free-Gift-Item",
+        "line_units": "111",
+        "line_charge": "0.00"
+      }
+    ]
+  },
+  "returnsByItemsResult": {
+    "line_units": 596,
+    "line_charge": 1120297.51,
+    "returnsByItems": [
+      {
+        "item_id": "M00586000000001",
+        "item_category_name": "Picture Windows",
+        "line_units": "94",
+        "line_charge": "155391.21"
+      },
+      {
+        "item_id": "M00278000000001",
+        "item_category_name": "Specialty Windows",
+        "line_units": "85",
+        "line_charge": "133603.89"
+      },
+      {
+        "item_id": "J53155000001000",
+        "item_category_name": "Gliding Patio doors",
+        "line_units": "35",
+        "line_charge": "122589.12"
+      },
+      {
+        "item_id": "L78195000000000",
+        "item_category_name": "Screen Doors",
+        "line_units": "63",
+        "line_charge": "118478.19"
+      },
+      {
+        "item_id": "J51713000000000",
+        "item_category_name": "Bay & Bow Windows  ",
+        "line_units": "128",
+        "line_charge": "116770.52"
+      },
+      {
+        "item_id": "L68677000000000",
+        "item_category_name": "Entry Doors",
+        "line_units": "61",
+        "line_charge": "108892.28"
+      },
+      {
+        "item_id": "L99482000000000",
+        "item_category_name": "Big Doors",
+        "line_units": "48",
+        "line_charge": "97948.99"
+      }
+    ]
+  },
+  "returnsQtyByCategoryResult": {
+    "sum": 32786,
+    "returnsQtyByCategory": [
+      { "item_category_name": "Solid Body Electric Guitars", "sum": "15536" },
+      { "item_category_name": "6 String Acoustic Guitars", "sum": "9145" },
+      { "item_category_name": "4 String Electric Bass", "sum": "2925" },
+      {
+        "item_category_name": "Cases for Solid Body Electric Guitars",
+        "sum": "2637"
+      },
+      {
+        "item_category_name": "GC Stringed Instrument Warranties",
+        "sum": "2543"
+      }
+    ]
+  },
+  "returnsQtyByBrandNameResult": {
+    "sum": 29823,
+    "returnsQtyByBrandName": [
+      { "item_brand_name": "Fender", "sum": "10551" },
+      { "item_brand_name": "Warranty", "sum": "7660" },
+      { "item_brand_name": "Yamaha", "sum": "4118" },
+      { "item_brand_name": "Gibson", "sum": "3902" },
+      { "item_brand_name": "Epiphone", "sum": "3592" }
+    ]
+  },
+  "returnsValByCategoryResult": {
+    "sum": 24215313.400000006,
+    "returnsValByCategory": [
+      {
+        "item_category_name": "Solid Body Electric Guitars",
+        "sum": "12745284.98"
+      },
+      {
+        "item_category_name": "6 String Acoustic Guitars",
+        "sum": "6018762.51"
+      },
+      {
+        "item_category_name": "Tube Combo Guitar Amplifiers",
+        "sum": "1830790.46"
+      },
+      { "item_category_name": "4 String Electric Bass", "sum": "1829309.03" },
+      {
+        "item_category_name": "Semi-Hollow and Hollow Body Electric Guitars",
+        "sum": "1791166.42"
+      }
+    ]
+  },
+  "returnsValByBrandNameResult": {
+    "sum": 15379970.84,
+    "returnsValByBrandName": [
+      { "item_brand_name": "Fender", "sum": "5720815.37" },
+      { "item_brand_name": "Gibson", "sum": "3997944.13" },
+      { "item_brand_name": "Martin", "sum": "2012023.41" },
+      { "item_brand_name": "Yamaha", "sum": "1924384.29" },
+      { "item_brand_name": "Taylor", "sum": "1724803.64" }
+    ]
+  }
+}

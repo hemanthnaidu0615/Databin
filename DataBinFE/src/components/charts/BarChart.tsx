@@ -1,0 +1,48 @@
+import { CategoryScale, Chart, registerables } from "chart.js";
+import { Bar } from "react-chartjs-2";
+
+Chart.register(...registerables);
+Chart.register(CategoryScale);
+export const BarChart = ({ chartData }: any) => {
+  const formatValue = (value: number) => {
+    if (value >= 1_000_000) {
+      return `$${(value / 1_000_000).toFixed(1)}M`;
+    } else if (value >= 1_000) {
+      return `$${(value / 1_000).toFixed(1)}k`;
+    }
+    return `$${value.toLocaleString()}`;
+  };
+  return (
+    <div className="chart-container h-48 w-full">
+      <Bar
+        data={chartData}
+        width={750}
+        options={{
+          plugins: {
+            title: {
+              display: true,
+              //   text: "Users Gained between 2016-2020",
+            },
+            legend: {
+              display: true,
+            },
+          },
+          scales: {
+            x: {
+              ticks: {
+                display: true,
+              },
+            },
+            y: {
+              ticks: {
+                callback: function (value: any) {
+                  return formatValue(value);
+                },
+              },
+            },
+          },
+        }}
+      />
+    </div>
+  );
+};
