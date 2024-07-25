@@ -32,12 +32,20 @@ export const BarChart = ({ chartData }: any) => {
               ticks: {
                 display: true,
               },
+              title : {
+                display: true,
+                text: 'Dates',
+              },
             },
             y: {
               ticks: {
                 callback: function (value: any) {
                   return formatValue(value);
                 },
+              },
+              title : {
+                display: true,
+                text: 'Order Amount',
               },
             },
           },
