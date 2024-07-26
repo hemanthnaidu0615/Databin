@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import authFetch from "../../axios";
 import { abbrvalue } from "../../helpers/helpers";
 import { ProgressSpinner } from "primereact/progressspinner";
+import { Tooltip } from 'primereact/tooltip';
 
 const Timeseries = () => {
   const [milestonesData, setMilestonesData] = useState<any>();
@@ -86,6 +87,7 @@ const Timeseries = () => {
           />
         </div>
       </div>
+      <div className="relative">
       <TabView
         activeIndex={activeIndex}
         onTabChange={(e) => setActiveIndex(e.index)}
@@ -99,7 +101,7 @@ const Timeseries = () => {
         <TabPanel
           header="Milestones"
           pt={{ headerTitle: { className: "text-purple-700" } }}
-        >
+        > 
           <div className="flex flex-1  items-center font-semibold text-violet-800">
             <div className="flex-[2]"></div>
             <div className="flex-1 text-center p-2">Total</div>
@@ -213,6 +215,15 @@ const Timeseries = () => {
           </div>
         </TabPanel>
       </TabView>
+      <div className="absolute top-4 right-4">
+        <i
+        className="pi pi-info-circle text-purple-500"
+        data-pr-tooltip="Hover over percentage values to see the amount and the quantity"
+        data-pr-position="top"
+        ></i>
+      </div>
+      <Tooltip target=".pi-info-circle" />
+      </div>
     </div>
   );
 };
