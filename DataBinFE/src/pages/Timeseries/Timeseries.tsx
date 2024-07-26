@@ -141,8 +141,8 @@ const Timeseries = () => {
                   </div>
                   {status?.lineTotalSum?.map((sum: any, i: number) => {
                     return (
-                      <div className="cursor-pointer timeseries-status flex-1 text-center border-l-[1px] border-purple-400 flex items-center justify-between px-2">
-                        <i className="pi pi-arrow-left"></i>
+                      <div className="cursor-pointer timeseries-status flex-1 text-center border-l-[1px] border-purple-400 flex items-center justify-center px-2">
+                        
                         <div className="line-total-sum">
                           {sum > 0
                             ? Math.round(
@@ -159,7 +159,7 @@ const Timeseries = () => {
                           }).format(sum)}{" "}
                           | {status?.QtySum[i]}
                         </div>
-                        <i className="pi pi-arrow-right"></i>
+                        
                       </div>
                     );
                   })}
