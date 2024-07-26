@@ -10,3 +10,5 @@ export const store = configureStore({
     enterprise: enterpriseReducer,
   },
 });
+
+export type RootState = ReturnType<typeof store.getState>;

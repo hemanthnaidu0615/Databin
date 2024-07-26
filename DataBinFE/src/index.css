@@ -36,3 +36,17 @@
   align-items: center;
   justify-content: center;
 }
+
+/* Add your custom styles here */
+
+.org-chart.vertical-layout .p-organizationchart {
+  display: flex;
+  flex-direction: column;
+}
+
+.org-chart.horizontal-layout .p-organizationchart {
+  display: flex;
+  flex-direction: row;
+}
+
+/* Additional styling */
