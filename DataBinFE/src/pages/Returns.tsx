@@ -10,6 +10,8 @@ export const Returns = () => {
   const [returnData, setReturnData] = useState<any>();
   const [loading, setLoading] = useState(false);
   const { dates } = useSelector((store: any) => store.dateRange);
+  const { key: returnEnterpriseKey } = useSelector((store: any) => store.enterprise);
+
 
   const fetchData = async () => {
     setLoading(true);
@@ -17,8 +19,8 @@ export const Returns = () => {
     try {
       const formattedStartDate = moment(dates[0]).format("YYYY-MM-DD");
       const formattedEndDate = moment(dates[1]).format("YYYY-MM-DD");
-      const response = await authFetch(
-        `/returns/getReturnsData?startDate=${formattedStartDate}&endDate=${formattedEndDate}`
+      const response = await authFetch.get(
+        `/returns/getReturnsData?startDate=${formattedStartDate}&endDate=${formattedEndDate}&returnEnterpriseKey=${returnEnterpriseKey}`
       );
       console.log("API response:", response.data);
       setReturnData(response.data);
@@ -31,7 +33,7 @@ export const Returns = () => {
 
   useEffect(() => {
     fetchData();
-  }, [dates]);
+  }, [dates, returnEnterpriseKey]);
 
   const formatNumber = (value: number | null | undefined): string => {
     if (value === null || value === undefined) return "-";
