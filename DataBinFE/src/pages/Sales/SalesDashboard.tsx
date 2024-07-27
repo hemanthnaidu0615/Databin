@@ -19,6 +19,7 @@ export const SalesDashboard = () => {
     return 172800;
   };
 
+
   function separateOrderChannels(data: any) {
     const result: any = [[], [], [], []];
 
@@ -255,7 +256,7 @@ export const SalesDashboard = () => {
       <h1 className="ml-2 text-violet-800 font-bold">Sales</h1>
       <div className="flex pt-2 ml-10 w-full space-x-3">
         {salesDetails.map((item) => (
-          <span key={item.label} className="w-1/5 flex flex-col space-y-1">
+          <span key={item.label} className=" w-1/5 flex flex-col space-y-1" style={{width: "15%"}}>
             <p className="text-xs mb-2 pl-1">{item.label}</p>
             <p className="text-sm text-violet-800 font-medium pl-1">{item.value}</p>
             <div className={`${item.color} h-1.5 mt-1 w-20 rounded-b-lg`}></div>

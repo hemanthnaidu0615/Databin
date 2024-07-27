@@ -102,7 +102,7 @@ export const SidebarComp = () => {
       template: itemRenderer,
     },
     {
-      label: "User Management",
+     label: "User Management",
       icon: "pi pi-users",
       command: () => {
         navigate("/user-management");
