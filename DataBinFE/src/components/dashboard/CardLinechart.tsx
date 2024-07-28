@@ -8,6 +8,11 @@ const CustomTooltip = ({ point }:any) => (
       background: "white",
       padding: "5px",
       border: "1px solid #ccc",
+      zIndex: 1000, // Ensure tooltip is on top
+      position: "absolute", // Absolute positioning for more control
+      top: point.y - 50, // Adjust the positioning as needed
+      width:'35vh',
+      pointerEvents: "none", // Prevent mouse events on tooltip
     }}
   >
     <strong>{point.serieId}</strong>
