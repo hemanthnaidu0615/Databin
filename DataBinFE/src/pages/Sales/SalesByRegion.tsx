@@ -13,27 +13,101 @@ interface Marker {
   value: string;
 }
 
+interface Statess {
+  [key: string]: string; 
+}
+
+const statess: Statess = {
+  AL: 'Alabama',
+  AK: 'Alaska',
+  AS: 'American Samoa',
+  AZ: 'Arizona',
+  AR: 'Arkansas',
+  CA: 'California',
+  CO: 'Colorado',
+  CT: 'Connecticut',
+  DE: 'Delaware',
+  DC: 'District of Columbia',
+  FL: 'Florida',
+  GA: 'Georgia',
+  HI: 'Hawaii',
+  ID: 'Idaho',
+  IL: 'Illinois',
+  IN: 'Indiana',
+  IA: 'Iowa',
+  KS: 'Kansas',
+  KY: 'Kentucky',
+  LA: 'Louisiana',
+  ME: 'Maine',
+  MD: 'Maryland',
+  MA: 'Massachusetts',
+  MI: 'Michigan',
+  MN: 'Minnesota',
+  MS: 'Mississippi',
+  MO: 'Missouri',
+  MT: 'Montana',
+  NE: 'Nebraska',
+  NV: 'Nevada',
+  NH: 'New Hampshire',
+  NJ: 'New Jersey',
+  NM: 'New Mexico',
+  NY: 'New York',
+  NC: 'North Carolina',
+  ND: 'North Dakota',
+  MP: 'Northern Mariana Islands',
+  OH: 'Ohio',
+  OK: 'Oklahoma',
+  OR: 'Oregon',
+  PA: 'Pennsylvania',
+  PR: 'Puerto Rico',
+  RI: 'Rhode Island',
+  SC: 'South Carolina',
+  SD: 'South Dakota',
+  TN: 'Tennessee',
+  TX: 'Texas',
+  UT: 'Utah',
+  VT: 'Vermont',
+  VA: 'Virginia',
+  WA: 'Washington',
+  WV: 'West Virginia',
+  WI: 'Wisconsin',
+  WY: 'Wyoming',
+};
+
 export const SalesByRegion = () => {
   const [mapData, setMapData] = useState<any>();
   const { dates } = useSelector((store: any) => store.dateRange);
-  const enterpriseKey = useSelector((store: any) => store.enterprise.key); // Get enterprise key from Redux store
+  const enterpriseKey = useSelector((store: any) => store.enterprise.key);
+  const [tooltipData, setTooltipData] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
     const fetchData = async () => {
       const formattedStartDate = moment(dates[0]).format("YYYY-MM-DD 00:00:00");
       const formattedEndDate = moment(dates[1]).format("YYYY-MM-DD 00:00:00");
       try {
-        console.log(`Fetching data with start_date=${formattedStartDate}, end_date=${formattedEndDate}, enterprise_key=${enterpriseKey}`); // Debug log
+        console.log(`Fetching data with start_date=${formattedStartDate}, end_date=${formattedEndDate}, enterprise_key=${enterpriseKey}`);
         const response = await authFetch(
-          `http://localhost:3000/v2/tables/map?start_date=${formattedStartDate}&end_date=${formattedEndDate}&enterprise_key=${enterpriseKey}`
+          `http://localhost:3000/v2/tables/map?start_date=${formattedStartDate}&end_date=${formattedEndDate}&enterprise_key=${enterpriseKey}`,{
+            headers: {
+              'Cache-Control': 'no-cache',
+              'Pragma': 'no-cache',
+            }
+          }
         );
-        console.log("API response:", response.data); // Debug log
+        console.log("API response:", response.data);
         setMapData(response.data);
+        const tooltipMap: { [key: string]: string } = response.data.reduce((acc: any, item: any) => {
+          const stateAbbreviation = item[0].split("-")[1].toUpperCase();
+          const stateName = statess[stateAbbreviation];
+          acc[stateName] = `$${item[1]}`;
+          return acc;
+        }, {});
+        setTooltipData(tooltipMap);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
-  
+
     fetchData();
   }, [dates, enterpriseKey]);
 
@@ -48,10 +122,10 @@ export const SalesByRegion = () => {
   const stateAbbreviations: { [key: string]: string } = states;
 
   const result: string[][] = mapData.map((subArray: string[]) => {
-  const stateAbbreviation: string = subArray[0].split("-")[1].toUpperCase();
-  const stateName: string = stateAbbreviations[stateAbbreviation];
-  return [stateName, ...subArray.slice(1)];
-});
+    const stateAbbreviation: string = subArray[0].split("-")[1].toUpperCase();
+    const stateName: string = stateAbbreviations[stateAbbreviation];
+    return [stateName, ...subArray.slice(1)];
+  });
 
   const formatter = new Intl.NumberFormat("en-US", {
     notation: "compact",
@@ -120,6 +194,7 @@ export const SalesByRegion = () => {
               markers4={[]}
               markers5={[]}
               colorScale={colorScale}
+              revenueData={tooltipData}
             />
             <div className="flex flex-col justify-center gap-4 p-2">
               <div className="w-max text-xs p-2 text-violet-900 bg-red-100 font-bold rounded-sm">
