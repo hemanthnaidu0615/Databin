@@ -258,7 +258,7 @@ export const SalesDashboard = () => {
       <div className="card m-2 h-full  "></div>
       {typeData?.map((type: any, i: any) => {
         return (
-          <div>
+          <div key={i}>
             <TabView
               className="border-2"
               pt={{

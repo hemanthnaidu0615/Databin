@@ -11,7 +11,6 @@ const getReturnsData = async (req, res) => {
   const endDate = req.query.endDate;
   const returnEnterpriseKey = req.query.return_enterprise_key || 'default_key'; // Handle missing enterprise key
 
-  // Update the query to include returnEnterpriseKey
   const query = `
     SELECT getReturnsData('${startDate}','${endDate}', '${returnEnterpriseKey}', 'Ref1', 'Ref2','Ref3', 'Ref4','Ref5','Ref6','Ref7', 'Ref8','Ref9', 'Ref10','Ref11');
     FETCH ALL IN "Ref1";

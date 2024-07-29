@@ -46,7 +46,7 @@ const getFullSalesData = (req, res) => {
   const start_date = req.query.start_date;
   const end_date = req.query.end_date;
   const intervaltime = req.query.intervaltime;
-  const enterprise_key = req.query.enterprise_key; // Get enterprise_key from the query
+  const enterprise_key = req.query.enterprise_key; 
 
   // 2022-11-17 22:12
   const start_date_formatted = moment(start_date, "YYYY-MM-DD HH:mm").format(
