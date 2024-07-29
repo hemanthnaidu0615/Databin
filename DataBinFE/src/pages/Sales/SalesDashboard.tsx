@@ -12,6 +12,7 @@ export const SalesDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [typeData, setTypeData] = useState<any>();
   const { dates } = useSelector((store: any) => store.dateRange);
+  const enterpriseKey = useSelector((store: any) => store.enterprise.key);
 
   const getIntervalTime = (days: number) => {
     if (days === 2) return 3600;
@@ -34,25 +35,14 @@ export const SalesDashboard = () => {
       }
     });
 
-    // result[0].forEach((item: any) => {
-    //   if (!result[2].find((i: any) => i.datetime === item.datetime)) {
-    //     result[2].push({
-    //       enterprise_key: "AWW",
-    //       datetime: item.datetime,
-    //       order_capture_channel: "AWDSTORE",
-    //       original_order_total_amount: 0,
-    //       line_ordered_qty: 0,
-    //     });
-    //   }
-    // });
-
     return result;
   }
 
   const fetchData = async (
     start: moment.Moment,
     end: moment.Moment,
-    days: number
+    days: number,
+    enterpriseKey: string
   ) => {
     if (!start || !end) return;
     setLoading(true);
@@ -61,7 +51,7 @@ export const SalesDashboard = () => {
       const formattedStartDate = start.format("YYYY-MM-DD HH:mm:ss");
       const formattedEndDate = end.format("YYYY-MM-DD HH:mm:ss");
       const response1 = await authFetch(
-        `/alsd/get-full-sales-data?start_date=${formattedStartDate}&end_date=${formattedEndDate}&intervaltime=${intervalTime}`
+        `/alsd/get-full-sales-data?start_date=${formattedStartDate}&end_date=${formattedEndDate}&intervaltime=${intervalTime}&enterprise_key=${enterpriseKey}`
       );
       setTypeData(response1.data);
       setLoading(false);
@@ -75,10 +65,9 @@ export const SalesDashboard = () => {
       const start = moment(dates[0]);
       const end = moment(dates[1]);
       const days = end.diff(start, "days") + 1;
-      // setDaysDifference(days);
-      fetchData(start, end, days);
+      fetchData(start, end, days, enterpriseKey);
     }
-  }, [dates]);
+  }, [dates, enterpriseKey]);
   if (loading) {
     return (
       <div className="flex justify-center items-center my-auto mx-auto flex-col">
@@ -269,7 +258,7 @@ export const SalesDashboard = () => {
       <div className="card m-2 h-full  "></div>
       {typeData?.map((type: any, i: any) => {
         return (
-          <div>
+          <div key={i}>
             <TabView
               className="border-2"
               pt={{

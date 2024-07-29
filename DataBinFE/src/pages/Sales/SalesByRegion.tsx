@@ -37,6 +37,9 @@ export const SalesByRegion = () => {
     fetchData();
   }, [dates, enterpriseKey]);
 
+  console.log("Dates from Redux:", dates); // Debug log
+  console.log("Enterprise Key from Redux:", enterpriseKey); // Debug log
+  
   if (!mapData) {
     return (
       <div className="flex justify-center items-center my-auto mx-auto">
