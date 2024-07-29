@@ -238,7 +238,7 @@ export const SalesDashboard = () => {
     <div className="w-full bg-white m-2 overflow-y-auto rounded-lg shadow-xl h-full flex flex-col">
       <div className="w-full h-2 bg-purple-300 rounded-t-lg"></div>
       <div className="card h-[20%] p-2">
-        <h1 className="ml-2 text-violet-800 font-semibold">Sales</h1>
+        <h1 className="text-2xl ml-2 text-violet-800 font-semibold">Sales</h1>
         <div className="flex gap-4  divide-x divide-gray-400 divide-dashed pt-2 ml-14  ">
           {salesDetails.map((item) => (
             <span key={item.label} className="w-25 pl-4 flex flex-col ">

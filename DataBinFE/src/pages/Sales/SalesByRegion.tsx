@@ -177,13 +177,13 @@ export const SalesByRegion = () => {
     <div className="h-full w-full flex flex-col m-2 rounded-lg bg-white border-2">
       <div className="w-full h-2 bg-purple-300 rounded-t-lg"></div>
       <div className="flex justify-between px-3 py-2">
-        <h1 className="font-semibold text-md text-violet-800">
+        <h1 className="text-2xl font-semibold text-md text-violet-800">
           Sales by Region
         </h1>
       </div>
       <div className="flex flex-col flex-1 shadow-lg rounded-lg border-slate-200 border-2 divide-y-2 divide-slate-200 divide-dashed px-2">
         <div className="flex justify-between p-2">
-          <h3 className="flex items-center text-sm font-bold">
+          <h3 className="text-2xl flex items-center text-sm font-bold">
             Countrywide Sales
           </h3>
         </div>
