@@ -41,24 +41,26 @@ export const Returns = () => {
     }).format(value);
   };
 
-  const formatNumberWithCommas = (value: number | null | undefined): string => {
+  const formatNumberWithCommas = (value: number | null | undefined,removeDecimals: boolean = false): string => {
     if (value === null || value === undefined) return "-";
     return Intl.NumberFormat("en-US", {
       style: "decimal",
+      maximumFractionDigits: removeDecimals ? 0 : 2,
     }).format(value);
   };
 
   const formatCustomDataTableData = (
     data: any[],
     fields: string[],
-    prependDollar: boolean = false
+    prependDollar: boolean = false,
+    removeDecimals: boolean = false
   ) => {
     return data.map((item) => {
       const formattedItem = { ...item };
       fields.forEach((field) => {
         formattedItem[field] = prependDollar
-          ? `${formatNumberWithCommas(formattedItem[field])}`
-          : formatNumberWithCommas(formattedItem[field]);
+          ? `${formatNumberWithCommas(formattedItem[field],removeDecimals)}`
+          : formatNumberWithCommas(formattedItem[field],removeDecimals);
       });
       return formattedItem;
     });
@@ -155,7 +157,7 @@ export const Returns = () => {
                         {item.label}
                       </p>
                       <p className="text-xl text-violet-900 font-medium pl-1">
-                        ${item.value}
+                        {item.value}
                       </p>
                     </span>
                   </div>
@@ -178,6 +180,7 @@ export const Returns = () => {
                 data={formatCustomDataTableData(
                   returnData?.returnsFulfilledResult.returnsFulfilled || [],
                   ["total_units", "total_value"],
+                  true,
                   true
                 )}
                 columns={[
@@ -208,6 +211,7 @@ export const Returns = () => {
                   returnData?.returnByFulfillmentTypeResult
                     .returnByFulfillmentType || [],
                   ["total_units", "total_value"],
+                  true,
                   true
                 )}
                 columns={[
@@ -241,6 +245,7 @@ export const Returns = () => {
                     "exchange_book_amount",
                     "pending_refund_to_use_for_exchange",
                   ],
+                  true,
                   true
                 )}
                 columns={[
@@ -274,7 +279,9 @@ export const Returns = () => {
               <CustomDataTable
                 data={formatCustomDataTableData(
                   returnData?.returnReasonResult.returnReason || [],
-                  ["total_units", "total_value"]
+                  ["total_units", "total_value"],
+                  true,
+                  true
                 )}
                 columns={[
                   {
@@ -304,7 +311,9 @@ export const Returns = () => {
               <CustomDataTable
                 data={formatCustomDataTableData(
                   returnData?.returnsByItemInfoResult.returnsByItemInfo || [],
-                  ["line_units", "line_charge"]
+                  ["line_units", "line_charge"],
+                  true,
+                  true
                 )}
                 columns={[
                   {
@@ -337,7 +346,8 @@ export const Returns = () => {
                 data={formatCustomDataTableData(
                   returnData?.returnsQtyByCategoryResult.returnsQtyByCategory ||
                     [],
-                  ["sum"]
+                  ["sum"],
+                  
                 )}
                 columns={[
                   {
@@ -361,7 +371,9 @@ export const Returns = () => {
                 data={formatCustomDataTableData(
                   returnData?.returnsValByCategoryResult.returnsValByCategory ||
                     [],
-                  ["sum"]
+                  ["sum"],
+                  true,
+                  true
                 )}
                 columns={[
                   {
@@ -414,7 +426,9 @@ export const Returns = () => {
                 data={formatCustomDataTableData(
                   returnData?.returnsValByBrandNameResult
                     .returnsValByBrandName || [],
-                  ["sum"]
+                  ["sum"],
+                  true,
+                  true
                 )}
                 columns={[
                   {

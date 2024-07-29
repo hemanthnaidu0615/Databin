@@ -938,11 +938,54 @@ const getEnterpriseKeys = async (req, res) => {
   }
 };
 
+const updateUsers = async (req, res) => {
+  const { username } = req.body;
+  const { firstname, lastname, role } = req.body;
+  console.log(username);
+  try {
+    const result = await client.query(
+      'UPDATE users SET firstname = $1, lastname = $2, role = $3 WHERE username = $4',
+      [firstname, lastname, role, username]
+    );
+
+    if (result.rowCount > 0) {
+      res.status(200).json({ message: 'User updated successfully' });
+    } else {
+      res.status(404).json({ message: 'User not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating user', error });
+  }
+};
+
+const deleteUser = async (req, res) => {
+  const { id } = req.params; // Extract the username from the request body
+  console.log(id);
+  
+  try {
+    // Perform the delete operation
+    const result = await client.query(
+      'DELETE FROM users WHERE id = $1',
+      [id]
+    );
+
+    if (result.rowCount > 0) {
+      res.status(200).json({ message: 'User deleted successfully' });
+    } else {
+      res.status(404).json({ message: 'User not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting user', error });
+  }
+};
+
 const getAllUser = async (req, res) => {
   try {
+    console.log("Users");
     const query = `SELECT * FROM users`;
     client.query(query, (err, result) => {
       res.status(200).json(result?.rows);
+      console.log(result?.rows)
     });
   } catch (error) {}
 };
@@ -1400,6 +1443,7 @@ module.exports = {
   UserRegistration,
   getMapData,
   getEnterpriseKeys,
+  updateUsers,
   getAllUser,
   getTimeSeriesData,
   getCityData,
@@ -1408,4 +1452,5 @@ module.exports = {
   getThresholdInfo,
   sendSMS,
   getSalesAvgData,
+  deleteUser
 };

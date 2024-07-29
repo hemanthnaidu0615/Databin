@@ -1,3 +1,16 @@
+// import { configureStore } from "@reduxjs/toolkit";
+// import userReducer from "./userSlice";
+// import dateRangeReducer from "./dateRangeSlice";
+// import enterpriseReducer from "./enterpriseSlice";
+
+// export const store = configureStore({
+//   reducer: {
+//     user: userReducer,
+//     dateRange: dateRangeReducer,
+//     enterprise: enterpriseReducer,
+//   },
+// });
+
 import { configureStore } from "@reduxjs/toolkit";
 import userReducer from "./userSlice";
 import dateRangeReducer from "./dateRangeSlice";
