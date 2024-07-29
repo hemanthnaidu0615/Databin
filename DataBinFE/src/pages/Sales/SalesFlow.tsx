@@ -74,7 +74,7 @@ const SalesFlow = () => {
   return (
     <div className="flex-1 flex flex-col  border-2 m-2 rounded-lg bg-white overflow-hidden">
       <div className="w-full h-2 bg-purple-300 rounded-t-lg"></div>
-      <h1 className="font-semibold text-md text-violet-800 py-2 px-3">
+      <h1 className="text-2xl font-semibold text-md text-violet-800 py-2 px-3">
         Sales Flow
       </h1>
       <div className="flex-1 flex flex-col gap-20  shadow-lg rounded-lg border-slate-200	border-2 ">
