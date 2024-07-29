@@ -20,23 +20,45 @@ export const SalesDashboard = () => {
     return 172800;
   };
 
-  function separateOrderChannels(data: any) {
-    const result: any = [[], [], [], []];
-
-    data.forEach((item: any) => {
-      if (item.order_capture_channel === "CallCenter") {
-        result[0].push(item);
-      } else if (item.order_capture_channel === "Web") {
-        result[1].push(item);
-      } else if (item.order_capture_channel === "AWDSTORE") {
-        result[2].push(item);
-      } else if (item.order_capture_channel === null) {
-        result[3].push(item);
-      }
-    });
-
-    return result;
+  interface SalesDataItem {
+    datetime: string;
+    order_capture_channel: string | null;
+    original_order_total_amount: number;
+    line_ordered_qty: number;
+    // Add other fields as needed
   }
+  
+  type SalesData = SalesDataItem[];
+
+  function separateOrderChannels(data: SalesData): SalesData[] {
+  const result: SalesData[] = [[], [], [], []];
+
+  data.forEach((item) => {
+    const orderDate = moment(item.datetime);
+    const now = moment();
+    const format = now.diff(orderDate, 'hours') < 24 ? 'YYYY-MM-DD HH:mm:ss' : 'YYYY-MM-DD';
+    const formattedDate = orderDate.format(format);
+
+    const formattedItem = {
+      ...item,
+      datetime: formattedDate,
+    };
+
+    if (item.order_capture_channel === "CallCenter") {
+      result[0].push(formattedItem);
+    } else if (item.order_capture_channel === "Web") {
+      result[1].push(formattedItem);
+    } else if (item.order_capture_channel === "AWDSTORE") {
+      result[2].push(formattedItem);
+    } else if (item.order_capture_channel === null) {
+      result[3].push(formattedItem);
+    }
+  });
+
+  return result;
+}
+
+  
 
   const fetchData = async (
     start: moment.Moment,
@@ -94,22 +116,30 @@ export const SalesDashboard = () => {
     });
   }
 
-  function formatSeriesDataLinechart(inputData: any) {
-    const colors: any = {
+  type ChannelType = "CallCenter" | "Web" | "AWDSTORE";
+
+  interface OrderData {
+    order_capture_channel: ChannelType;
+    datetime: string;
+    original_order_total_amount: number;
+  }
+
+  function formatSeriesDataLinechart(inputData: any): any[] {
+    const colors: Record<ChannelType, string> = {
       CallCenter: "rgba(173, 99, 155, 0.65)",
       Web: "rgba(253, 88, 173, 0.8)",
       AWDSTORE: "rgba(125, 221, 187, 0.68)",
     };
-
-    const channels = ["CallCenter", "Web", "AWDSTORE"];
-
+  
+    const channels: ChannelType[] = ["CallCenter", "Web", "AWDSTORE"];
+  
     return channels.map((channel) => {
       const dataPoints = inputData.flatMap((dataset: any) => {
         // Ensure dataset is an array
         if (!Array.isArray(dataset)) {
           return [];
         }
-
+  
         return dataset
           .filter((order) => order.order_capture_channel === channel)
           .map((order) => ({
@@ -117,7 +147,7 @@ export const SalesDashboard = () => {
             y: order.original_order_total_amount,
           }));
       });
-
+  
       return {
         id: channel === "AWDSTORE" ? "Store" : channel,
         color: colors[channel],
@@ -125,6 +155,7 @@ export const SalesDashboard = () => {
       };
     });
   }
+  
 
   const tab1HeaderTemplate = (options: any) => {
     return (
