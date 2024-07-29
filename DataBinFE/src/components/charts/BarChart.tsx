@@ -8,7 +8,7 @@ export const BarChart = ({ chartData }: any) => {
     if (value >= 1_000_000) {
       return `$${(value / 1_000_000).toFixed(1)}M`;
     } else if (value >= 1_000) {
-      return `$${(value / 1_000).toFixed(1)}k`;
+      return `$${(value / 1_000_000).toFixed(1)}M`;
     }
     return `$${value.toLocaleString()}`;
   };
@@ -32,12 +32,20 @@ export const BarChart = ({ chartData }: any) => {
               ticks: {
                 display: true,
               },
+              title : {
+                display: true,
+                text: 'Dates',
+              },
             },
             y: {
               ticks: {
                 callback: function (value: any) {
                   return formatValue(value);
                 },
+              },
+              title : {
+                display: true,
+                text: 'Order Amount',
               },
             },
           },
