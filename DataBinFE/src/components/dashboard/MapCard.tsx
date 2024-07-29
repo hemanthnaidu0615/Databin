@@ -129,10 +129,10 @@ export const MapCard = () => {
     }
   };
   return (
-    <div className="flex  w-full h-[65%] mt-0 m-2 shadow-slate-300 shadow-lg rounded-sm bg-white">
-      <div className="flex flex-col w-[78%] h-full">
+    <div className="flex   h-[100%] rounded-sm bg-white">
+      <div className="flex flex-col ">
         <h3 className="inline font-bold pl-4 pt-2 h-[10%] ">Performance</h3>
-        <div className="h-[90%] w-full">
+        <div className="h-[80%] w-[150%]">
           <USMap
             markers={markers}
             markers2={markers2}
@@ -144,8 +144,8 @@ export const MapCard = () => {
         </div>
       </div>
 
-      <div className="flex-1 flex flex-col h-full translate-y-24">
-        <div className=" m-3 text-xs p-2 text-violet-900 bg-red-100 font-bold rounded-sm">
+      <div className="flex-1 flex pl-[20%] flex-col w-[25%]  translate-y-24">
+        <div className=" m-3 mt-1 text-xs p-2 text-violet-900 bg-red-100 font-bold rounded-sm">
           Top 5 Revenues
         </div>
         <div className="flex gap-2 flex-col justify-center mt-2">
