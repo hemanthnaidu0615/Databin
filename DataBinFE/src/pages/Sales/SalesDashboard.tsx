@@ -270,26 +270,20 @@ export const SalesDashboard = () => {
 
   return (
     <div className="w-full bg-white m-2 overflow-y-auto rounded-lg shadow-xl h-full flex flex-col">
+  
       <div className="w-full h-2 bg-purple-300 rounded-t-lg"></div>
-      <div className="card h-[20%] p-2">
-        <h1 className="text-2xl ml-2 text-violet-800 font-semibold">Sales</h1>
-        <div className="flex gap-4  divide-x divide-gray-400 divide-dashed pt-2 ml-14  ">
+      <div className="card p-2 mb-4 h-[20%]">
+        <h1 className="ml-2 text-violet-800 font-bold">Sales</h1>
+        <div className="flex pt-2 ml-10 w-full space-x-3">
           {salesDetails.map((item) => (
-            <span key={item.label} className="w-25 pl-4 flex flex-col ">
-              <p className="text-xs  mb-2 max-w-16 min-h-8  pl-1">
-                {item.label}
-              </p>
-              <p className="text-sm text-violet-800 font-medium pl-1">
-                {item.value}
-              </p>
-              <div
-                className={`${item.color} h-1.5 mt-1 w-20 rounded-b-lg`}
-              ></div>
+            <span key={item.label} className=" w-1/5 flex flex-col space-y-1" style={{width: "15%"}}>
+              <p className="text-xs mb-2 pl-1">{item.label}</p>
+              <p className="text-sm text-violet-800 font-medium pl-1">{item.value}</p>
+              <div className={`${item.color} h-1.5 mt-1 w-20 rounded-b-lg`}></div>
             </span>
           ))}
         </div>
       </div>
-    </div>
     <div className="card m-2 h-full"></div>
       {typeData?.map((type: any, i: any) => {
         return (
