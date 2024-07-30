@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import authFetch from "../../axios";
 import { abbrvalue } from "../../helpers/helpers";
 import { ProgressSpinner } from "primereact/progressspinner";
-import { Tooltip } from 'primereact/tooltip';
 
 const Timeseries = () => {
   const [milestonesData, setMilestonesData] = useState<any>();
@@ -215,14 +214,9 @@ const Timeseries = () => {
           </div>
         </TabPanel>
       </TabView>
-      <div className="absolute top-4 right-4">
-        <i
-        className="pi pi-info-circle text-purple-500"
-        data-pr-tooltip="Hover over percentage values to see the amount and the quantity"
-        data-pr-position="top"
-        ></i>
+      <div className="mt-4 text-sm text-gray-600 text-center">
+        Note: Hover over percentage values to see the amount and the quantity.
       </div>
-      <Tooltip target=".pi-info-circle" />
       </div>
     </div>
   );
