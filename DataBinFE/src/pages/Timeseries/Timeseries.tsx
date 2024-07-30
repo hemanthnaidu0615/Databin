@@ -86,6 +86,7 @@ const Timeseries = () => {
           />
         </div>
       </div>
+      <div className="relative">
       <TabView
         activeIndex={activeIndex}
         onTabChange={(e) => setActiveIndex(e.index)}
@@ -99,7 +100,7 @@ const Timeseries = () => {
         <TabPanel
           header="Milestones"
           pt={{ headerTitle: { className: "text-purple-700" } }}
-        >
+        > 
           <div className="flex flex-1  items-center font-semibold text-violet-800">
             <div className="flex-[2]"></div>
             <div className="flex-1 text-center p-2">Total</div>
@@ -141,8 +142,8 @@ const Timeseries = () => {
                   </div>
                   {status?.lineTotalSum?.map((sum: any, i: number) => {
                     return (
-                      <div className="cursor-pointer timeseries-status flex-1 text-center border-l-[1px] border-purple-400 flex items-center justify-between px-2">
-                        <i className="pi pi-arrow-left"></i>
+                      <div className="cursor-pointer timeseries-status flex-1 text-center border-l-[1px] border-purple-400 flex items-center justify-center px-2">
+                        
                         <div className="line-total-sum">
                           {sum > 0
                             ? Math.round(
@@ -159,7 +160,7 @@ const Timeseries = () => {
                           }).format(sum)}{" "}
                           | {status?.QtySum[i]}
                         </div>
-                        <i className="pi pi-arrow-right"></i>
+                        
                       </div>
                     );
                   })}
@@ -194,7 +195,7 @@ const Timeseries = () => {
               ?.map((ts: any) => {
                 return (
                   <div className="flex border-b-[1px] border-purple-400 p-4 h-16">
-                    <div className="flex-[3] text-nowrap text-violet-800">
+                    <div className="flex-[3] max-w-80 overflow-hidden">
                       {ts?.status_name}
                     </div>
                     <div className="flex-1 flex min-w-[75px] justify-center">
@@ -213,6 +214,10 @@ const Timeseries = () => {
           </div>
         </TabPanel>
       </TabView>
+      <div className="mt-4 text-sm text-gray-600 text-center">
+        Note: Hover over percentage values to see the amount and the quantity.
+      </div>
+      </div>
     </div>
   );
 };
