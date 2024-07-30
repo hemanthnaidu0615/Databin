@@ -273,7 +273,7 @@ export const SalesDashboard = () => {
   
       <div className="w-full h-2 bg-purple-300 rounded-t-lg"></div>
       <div className="card p-2 mb-4 h-[20%]">
-        <h1 className="ml-2 text-violet-800 font-bold">Sales</h1>
+        <h1 className="text-2xl ml-2 text-violet-800 font-bold">Sales</h1>
         <div className="flex pt-2 ml-10 w-full space-x-3">
           {salesDetails.map((item) => (
             <span key={item.label} className=" w-1/5 flex flex-col space-y-1" style={{width: "15%"}}>
