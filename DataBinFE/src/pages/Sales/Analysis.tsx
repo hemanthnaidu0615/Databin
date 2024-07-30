@@ -102,11 +102,18 @@ export const Analysis = () => {
   };
 
   const getTableColumns = (data: any[]) => {
+    if (tableName === "order_book_line" || tableName === "order_book_taxes") {
+      return Object.keys(data[0] || {}).slice(1).map((key) => ({
+        field: key,
+        header: formatHeaderKey(key),
+      }));
+    }
     return Object.keys(data[0] || {}).map((key) => ({
       field: key,
       header: formatHeaderKey(key),
     }));
   };
+  
 
   const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
