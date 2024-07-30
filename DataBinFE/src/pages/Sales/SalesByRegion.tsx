@@ -219,6 +219,9 @@ export const SalesByRegion = () => {
             </div>
           </div>
           <div className="w-[480px]">
+            <h3 className="font-bold text-lg mb-2 text-violet-800">
+              Top 10 Revenues
+            </h3>
             <DataTable
               value={tableData.slice(0, 10)}
               size="small"
