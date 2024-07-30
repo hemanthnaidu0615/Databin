@@ -12,6 +12,7 @@ export const SalesDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [typeData, setTypeData] = useState<any>();
   const { dates } = useSelector((store: any) => store.dateRange);
+  const enterpriseKey = useSelector((store: any) => store.enterprise.key);
 
   const getIntervalTime = (days: number) => {
     if (days === 2) return 3600;
@@ -19,41 +20,51 @@ export const SalesDashboard = () => {
     return 172800;
   };
 
-
-  function separateOrderChannels(data: any) {
-    const result: any = [[], [], [], []];
-
-    data.forEach((item: any) => {
-      if (item.order_capture_channel === "CallCenter") {
-        result[0].push(item);
-      } else if (item.order_capture_channel === "Web") {
-        result[1].push(item);
-      } else if (item.order_capture_channel === "AWDSTORE") {
-        result[2].push(item);
-      } else if (item.order_capture_channel === null) {
-        result[3].push(item);
-      }
-    });
-
-    // result[0].forEach((item: any) => {
-    //   if (!result[2].find((i: any) => i.datetime === item.datetime)) {
-    //     result[2].push({
-    //       enterprise_key: "AWW",
-    //       datetime: item.datetime,
-    //       order_capture_channel: "AWDSTORE",
-    //       original_order_total_amount: 0,
-    //       line_ordered_qty: 0,
-    //     });
-    //   }
-    // });
-
-    return result;
+  interface SalesDataItem {
+    datetime: string;
+    order_capture_channel: string | null;
+    original_order_total_amount: number;
+    line_ordered_qty: number;
+    // Add other fields as needed
   }
+  
+  type SalesData = SalesDataItem[];
+
+  function separateOrderChannels(data: SalesData): SalesData[] {
+  const result: SalesData[] = [[], [], [], []];
+
+  data.forEach((item) => {
+    const orderDate = moment(item.datetime);
+    const now = moment();
+    const format = now.diff(orderDate, 'hours') < 24 ? 'YYYY-MM-DD HH:mm:ss' : 'YYYY-MM-DD';
+    const formattedDate = orderDate.format(format);
+
+    const formattedItem = {
+      ...item,
+      datetime: formattedDate,
+    };
+
+    if (item.order_capture_channel === "CallCenter") {
+      result[0].push(formattedItem);
+    } else if (item.order_capture_channel === "Web") {
+      result[1].push(formattedItem);
+    } else if (item.order_capture_channel === "AWDSTORE") {
+      result[2].push(formattedItem);
+    } else if (item.order_capture_channel === null) {
+      result[3].push(formattedItem);
+    }
+  });
+
+  return result;
+}
+
+  
 
   const fetchData = async (
     start: moment.Moment,
     end: moment.Moment,
-    days: number
+    days: number,
+    enterpriseKey: string
   ) => {
     if (!start || !end) return;
     setLoading(true);
@@ -62,7 +73,7 @@ export const SalesDashboard = () => {
       const formattedStartDate = start.format("YYYY-MM-DD HH:mm:ss");
       const formattedEndDate = end.format("YYYY-MM-DD HH:mm:ss");
       const response1 = await authFetch(
-        `/alsd/get-full-sales-data?start_date=${formattedStartDate}&end_date=${formattedEndDate}&intervaltime=${intervalTime}`
+        `/alsd/get-full-sales-data?start_date=${formattedStartDate}&end_date=${formattedEndDate}&intervaltime=${intervalTime}&enterprise_key=${enterpriseKey}`
       );
       setTypeData(response1.data);
       setLoading(false);
@@ -76,10 +87,9 @@ export const SalesDashboard = () => {
       const start = moment(dates[0]);
       const end = moment(dates[1]);
       const days = end.diff(start, "days") + 1;
-      // setDaysDifference(days);
-      fetchData(start, end, days);
+      fetchData(start, end, days, enterpriseKey);
     }
-  }, [dates]);
+  }, [dates, enterpriseKey]);
   if (loading) {
     return (
       <div className="flex justify-center items-center my-auto mx-auto flex-col">
@@ -106,22 +116,30 @@ export const SalesDashboard = () => {
     });
   }
 
-  function formatSeriesDataLinechart(inputData: any) {
-    const colors: any = {
+  type ChannelType = "CallCenter" | "Web" | "AWDSTORE";
+
+  interface OrderData {
+    order_capture_channel: ChannelType;
+    datetime: string;
+    original_order_total_amount: number;
+  }
+
+  function formatSeriesDataLinechart(inputData: any): any[] {
+    const colors: Record<ChannelType, string> = {
       CallCenter: "rgba(173, 99, 155, 0.65)",
       Web: "rgba(253, 88, 173, 0.8)",
       AWDSTORE: "rgba(125, 221, 187, 0.68)",
     };
-
-    const channels = ["CallCenter", "Web", "AWDSTORE"];
-
+  
+    const channels: ChannelType[] = ["CallCenter", "Web", "AWDSTORE"];
+  
     return channels.map((channel) => {
       const dataPoints = inputData.flatMap((dataset: any) => {
         // Ensure dataset is an array
         if (!Array.isArray(dataset)) {
           return [];
         }
-
+  
         return dataset
           .filter((order) => order.order_capture_channel === channel)
           .map((order) => ({
@@ -129,7 +147,7 @@ export const SalesDashboard = () => {
             y: order.original_order_total_amount,
           }));
       });
-
+  
       return {
         id: channel === "AWDSTORE" ? "Store" : channel,
         color: colors[channel],
@@ -137,6 +155,7 @@ export const SalesDashboard = () => {
       };
     });
   }
+  
 
   const tab1HeaderTemplate = (options: any) => {
     return (
@@ -251,23 +270,30 @@ export const SalesDashboard = () => {
 
   return (
     <div className="w-full bg-white m-2 overflow-y-auto rounded-lg shadow-xl h-full flex flex-col">
-    <div className="w-full h-2 bg-purple-300 rounded-t-lg"></div>
-    <div className="card p-2 mb-4 h-[20%]">
-      <h1 className="ml-2 text-violet-800 font-bold">Sales</h1>
-      <div className="flex pt-2 ml-10 w-full space-x-3">
-        {salesDetails.map((item) => (
-          <span key={item.label} className=" w-1/5 flex flex-col space-y-1" style={{width: "15%"}}>
-            <p className="text-xs mb-2 pl-1">{item.label}</p>
-            <p className="text-sm text-violet-800 font-medium pl-1">{item.value}</p>
-            <div className={`${item.color} h-1.5 mt-1 w-20 rounded-b-lg`}></div>
-          </span>
-        ))}
+      <div className="w-full h-2 bg-purple-300 rounded-t-lg"></div>
+      <div className="card h-[20%] p-2">
+        <h1 className="text-2xl ml-2 text-violet-800 font-semibold">Sales</h1>
+        <div className="flex gap-4  divide-x divide-gray-400 divide-dashed pt-2 ml-14  ">
+          {salesDetails.map((item) => (
+            <span key={item.label} className="w-25 pl-4 flex flex-col ">
+              <p className="text-xs  mb-2 max-w-16 min-h-8  pl-1">
+                {item.label}
+              </p>
+              <p className="text-sm text-violet-800 font-medium pl-1">
+                {item.value}
+              </p>
+              <div
+                className={`${item.color} h-1.5 mt-1 w-20 rounded-b-lg`}
+              ></div>
+            </span>
+          ))}
+        </div>
       </div>
     </div>
     <div className="card m-2 h-full"></div>
       {typeData?.map((type: any, i: any) => {
         return (
-          <div>
+          <div key={i}>
             <TabView
               className="border-2"
               pt={{

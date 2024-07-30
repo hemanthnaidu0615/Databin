@@ -13,30 +13,107 @@ interface Marker {
   value: string;
 }
 
+interface Statess {
+  [key: string]: string; 
+}
+
+const statess: Statess = {
+  AL: 'Alabama',
+  AK: 'Alaska',
+  AS: 'American Samoa',
+  AZ: 'Arizona',
+  AR: 'Arkansas',
+  CA: 'California',
+  CO: 'Colorado',
+  CT: 'Connecticut',
+  DE: 'Delaware',
+  DC: 'District of Columbia',
+  FL: 'Florida',
+  GA: 'Georgia',
+  HI: 'Hawaii',
+  ID: 'Idaho',
+  IL: 'Illinois',
+  IN: 'Indiana',
+  IA: 'Iowa',
+  KS: 'Kansas',
+  KY: 'Kentucky',
+  LA: 'Louisiana',
+  ME: 'Maine',
+  MD: 'Maryland',
+  MA: 'Massachusetts',
+  MI: 'Michigan',
+  MN: 'Minnesota',
+  MS: 'Mississippi',
+  MO: 'Missouri',
+  MT: 'Montana',
+  NE: 'Nebraska',
+  NV: 'Nevada',
+  NH: 'New Hampshire',
+  NJ: 'New Jersey',
+  NM: 'New Mexico',
+  NY: 'New York',
+  NC: 'North Carolina',
+  ND: 'North Dakota',
+  MP: 'Northern Mariana Islands',
+  OH: 'Ohio',
+  OK: 'Oklahoma',
+  OR: 'Oregon',
+  PA: 'Pennsylvania',
+  PR: 'Puerto Rico',
+  RI: 'Rhode Island',
+  SC: 'South Carolina',
+  SD: 'South Dakota',
+  TN: 'Tennessee',
+  TX: 'Texas',
+  UT: 'Utah',
+  VT: 'Vermont',
+  VA: 'Virginia',
+  WA: 'Washington',
+  WV: 'West Virginia',
+  WI: 'Wisconsin',
+  WY: 'Wyoming',
+};
+
 export const SalesByRegion = () => {
   const [mapData, setMapData] = useState<any>();
   const { dates } = useSelector((store: any) => store.dateRange);
-  const enterpriseKey = useSelector((store: any) => store.enterprise.key); // Get enterprise key from Redux store
+  const enterpriseKey = useSelector((store: any) => store.enterprise.key);
+  const [tooltipData, setTooltipData] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
     const fetchData = async () => {
       const formattedStartDate = moment(dates[0]).format("YYYY-MM-DD 00:00:00");
       const formattedEndDate = moment(dates[1]).format("YYYY-MM-DD 00:00:00");
       try {
-        console.log(`Fetching data with start_date=${formattedStartDate}, end_date=${formattedEndDate}, enterprise_key=${enterpriseKey}`); // Debug log
+        console.log(`Fetching data with start_date=${formattedStartDate}, end_date=${formattedEndDate}, enterprise_key=${enterpriseKey}`);
         const response = await authFetch(
-          `http://localhost:3000/v2/tables/map?start_date=${formattedStartDate}&end_date=${formattedEndDate}&enterprise_key=${enterpriseKey}`
+          `http://localhost:3000/v2/tables/map?start_date=${formattedStartDate}&end_date=${formattedEndDate}&enterprise_key=${enterpriseKey}`,{
+            headers: {
+              'Cache-Control': 'no-cache',
+              'Pragma': 'no-cache',
+            }
+          }
         );
-        console.log("API response:", response.data); // Debug log
+        console.log("API response:", response.data);
         setMapData(response.data);
+        const tooltipMap: { [key: string]: string } = response.data.reduce((acc: any, item: any) => {
+          const stateAbbreviation = item[0].split("-")[1].toUpperCase();
+          const stateName = statess[stateAbbreviation];
+          acc[stateName] = `$${item[1]}`;
+          return acc;
+        }, {});
+        setTooltipData(tooltipMap);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
-  
+
     fetchData();
   }, [dates, enterpriseKey]);
 
+  console.log("Dates from Redux:", dates); // Debug log
+  console.log("Enterprise Key from Redux:", enterpriseKey); // Debug log
+  
   if (!mapData) {
     return (
       <div className="flex justify-center items-center my-auto mx-auto">
@@ -48,10 +125,10 @@ export const SalesByRegion = () => {
   const stateAbbreviations: { [key: string]: string } = states;
 
   const result: string[][] = mapData.map((subArray: string[]) => {
-  const stateAbbreviation: string = subArray[0].split("-")[1].toUpperCase();
-  const stateName: string = stateAbbreviations[stateAbbreviation];
-  return [stateName, ...subArray.slice(1)];
-});
+    const stateAbbreviation: string = subArray[0].split("-")[1].toUpperCase();
+    const stateName: string = stateAbbreviations[stateAbbreviation];
+    return [stateName, ...subArray.slice(1)];
+  });
 
   const formatter = new Intl.NumberFormat("en-US", {
     notation: "compact",
@@ -100,13 +177,13 @@ export const SalesByRegion = () => {
     <div className="h-full w-full flex flex-col m-2 rounded-lg bg-white border-2">
       <div className="w-full h-2 bg-purple-300 rounded-t-lg"></div>
       <div className="flex justify-between px-3 py-2">
-        <h1 className="font-semibold text-md text-violet-800">
+        <h1 className="text-2xl font-semibold text-md text-violet-800">
           Sales by Region
         </h1>
       </div>
       <div className="flex flex-col flex-1 shadow-lg rounded-lg border-slate-200 border-2 divide-y-2 divide-slate-200 divide-dashed px-2">
         <div className="flex justify-between p-2">
-          <h3 className="flex items-center text-sm font-bold">
+          <h3 className="text-2xl flex items-center text-sm font-bold">
             Countrywide Sales
           </h3>
         </div>
@@ -120,6 +197,7 @@ export const SalesByRegion = () => {
               markers4={[]}
               markers5={[]}
               colorScale={colorScale}
+              revenueData={tooltipData}
             />
             <div className="flex flex-col justify-center gap-4 p-2">
               <div className="w-max text-xs p-2 text-violet-900 bg-red-100 font-bold rounded-sm">
