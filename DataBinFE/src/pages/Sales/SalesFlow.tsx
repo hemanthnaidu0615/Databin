@@ -413,6 +413,12 @@ const SalesFlow = () => {
     fetchData(newType);
   };
 
+  const handleZoomChange = (newValue: number) => {
+    if (newValue >= 0 && newValue <= 100) {
+      setZoomValue(newValue);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center my-auto mx-auto">
@@ -454,19 +460,28 @@ const SalesFlow = () => {
                 key={index}
                 className="p-2 text-sm bg-purple-500 border-0"
                 onClick={() => handleSelectingType(btn.value)}
+                style={{
+                  transition: "background-color 0.3s",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = "#9f7aea";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = "#7c3aed";
+                }}
               >
                 {btn.name}
               </Button>
             ))}
           </div>
           <div className="flex items-center gap-2 ml-4">
-            <i className="pi pi-search-minus"></i>
+            <i className="pi pi-search-minus"  onClick={() => handleZoomChange(zoomValue - 10)}></i>
             <Slider
               value={zoomValue}
-              onChange={(e) => setZoomValue(e.value as number)}
+              onChange={(e) => handleZoomChange(e.value as number)}
               className="w-32"
             />
-            <i className="pi pi-search-plus"></i>
+            <i className="pi pi-search-plus"  onClick={() => handleZoomChange(zoomValue + 10)}></i>
             <ToggleButton
               onLabel="Vertical"
               offLabel="Horizontal"
