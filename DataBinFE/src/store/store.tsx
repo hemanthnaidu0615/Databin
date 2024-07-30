@@ -13,3 +13,5 @@ export const store = configureStore({
     singleDate: singleDateReducer, // Add the new reducer to the store
   },
 });
+
+export type RootState = ReturnType<typeof store.getState>;

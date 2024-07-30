@@ -201,26 +201,29 @@ export const SalesDashboard = () => {
 
   const formatNumberWithCommas = (value: number | null | undefined): string => {
     if (value === null || value === undefined) return "-";
+    const roundedValue = Math.round(value);
     return Intl.NumberFormat("en-US", {
       style: "decimal",
-    }).format(value);
+    }).format(roundedValue);
   };
 
   const formatCustomDataTableData = (
-    data: any[],
-    fields: string[],
-    prependDollar: boolean = false
-  ) => {
-    return data.map((item) => {
-      const formattedItem = { ...item };
-      fields.forEach((field) => {
-        formattedItem[field] = prependDollar
-          ? `${formatNumberWithCommas(formattedItem[field])}`
-          : formatNumberWithCommas(formattedItem[field]);
-      });
-      return formattedItem;
+  data: any[],
+  fields: string[],
+  prependDollar: boolean = false
+) => {
+  return data.map((item) => {
+    const formattedItem = { ...item };
+    fields.forEach((field) => {
+      const value = Math.round(formattedItem[field]);
+      formattedItem[field] = prependDollar
+        ? `$${formatNumberWithCommas(value)}`
+        : formatNumberWithCommas(value);
     });
-  };
+    return formattedItem;
+  });
+};
+
 
   const salesDetails = [
     {
@@ -286,7 +289,8 @@ export const SalesDashboard = () => {
           ))}
         </div>
       </div>
-      <div className="card m-2 h-full  "></div>
+    </div>
+    <div className="card m-2 h-full"></div>
       {typeData?.map((type: any, i: any) => {
         return (
           <div key={i}>
@@ -438,7 +442,7 @@ export const SalesDashboard = () => {
                           field: "line_ordered_qty",
                           header: "Total",
                           format: true,
-                          prependDollar: true,
+                          
                         },
                       ]}
                     />
@@ -477,3 +481,4 @@ export const SalesDashboard = () => {
     </div>
   );
 };
+

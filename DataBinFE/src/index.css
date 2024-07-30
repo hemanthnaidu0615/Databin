@@ -37,3 +37,12 @@
   justify-content: center;
 }
 
+.org-chart.vertical-layout .p-organizationchart {
+  display: flex;
+  flex-direction: column;
+}
+
+.org-chart.horizontal-layout .p-organizationchart {
+  display: flex;
+  flex-direction: row;
+}
