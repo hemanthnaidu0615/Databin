@@ -190,33 +190,36 @@ export const SalesByRegion = () => {
 
         <div className="flex gap-24 py-4 items-center justify-center">
           <div className="w-[500px] flex flex-col">
-            <MapChart
-              markers={[]}
-              markers2={[]}
-              markers3={[]}
-              markers4={[]}
-              markers5={[]}
-              colorScale={colorScale}
+          <div className="relative h-[340px]"> 
+           <MapChart
+             markers={[]}
+             markers2={[]}
+             markers3={[]}
+             markers4={[]}
+             markers5={[]}
+             colorScale={colorScale}
               revenueData={tooltipData}
-            />
-            <div className="flex flex-col justify-center gap-4 p-2">
-              <div className="w-max text-xs p-2 text-violet-900 bg-red-100 font-bold rounded-sm">
-                Top 5 revenues
-              </div>
-              <div className="flex gap-2 flex-col flex-wrap h-16 max-w-16 flex-1">
-                {markersList.map((item: Marker) => (
-                  <span key={item.color} className="w-32 px-2 h-4 flex">
-                    <div
-                      className="rounded-full h-[9px] w-[9px] mt-1"
-                      style={{ backgroundColor: `${item.color}` }}
-                    ></div>
-                    <p className="text-xs ml-1 text-violet-900">
-                      $ {item.value}
-                    </p>
-                  </span>
-                ))}
-              </div>
-            </div>
+           />
+          </div>
+          <div className="flex flex-col p-2 gap-4 max-w-xs">
+          <div className="text-xs p-2 text-violet-900 bg-red-100 font-bold rounded-sm">
+             Top 5 revenues
+           </div>
+           <div className="flex flex-col gap-1">
+            {markersList.map((item: Marker) => (
+            <span key={item.color} className="flex items-center gap-2">
+          <div
+             className="rounded-full h-[9px] w-[9px]"
+             style={{ backgroundColor: `${item.color}` }}
+           ></div>
+             <p className="text-xs text-violet-900">
+               $ {item.value}
+            </p>
+         </span>
+           ))}
+       </div>
+    </div>
+
           </div>
           <div className="w-[480px]">
             <h3 className="font-bold text-lg mb-2 text-violet-800">
