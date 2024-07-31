@@ -201,25 +201,24 @@ export const SalesByRegion = () => {
               revenueData={tooltipData}
            />
           </div>
-          <div className="flex flex-col p-2 gap-4 max-w-xs">
-          <div className="text-xs p-2 text-violet-900 bg-red-100 font-bold rounded-sm">
-             Top 5 revenues
-           </div>
-           <div className="flex flex-col gap-1">
-            {markersList.map((item: Marker) => (
-            <span key={item.color} className="flex items-center gap-2">
-          <div
-             className="rounded-full h-[9px] w-[9px]"
-             style={{ backgroundColor: `${item.color}` }}
-           ></div>
-             <p className="text-xs text-violet-900">
-               $ {item.value}
-            </p>
-         </span>
-           ))}
+            <div className="flex flex-col p-2 gap-4 max-w-xs">
+            <div className="text-xs p-2 text-violet-900 bg-red-100 font-bold rounded-sm">
+              Top 5 revenues
+            </div>
+            <div className="flex flex-col gap-1">
+             {markersList.map((item: Marker) => (
+              <span key={item.color} className="flex items-center gap-2">
+            <div
+              className="rounded-full h-[9px] w-[9px]"
+              style={{ backgroundColor: `${item.color}` }}
+            ></div>
+              <p className="text-xs text-violet-900">
+                 $ {item.value}
+              </p>
+          </span>
+            ))}
+        </div>
        </div>
-    </div>
-
           </div>
           <div className="w-[480px]">
             <h3 className="font-bold text-lg mb-2 text-violet-800">
