@@ -14,6 +14,10 @@ import { Bar } from "react-chartjs-2";
 import { useSelector } from "react-redux";
 import authFetch from "../../axios";
 import { InputNumber, InputNumberChangeEvent } from "primereact/inputnumber";
+import { Dialog } from 'primereact/dialog';
+import { Calendar } from 'primereact/calendar';
+
+
 
 export const Analysis = () => {
   const [tableName, setTableName] = useState<string>("order_book_header");
@@ -25,6 +29,18 @@ export const Analysis = () => {
   const [globalFilterValue, setGlobalFilterValue] = useState<string>("");
 
   const { dates } = useSelector((store: any) => store.dateRange);
+
+  const [showSchedulerDialog, setShowSchedulerDialog] = useState(false);
+  const [schedulerData, setSchedulerData] = useState({
+    startDate: null,
+    recurrencePattern: null,
+    emailAddress: '',
+    tableSelection: '',
+    columnSelection: []
+  });
+  
+
+
 
   const fetchData = async (tablename: string) => {
     const formattedStartDate = moment(dates[0]).format("YYYY-MM-DD HH:mm:ss");
@@ -42,6 +58,159 @@ export const Analysis = () => {
       console.error("Error fetching data:", error);
     }
   };
+
+  const handleSaveScheduler = async () => {
+    try {
+      const { tableSelection, columnSelection, startDate, recurrencePattern, emailAddress, timeFrame } = schedulerData;
+  
+      const formattedStartDate = moment(startDate).format('YYYY-MM-DDTHH:mm:ss');
+      let formattedEndDate = moment().format('YYYY-MM-DDTHH:mm:ss');
+  
+      if (timeFrame === 'last_year') {
+        formattedEndDate = moment().subtract(1, 'year').format('YYYY-MM-DDTHH:mm:ss');
+      } else if (timeFrame === 'last_month') {
+        formattedEndDate = moment().subtract(1, 'month').format('YYYY-MM-DDTHH:mm:ss');
+      } else if (timeFrame === 'last_week') {
+        formattedEndDate = moment().subtract(1, 'week').format('YYYY-MM-DDTHH:mm:ss');
+      }
+  
+      const response = await authFetch(`/tables?table=${tableSelection}&startDate=${formattedStartDate}&endDate=${formattedEndDate}`);
+      const data = await response.json();
+  
+      const selectedColumnsData = data.map((row) => {
+        const newRow = {};
+        columnSelection.forEach((column) => {
+          newRow[column] = row[column];
+        });
+        return newRow;
+      });
+  
+      const xlsx = (await import('xlsx')).default;
+      const worksheet = xlsx.utils.json_to_sheet(selectedColumnsData);
+      const workbook = { Sheets: { data: worksheet }, SheetNames: ['data'] };
+      const excelBuffer = xlsx.write(workbook, { bookType: 'xlsx', type: 'array' });
+  
+      const formData = new FormData();
+      formData.append('file', new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }), 'data.xlsx');
+      formData.append('email', emailAddress);
+      formData.append('recurrencePattern', recurrencePattern);
+      formData.append('startDate', formattedStartDate);
+      formData.append('tableSelection', tableSelection);
+      formData.append('columnSelection', JSON.stringify(columnSelection));
+      formData.append('timeFrame', timeFrame);
+  
+      await authFetch('/scheduler', { method: 'POST', body: formData });
+  
+      console.log('Scheduler data saved and email sent successfully');
+      setShowSchedulerDialog(false);
+    } catch (error) {
+      console.error('Error saving scheduler data:', error);
+    }
+  };
+  
+  function getDefaultTimeFrame(recurrencePattern) {
+    switch (recurrencePattern) {
+      case 'daily':
+        return 'Today';
+      case 'weekly':
+        return 'Past Week';
+      case 'monthly':
+        return 'Past Month';
+      case 'yearly':
+        return 'Past Year';
+      default:
+        return 'Today';
+    }
+  }
+  
+  function getTimeFrames(recurrencePattern) {
+    const timeFrames = {
+      daily: [
+        { label: 'Today', value: 'Today' },
+        { label: 'Past Week', value: 'Past Week' },
+        { label: 'Past Month', value: 'Past Month' },
+        { label: 'Past 3 Months', value: 'Past 3 Months' },
+        { label: 'Past 6 Months', value: 'Past 6 Months' },
+        { label: 'Past Year', value: 'Past Year' },
+      ],
+      weekly: [
+        { label: 'Past Week', value: 'Past Week' },
+        { label: 'Past Month', value: 'Past Month' },
+        { label: 'Past 3 Months', value: 'Past 3 Months' },
+        { label: 'Past 6 Months', value: 'Past 6 Months' },
+        { label: 'Past Year', value: 'Past Year' },
+      ],
+      monthly: [
+        { label: 'Past Month', value: 'Past Month' },
+        { label: 'Past 3 Months', value: 'Past 3 Months' },
+        { label: 'Past 6 Months', value: 'Past 6 Months' },
+        { label: 'Past Year', value: 'Past Year' },
+        { label: 'Past 2 Years', value: 'Past 2 Years' },
+        { label: 'Past 5 Years', value: 'Past 5 Years' },
+        { label: 'Past 10 Years', value: 'Past 10 Years' },
+      ],
+      yearly: [
+        { label: 'Past Year', value: 'Past Year' },
+        { label: 'Past 2 Years', value: 'Past 2 Years' },
+        { label: 'Past 5 Years', value: 'Past 5 Years' },
+        { label: 'Past 10 Years', value: 'Past 10 Years' },
+      ],
+    };
+    return timeFrames[recurrencePattern] || [];
+  }
+  
+  
+  function getDefaultTimeFrame(recurrencePattern) {
+    switch (recurrencePattern) {
+      case 'daily':
+        return 'Today';
+      case 'weekly':
+        return 'Past Week';
+      case 'monthly':
+        return 'Past Month';
+      case 'yearly':
+        return 'Past Year';
+      default:
+        return 'Today';
+    }
+  }
+  
+  function getTimeFrames(recurrencePattern) {
+    const timeFrames = {
+      daily: [
+        { label: 'Today', value: 'Today' },
+        { label: 'Past Week', value: 'Past Week' },
+        { label: 'Past Month', value: 'Past Month' },
+        { label: 'Past 3 Months', value: 'Past 3 Months' },
+        { label: 'Past 6 Months', value: 'Past 6 Months' },
+        { label: 'Past Year', value: 'Past Year' },
+      ],
+      weekly: [
+        { label: 'Past Week', value: 'Past Week' },
+        { label: 'Past Month', value: 'Past Month' },
+        { label: 'Past 3 Months', value: 'Past 3 Months' },
+        { label: 'Past 6 Months', value: 'Past 6 Months' },
+        { label: 'Past Year', value: 'Past Year' },
+      ],
+      monthly: [
+        { label: 'Past Month', value: 'Past Month' },
+        { label: 'Past 3 Months', value: 'Past 3 Months' },
+        { label: 'Past 6 Months', value: 'Past 6 Months' },
+        { label: 'Past Year', value: 'Past Year' },
+        { label: 'Past 2 Years', value: 'Past 2 Years' },
+        { label: 'Past 5 Years', value: 'Past 5 Years' },
+        { label: 'Past 10 Years', value: 'Past 10 Years' },
+      ],
+      yearly: [
+        { label: 'Past Year', value: 'Past Year' },
+        { label: 'Past 2 Years', value: 'Past 2 Years' },
+        { label: 'Past 5 Years', value: 'Past 5 Years' },
+        { label: 'Past 10 Years', value: 'Past 10 Years' },
+      ],
+    };
+    return timeFrames[recurrencePattern] || [];
+  }
+  
 
   const initializeFilters = (data: any[]) => {
     const initialFilters: DataTableFilterMeta = {
@@ -370,6 +539,18 @@ export const Analysis = () => {
         tooltipOptions={{ position: "top" }}
         tooltip="xls"
       />
+
+      <Button
+        type="button"
+        icon="pi pi-calendar"
+        rounded
+        onClick={() => setShowSchedulerDialog(true)}
+        data-pr-tooltip="Schedule"
+        className="bg-purple-500 border-0 h-10 w-10"
+        tooltipOptions={{ position: "top" }}
+        tooltip="Schedule"
+      />
+
     </div>
   );
 
@@ -420,7 +601,7 @@ export const Analysis = () => {
           </div>
         ) : (
           <DataTable
-            className={showBarChart ? "m-1 w-[99%] " : "m-1 w-[99%]"}
+            className="m-1 w-[99%]"
             showGridlines
             size="small"
             paginator
@@ -430,52 +611,140 @@ export const Analysis = () => {
             filters={filters}
             filterDisplay="row"
             globalFilterFields={Object.keys(filters)}
-            >
-            {getTableColumns(data).slice(1).map((col, index) => { // Exclude the first column
-            if (
-              col.header.toLowerCase().includes("amount") ||
-              col.header.toLowerCase().includes("charges")
-            ) {
-            return (
-            <Column
-            sortable
-            key={index}
-            field={col.field}
-            header={col.header}
-            style={{ minWidth: "350px" }}
-            dataType="numeric"
-            filterField={col.field}
-            filter
-            filterElement={balanceFilterTemplate}
-            body={(rowData) => formatValue(col.field, rowData[col.field])}
-          />
-         );
-       }
-    return (
-      <Column
-        sortable
-        key={index}
-        field={col.field}
-        style={{ minWidth: "350px" }}
-        header={col.header}
-        filter
-        filterElement={
-          <InputText
-            value={filters[col.field]?.value || ""}
-            onChange={(e) => onColumnFilterChange(e, col.field)}
-            placeholder={`Search ${col.header}`}
-            className="max-w-40 text-sm p-1"
-          />
-        }
-        filterPlaceholder={`Search by ${col.header}`}
-        body={(rowData) => formatValue(col.field, rowData[col.field])}
-      />
-    );
-  })}
-</DataTable>
-
+          >
+            {getTableColumns(data).slice(1).map((col, index) => {
+              if (
+                col.header.toLowerCase().includes("amount") ||
+                col.header.toLowerCase().includes("charges")
+              ) {
+                return (
+                  <Column
+                    sortable
+                    key={index}
+                    field={col.field}
+                    header={col.header}
+                    style={{ minWidth: "350px" }}
+                    dataType="numeric"
+                    filterField={col.field}
+                    filter
+                    filterElement={balanceFilterTemplate}
+                    body={(rowData) => formatValue(col.field, rowData[col.field])}
+                  />
+                );
+              }
+              return (
+                <Column
+                  sortable
+                  key={index}
+                  field={col.field}
+                  style={{ minWidth: "350px" }}
+                  header={col.header}
+                  filter
+                  filterElement={
+                    <InputText
+                      value={filters[col.field]?.value || ""}
+                      onChange={(e) => onColumnFilterChange(e, col.field)}
+                      placeholder={`Search ${col.header}`}
+                      className="max-w-40 text-sm p-1"
+                    />
+                  }
+                  filterPlaceholder={`Search by ${col.header}`}
+                  body={(rowData) => formatValue(col.field, rowData[col.field])}
+                />
+              );
+            })}
+          </DataTable>
         )}
       </div>
+
+      {/* Scheduler Popup */}
+      <Dialog
+  visible={showSchedulerDialog}
+  onHide={() => setShowSchedulerDialog(false)}
+  header="Scheduler"
+  footer={
+    <div className="flex justify-end">
+      <Button label="Save" icon="pi pi-check" onClick={handleSaveScheduler} />
+      <Button label="Cancel" icon="pi pi-times" onClick={() => setShowSchedulerDialog(false)} className="p-button-secondary" />
+    </div>
+  }
+  style={{ width: '50vw' }}
+>
+  <div className="p-fluid">
+    <div className="p-field">
+      <label htmlFor="startDate">Start Date</label>
+      <Calendar
+        id="startDate"
+        value={schedulerData.startDate}
+        onChange={(e) => setSchedulerData({ ...schedulerData, startDate: e.value })}
+        showTime
+      />
+    </div>
+    <div className="p-field">
+      <label htmlFor="recurrencePattern">Recurrence Pattern</label>
+      <Dropdown
+        id="recurrencePattern"
+        value={schedulerData.recurrencePattern}
+        options={[
+          { label: 'Daily', value: 'daily' },
+          { label: 'Weekly', value: 'weekly' },
+          { label: 'Monthly', value: 'monthly' },
+          { label: 'Yearly', value: 'yearly' }
+        ]}
+        onChange={(e) => {
+          setSchedulerData({
+            ...schedulerData,
+            recurrencePattern: e.value,
+            timeFrame: getDefaultTimeFrame(e.value) // Set default time frame based on recurrence
+          });
+        }}
+      />
+    </div>
+    <div className="p-field">
+      <label htmlFor="timeFrame">Time Frame</label>
+      <Dropdown
+        id="timeFrame"
+        value={schedulerData.timeFrame}
+        options={getTimeFrames(schedulerData.recurrencePattern)}
+        onChange={(e) => setSchedulerData({ ...schedulerData, timeFrame: e.value })}
+      />
+    </div>
+    <div className="p-field">
+      <label htmlFor="emailAddress">Email Address</label>
+      <InputText
+        id="emailAddress"
+        value={schedulerData.emailAddress}
+        onChange={(e) => setSchedulerData({ ...schedulerData, emailAddress: e.target.value })}
+      />
+    </div>
+    <div className="p-field">
+      <label htmlFor="tableSelection">Table Selection</label>
+      <Dropdown
+        id="tableSelection"
+        value={schedulerData.tableSelection}
+        options={[
+          { label: 'Order Book Header', value: 'order_book_header' },
+          { label: 'Order Book Line', value: 'order_book_line' },
+          { label: 'Order Book Taxes', value: 'order_book_taxes' },
+        ]}
+        onChange={(e) => setSchedulerData({ ...schedulerData, tableSelection: e.value })}
+      />
+    </div>
+    <div className="p-field">
+      <label htmlFor="columnSelection">Column Selection</label>
+      <MultiSelect
+        id="columnSelection"
+        value={schedulerData.columnSelection}
+        options={getTableColumns(data).slice(1)}
+        onChange={(e) => setSchedulerData({ ...schedulerData, columnSelection: e.value })}
+        optionLabel="header"
+        display="chip"
+        placeholder="Select Columns"
+      />
+    </div>
+  </div>
+</Dialog>
+
     </div>
   );
 };

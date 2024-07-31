@@ -8,6 +8,10 @@ const authToken = process.env.AUTH_TOKEN;
 // const smsKey = process.env.SMS_SECRET_KEY;
 let twilioNum = process.env.TWILIO_PHONE_NUMBER;
 const twilioClient = require("twilio")(accountSid, authToken);
+const nodemailer = require('nodemailer');
+const nodeSchedule = require('node-schedule');
+const nodemailer = require('nodemailer');
+const ExcelJS = require('exceljs');
 
 const {
   formatDate,
@@ -42,6 +46,80 @@ const getCustomQueryDate = (req, res) => {
     }
   });
 };
+
+const scheduleTask = async (req, res) => {
+  try {
+    const { email, startDate, recurrencePattern, tableSelection, columnSelection, timeFrame } = req.body;
+
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    const recurrenceMap = {
+      daily: '0 0 * * *',
+      weekly: '0 0 * * 0',
+      monthly: '0 0 1 * *',
+    };
+    const cronPattern = recurrenceMap[recurrencePattern] || '0 0 * * *';
+
+    schedule.scheduleJob(cronPattern, async () => {
+      try {
+        const formattedStartDate = moment(startDate).format('YYYY-MM-DDTHH:mm:ss');
+        let formattedEndDate = moment().format('YYYY-MM-DDTHH:mm:ss');
+
+        if (timeFrame === 'last_year') {
+          formattedEndDate = moment().subtract(1, 'year').format('YYYY-MM-DDTHH:mm:ss');
+        } else if (timeFrame === 'last_month') {
+          formattedEndDate = moment().subtract(1, 'month').format('YYYY-MM-DDTHH:mm:ss');
+        } else if (timeFrame === 'last_week') {
+          formattedEndDate = moment().subtract(1, 'week').format('YYYY-MM-DDTHH:mm:ss');
+        }
+
+        const response = await authFetch(`/tables?table=${tableSelection}&startDate=${formattedStartDate}&endDate=${formattedEndDate}`);
+        const data = await response.json();
+
+        const selectedColumnsData = data.map((row) => {
+          const newRow = {};
+          columnSelection.forEach((column) => {
+            newRow[column] = row[column];
+          });
+          return newRow;
+        });
+
+        const xlsx = (await import('xlsx')).default;
+        const worksheet = xlsx.utils.json_to_sheet(selectedColumnsData);
+        const workbook = { Sheets: { data: worksheet }, SheetNames: ['data'] };
+        const excelBuffer = xlsx.write(workbook, { bookType: 'xlsx', type: 'array' });
+
+        const filePath = path.join(__dirname, 'temp.xlsx');
+        fs.writeFileSync(filePath, Buffer.from(excelBuffer));
+
+        await transporter.sendMail({
+          from: process.env.EMAIL_USER,
+          to: email,
+          subject: 'Scheduled Report',
+          text: 'Please find the attached report.',
+          attachments: [{ filename: 'report.xlsx', path: filePath }],
+        });
+
+        fs.unlinkSync(filePath);
+      } catch (error) {
+        console.error('Error in scheduled job:', error);
+      }
+    });
+
+    res.status(200).send('Task scheduled successfully');
+  } catch (error) {
+    console.error('Error scheduling task:', error);
+    res.status(500).send('Internal Server Error');
+  }
+};
+
+
 const getFullSalesData = (req, res) => {
   const start_date = req.query.start_date;
   const end_date = req.query.end_date;
@@ -1377,6 +1455,7 @@ const getSalesAvgData = async (req, res) => {
 
 module.exports = {
   getTableData,
+  scheduleTask,
   getFullSalesData,
   getFullSalesDataTEST,
   getCustomQueryDate,

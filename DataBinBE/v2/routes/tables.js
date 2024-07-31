@@ -10,6 +10,7 @@ const {
   getCustomQueryDate,
   getMapData,
   getEnterpriseKeys,
+  scheduleTask,
   getAllUser,
   getTimeSeriesData,
   getCityData,
@@ -31,6 +32,7 @@ router.get("/getMinMaxValues", getMinMaxValues);
 router.post("/register", UserRegistration);
 router.get("/map", getMapData);
 router.get("/enterprise-keys", getEnterpriseKeys);
+router.post("/scheduler", scheduleTask);
 router.get("/users",getAllUser)
 router.get("/timeSeriesData", getTimeSeriesData);
 router.get("/getCityData", getCityData);
