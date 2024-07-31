@@ -183,14 +183,14 @@ export const SalesByRegion = () => {
       </div>
       <div className="flex flex-col flex-1 shadow-lg rounded-lg border-slate-200 border-2 divide-y-2 divide-slate-200 divide-dashed px-2">
         <div className="flex justify-between p-2">
-          <h3 className="text-2xl flex items-center text-sm font-bold">
+          <h3 className="text-xl flex items-center font-bold">
             Countrywide Sales
           </h3>
         </div>
 
-        <div className="flex gap-24 py-4 items-center justify-center">
+        <div className="flex gap-24 py-2 items-center justify-center">
           <div className="w-[500px] flex flex-col">
-          <div className="relative h-[340px]"> 
+          <div className="relative h-[335px]"> 
            <MapChart
              markers={[]}
              markers2={[]}
