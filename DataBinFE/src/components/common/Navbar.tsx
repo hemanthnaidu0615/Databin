@@ -81,9 +81,9 @@ export const Navbar = () => {
     console.log("Selected enterprise key:", event.target.value);
     dispatch(setEnterpriseKey(event.target.value));
   }
-
   const getInitials = (name: string) => {
-    const nameArray = name.split(" ");
+    if (!name) return ""; 
+    const nameArray = name.split(" ").filter(Boolean);
     const initials = nameArray.map(n => n[0].toUpperCase()).join("");
     return initials;
   };
