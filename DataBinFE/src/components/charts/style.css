@@ -1,0 +1,49 @@
+.node-container .node-content {
+    height: 5rem; 
+    width: 10rem; 
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: color 0.3s ease-in-out, background-color 0.3s ease-in-out;
+    overflow: hidden;
+    text-overflow: ellipsis; 
+}
+.node-container{
+   
+    border-radius: 15px;
+}
+
+.node-container .node-content:hover {
+    color: #2c3e50;
+    background-color: #e0e0e0; 
+}
+
+.node-label,
+.node-data {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: center; 
+}
+
+.p-datatable .p-datatable-wrapper{ border-radius:5px;}
+.p-datatable.p-datatable-sm .p-datatable-thead > tr{
+    height: 3rem;
+    background-color:#F9FAFB !important;
+}
+
+.p-datatable.p-datatable .p-datatable-thead > tr >th{
+
+    background:none !important;
+    
+}
+.p-datatable.p-datatable .p-datatable-tbody>tr>td{
+    background-color: white !important;
+}
+
+.p-datatable.p-datatable .p-datatable-tbody>tr{
+
+    background-color: none !important;
+}
+

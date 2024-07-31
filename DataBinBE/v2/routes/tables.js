@@ -10,6 +10,7 @@ const {
   getCustomQueryDate,
   getMapData,
   getEnterpriseKeys,
+  updateUsers,
   getAllUser,
   getTimeSeriesData,
   getCityData,
@@ -17,6 +18,7 @@ const {
   thresholdInfo,
   getThresholdInfo,
   sendSMS,
+  deleteUser,
   getSalesAvgData
 } = require("../controllers/tables");
 
@@ -38,6 +40,8 @@ router.get("/getDataForTimeSeries", getDataForTimeSeries);
 router.get("/getThresholdInfo", getThresholdInfo);
 router.post("/thresholdInfo", thresholdInfo);
 router.post("/sendSMS", sendSMS);
+router.put("/updateUsers/:id",updateUsers);
+router.delete("/deleteUser/:id",deleteUser);
 router.get("/getSalesAvgData", getSalesAvgData);
 
 module.exports = router;

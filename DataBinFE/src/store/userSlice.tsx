@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   username: "",
+  useremail: "", 
   test: "jack",
 };
 
@@ -11,7 +12,8 @@ const userSlice = createSlice({
   reducers: {
     setUser: (state, { payload }) => {
       localStorage.setItem("userData", JSON.stringify(payload));
-      state.username = payload?.firstname?payload?.firstname:"";
+      state.username = payload.firstname ? payload.firstname : "";
+      state.useremail = payload.username ? payload.username : ""; 
     },
   },
 });
