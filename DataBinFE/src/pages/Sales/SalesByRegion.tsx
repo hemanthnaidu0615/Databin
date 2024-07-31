@@ -188,7 +188,7 @@ export const SalesByRegion = () => {
           </h3>
         </div>
 
-        <div className="flex gap-24 py-4 items-center justify-center">
+        <div className="flex gap-24 py-2 items-center justify-center">
           <div className="w-[500px] flex flex-col">
           <div className="relative h-[335px]"> 
            <MapChart
