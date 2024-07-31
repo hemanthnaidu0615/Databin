@@ -197,9 +197,9 @@ const Timeseries = () => {
                   <div className="flex border-b-[1px] border-purple-400 p-4 h-16">
                     <div className="flex-[3] max-w-80 overflow-hidden text-violet-800"
                     style={{
-                      whiteSpace: "nowrap",  // Added this line
-                      textOverflow: "ellipsis",  // Added this line
-                      overflow: "hidden",  // Added this line
+                      whiteSpace: "nowrap",  
+                      textOverflow: "ellipsis", 
+                      overflow: "hidden",  
                     }}>
                       {ts?.status_name}
                     </div>
