@@ -191,7 +191,12 @@ const Timeseries = () => {
                 ?.filter((t: any) => allowedStatusNames.includes(t?.status_name))
                 ?.map((ts: any) => (
                   <div className="flex border-b-[1px] border-purple-400 p-4 h-16" key={ts?.status_name}>
-                    <div className="flex-[3] max-w-80 overflow-hidden">
+                    <div className="flex-[3] max-w-80 overflow-hidden text-violet-800"
+                    style={{
+                      whiteSpace: "nowrap",  
+                      textOverflow: "ellipsis", 
+                      overflow: "hidden",  
+                    }}>
                       {ts?.status_name}
                     </div>
                     <div className="flex-1 flex min-w-[75px] justify-center">
