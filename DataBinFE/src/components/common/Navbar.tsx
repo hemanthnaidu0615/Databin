@@ -25,7 +25,8 @@ export const Navbar = () => {
   const hideCalendarRoutes = [
     "/home-dashboard",
     "/timeseries",
-    "/sales/analysis"
+    "/sales/analysis",
+    "/user-management"
   ];
 
   const hideDropdownRoutes = [
@@ -33,7 +34,8 @@ export const Navbar = () => {
     "/sales/flow",
     "/sales/analysis",
     "/returns",
-    "/timeseries"
+    "/timeseries",
+    "/user-management"
   ];
 
   const hideCalendar = hideCalendarRoutes.includes(location.pathname);
@@ -164,7 +166,7 @@ export const Navbar = () => {
           onContextMenu={(e) => cm.current!.show(e)}
           onClick={(e) => cm.current!.show(e)}
           className="custom-icon-size"
-          style={{ backgroundColor: "#007bff", color: "#ffffff" }}
+          style={{ backgroundColor: "#6A1B9A", color: "#FFFFFF" }}
         />
       </div>
     </div>
