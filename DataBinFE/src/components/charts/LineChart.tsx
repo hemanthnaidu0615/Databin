@@ -3,12 +3,13 @@ import { ResponsiveLine } from "@nivo/line";
 export const LineChart = (props: any) => {
   const formatYAxis = (value: any) => {
     if (value >= 1000 && value < 1000000) {
-      return `${(value / 1000).toFixed(1).replace(/\.0$/, "")}k`;
+      return `${(value / 1000000).toFixed(1).replace(/\.0$/, "")}M`;
     } else if (value >= 1000000) {
       return `${(value / 1000000).toFixed(1).replace(/\.0$/, "")}M`;
     }
     return value.toString();
   };
+  
 
   const formatXAxis = (value: any) => {
     // Assuming the format is "DD MMM HH:mm", we split by space and take the last part

@@ -56,39 +56,3 @@ export default function OrgChart({ data, orientation = "horizontal", zoom = 50 }
     </div>
   );
 }
-
-
-
-// import React from 'react';
-// import ReactFlow, { ReactFlowProvider, Controls, Background, Elements ,HandleElement} from 'react-flow-renderer';
-// import './style.css';
-
-// interface OrgChartProps {
-//   data: Elements;
-//   orientation?: string; // Optional prop
-//   zoom?: number; // Optional prop
-// }
-
-// const OrgChart: React.FC<OrgChartProps> = ({ data, orientation = 'horizontal', zoom = 50 }) => {
-//   return (
-//     <div
-//       className="card"
-//       style={{
-//         transform: orientation === 'vertical' ? `rotate(90deg) scale(${zoom / 50})` : `scale(${zoom / 50})`,
-//         transformOrigin: 'top left',
-//         overflow: 'auto',
-//         display: 'inline-block',
-//         maxHeight: 'calc(100vh - 200px)',
-//       }}
-//     >
-//       <ReactFlowProvider>
-//         <ReactFlow elements={data} zoom={zoom / 50}>
-//           <Controls />
-//           <Background />
-//         </ReactFlow>
-//       </ReactFlowProvider>
-//     </div>
-//   );
-// };
-
-// export default OrgChart;

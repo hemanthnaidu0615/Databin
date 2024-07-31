@@ -116,11 +116,11 @@ export const Returns = () => {
     </div>
   ) : (
     <div className="flex overflow-y-auto overflow-x-hidden flex-col m-2 h-full bg-white w-full">
-      <h1 className="ml-2 font-bold pl-4 pt-4 py-1">Returns Dashboard</h1>
+      <h1 className="text-2xl ml-2 font-bold pl-4 pt-4 py-1">Returns Dashboard</h1>
       <div className="card h-full">
         <div className="card flex gap-1 m-1 align-center w-[99%] justify-center">
           <div className="flex-1 card h-full border bg-purple-50 border-gray-200 shadow-lg rounded-lg py-1 px-2 ml-6 m-2">
-            <h1 className="flex justify-center items-center text-lg font-medium ml-2">
+            <h1 className="flex justify-center items-center text-sm font-semibold ml-2">
               BY VALUE
             </h1>
             <div className="gap-4 card flex justify-center">
@@ -145,7 +145,7 @@ export const Returns = () => {
             </div>
           </div>
           <div className="flex-1 card h-full border bg-purple-50 border-gray-200 shadow-lg rounded-lg py-1 px-2 m-2">
-            <h1 className="flex justify-center items-center text-lg font-medium ml-2">
+            <h1 className="flex justify-center items-center text-sm font-semibold ml-2">
               BY VOLUME
             </h1>
             <div className="gap-4 card flex justify-center">
@@ -449,6 +449,7 @@ export const Returns = () => {
           </div>
         </div>
       </div>
+
     </div>
   );
 };

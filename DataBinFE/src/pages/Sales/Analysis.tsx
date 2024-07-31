@@ -102,11 +102,18 @@ export const Analysis = () => {
   };
 
   const getTableColumns = (data: any[]) => {
+    if (tableName === "order_book_line" || tableName === "order_book_taxes") {
+      return Object.keys(data[0] || {}).slice(1).map((key) => ({
+        field: key,
+        header: formatHeaderKey(key),
+      }));
+    }
     return Object.keys(data[0] || {}).map((key) => ({
       field: key,
       header: formatHeaderKey(key),
     }));
   };
+  
 
   const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -328,7 +335,7 @@ export const Analysis = () => {
       />
       <MultiSelect
         value={selectedColumns}
-        options={getTableColumns(data || [])}
+        options={getTableColumns(data).slice(1)}
         onChange={(e) => setSelectedColumns(e.value)}
         optionLabel="header"
         display="chip"
@@ -370,7 +377,7 @@ export const Analysis = () => {
     <div className="rounded-lg bg-white border-2 w-full overflow-y-auto">
       <div className="w-full h-2 bg-purple-300 rounded-t-lg"></div>
       <div className="flex gap-4 items-center px-3 py-2">
-        <h1 className="font-semibold text-md text-violet-800">
+        <h1 className="text-2xl font-semibold text-md text-violet-800">
           Sales Analysis
         </h1>
       </div>
@@ -418,99 +425,55 @@ export const Analysis = () => {
             size="small"
             paginator
             rows={10}
-            // value={
-            //   selectedColumns.length > 0
-            //     ? processData(data, selectedColumns)
-            //     : processData(data, getTableColumns(data || []))
-            // }
-            // value={selectedColumns.length > 0 ? selectedColumns : data}
             value={data}
             header={header}
             filters={filters}
             filterDisplay="row"
             globalFilterFields={Object.keys(filters)}
-          >
-            {getTableColumns(
-              selectedColumns.length > 0
-                ? data.map((row: any) => {
-                    const newRow: Record<string, any> = {};
-                    selectedColumns.forEach((column: any) => {
-                      newRow[column.field] = row[column.field];
-                    });
-                    return newRow;
-                  })
-                : data || []
-            ).map((col, index) => {
-              // return (
-              //   <Column
-              //     key={index}
-              //     field={col.field}
-              //     header={col.header}
-              //     style={{ minWidth: "350px" }}
-              //     filter
-              //     filterElement={
-              //       <InputText
-              //         value={filters[col.field]?.value || ""}
-              //         onChange={(e) => onColumnFilterChange(e, col.field)}
-              //         placeholder={`Search ${col.header}`}
-              //         className="max-w-40 text-xs p-1"
-              //       />
-              //     }
-              //   />
-              // );
-              if (
-                col.header.toLowerCase().includes("amount") ||
-                col.header.toLowerCase().includes("charges")
-              ) {
-                return (
-                  <Column
-                    sortable
-                    key={index}
-                    field={col.field}
-                    header={col.header}
-                    style={{ minWidth: "350px" }}
-                    dataType="numeric"
-                    filterField={col.field}
-                    filter
-                    // filterElement={
-                    //   <InputText
-                    //     value={filters[col.field]?.value || ""}
-                    //     onChange={(e) => onColumnFilterChange(e, col.field)}
-                    //     placeholder={`Search ${col.header}`}
-                    //     className="max-w-40 text-xs p-1"
-                    //   />
-                    // }
-                    filterElement={balanceFilterTemplate}
-                    body={(rowData: any) =>
-                      formatValue(col.field, rowData[col.field])
-                    }
-                  />
-                );
-              }
-              return (
-                <Column
-                  sortable
-                  key={index}
-                  field={col.field}
-                  style={{ minWidth: "350px" }}
-                  header={col.header}
-                  filter
-                  filterElement={
-                    <InputText
-                      value={filters[col.field]?.value || ""}
-                      onChange={(e) => onColumnFilterChange(e, col.field)}
-                      placeholder={`Search ${col.header}`}
-                      className="max-w-40 text-sm p-1"
-                    />
-                  }
-                  filterPlaceholder={`Search by ${col.header}`}
-                  body={(rowData: any) =>
-                    formatValue(col.field, rowData[col.field])
-                  }
-                />
-              );
-            })}
-          </DataTable>
+            >
+            {getTableColumns(data).slice(1).map((col, index) => { // Exclude the first column
+            if (
+              col.header.toLowerCase().includes("amount") ||
+              col.header.toLowerCase().includes("charges")
+            ) {
+            return (
+            <Column
+            sortable
+            key={index}
+            field={col.field}
+            header={col.header}
+            style={{ minWidth: "350px" }}
+            dataType="numeric"
+            filterField={col.field}
+            filter
+            filterElement={balanceFilterTemplate}
+            body={(rowData) => formatValue(col.field, rowData[col.field])}
+          />
+         );
+       }
+    return (
+      <Column
+        sortable
+        key={index}
+        field={col.field}
+        style={{ minWidth: "350px" }}
+        header={col.header}
+        filter
+        filterElement={
+          <InputText
+            value={filters[col.field]?.value || ""}
+            onChange={(e) => onColumnFilterChange(e, col.field)}
+            placeholder={`Search ${col.header}`}
+            className="max-w-40 text-sm p-1"
+          />
+        }
+        filterPlaceholder={`Search by ${col.header}`}
+        body={(rowData) => formatValue(col.field, rowData[col.field])}
+      />
+    );
+  })}
+</DataTable>
+
         )}
       </div>
     </div>

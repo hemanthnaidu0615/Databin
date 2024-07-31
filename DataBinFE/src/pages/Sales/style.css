@@ -1,0 +1,10 @@
+.vertical-layout .p-organizationchart .p-organizationchart-node-content {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .horizontal-layout .p-organizationchart .p-organizationchart-node-content {
+    display: flex;
+    flex-direction: row;
+  }
+  

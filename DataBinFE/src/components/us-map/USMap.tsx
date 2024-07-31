@@ -6,8 +6,7 @@ import {
   Geography,
   Marker,
 } from "react-simple-maps";
-
-// import { scaleLinear } from "d3-scale";
+import React, { useState } from 'react';
 import allStates from "./data.json";
 import states from "./states.json";
 const geoUrl = "https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json";
@@ -23,18 +22,107 @@ const offsets = {
   MD: [47, 10],
   DC: [49, 21],
 };
-// const colorScale = scaleLinear().domain([0, 100]).range(["#FFF", "#06F"]);
 
-const MapChart = ({
+interface MapChartProps {
+  markers: any[];
+  markers2: any[];
+  markers3: any[];
+  markers4: any[];
+  markers5: any[];
+  colorScale: (idValue: string) => string;
+  revenueData: { [key: string]: string };
+}
+
+
+interface Statess {
+  [key: string]: string; 
+}
+
+const statess: Statess = {
+  AL: 'Alabama',
+  AK: 'Alaska',
+  AS: 'American Samoa',
+  AZ: 'Arizona',
+  AR: 'Arkansas',
+  CA: 'California',
+  CO: 'Colorado',
+  CT: 'Connecticut',
+  DE: 'Delaware',
+  DC: 'District of Columbia',
+  FL: 'Florida',
+  GA: 'Georgia',
+  HI: 'Hawaii',
+  ID: 'Idaho',
+  IL: 'Illinois',
+  IN: 'Indiana',
+  IA: 'Iowa',
+  KS: 'Kansas',
+  KY: 'Kentucky',
+  LA: 'Louisiana',
+  ME: 'Maine',
+  MD: 'Maryland',
+  MA: 'Massachusetts',
+  MI: 'Michigan',
+  MN: 'Minnesota',
+  MS: 'Mississippi',
+  MO: 'Missouri',
+  MT: 'Montana',
+  NE: 'Nebraska',
+  NV: 'Nevada',
+  NH: 'New Hampshire',
+  NJ: 'New Jersey',
+  NM: 'New Mexico',
+  NY: 'New York',
+  NC: 'North Carolina',
+  ND: 'North Dakota',
+  MP: 'Northern Mariana Islands',
+  OH: 'Ohio',
+  OK: 'Oklahoma',
+  OR: 'Oregon',
+  PA: 'Pennsylvania',
+  PR: 'Puerto Rico',
+  RI: 'Rhode Island',
+  SC: 'South Carolina',
+  SD: 'South Dakota',
+  TN: 'Tennessee',
+  TX: 'Texas',
+  UT: 'Utah',
+  VT: 'Vermont',
+  VA: 'Virginia',
+  WA: 'Washington',
+  WV: 'West Virginia',
+  WI: 'Wisconsin',
+  WY: 'Wyoming',
+};
+
+
+const MapChart: React.FC<MapChartProps> = ({
   markers,
   markers2,
   markers3,
   markers4,
   markers5,
   colorScale,
-}: any) => {
+  revenueData,
+}) => {
+  const [tooltip, setTooltip] = useState<{ display: boolean, content: string, x: number, y: number }>({ display: false, content: '', x: 0, y: 0 });
+
+  const handleMouseEnter = (e: React.MouseEvent<SVGGeometryElement, MouseEvent>, stateName: string) => {
+    const { clientX, clientY } = e;
+    setTooltip({
+      display: true,
+      content: `${stateName}: ${revenueData[stateName] || 'No data'}`,
+      x: clientX,
+      y: clientY,
+    });
+  };
+
+  const handleMouseLeave = () => {
+    setTooltip({ ...tooltip, display: false });
+  };
+
   return (
-    <div className="h-full flex items-center justify-center">
+    <div className="h-full flex items-center justify-center relative">
       <ComposableMap projection="geoAlbersUsa" className="h-full">
         <Geographies geography={geoUrl}>
           {({ geographies }) => (
@@ -44,18 +132,21 @@ const MapChart = ({
                   Object?.entries(states)?.find(
                     (s) => s[1] === geo.properties.name
                   ) || [];
-                const idValue =
+                const idValue:any =
                   allStates?.find((s) => s.id === stateId[0])?.id || 0;
 
                 const color = colorScale(idValue as any);
+                const stateName = statess[idValue] || geo.properties.name;
+
                 return (
                   <Geography
                     key={geo.rsmKey}
-                    // stroke="#210d4a"
                     stroke="#ffffff"
                     strokeWidth={2}
                     geography={geo}
                     fill={color}
+                    onMouseEnter={(e) => handleMouseEnter(e, stateName)}
+                    onMouseLeave={handleMouseLeave}
                     style={{
                       hover: {
                         fill: "#F53",
@@ -110,8 +201,6 @@ const MapChart = ({
             />
             <text
               textAnchor="middle"
-              // y={markerOffset}
-
               style={{ fontFamily: "system-ui", fill: "#5D5A6D" }}
             ></text>
           </Marker>
@@ -126,8 +215,6 @@ const MapChart = ({
             />
             <text
               textAnchor="middle"
-              // y={markerOffset}
-
               style={{ fontFamily: "system-ui", fill: "#5D5A6D" }}
             ></text>
           </Marker>
@@ -142,8 +229,6 @@ const MapChart = ({
             />
             <text
               textAnchor="middle"
-              // y={markerOffset}
-
               style={{ fontFamily: "system-ui", fill: "#5D5A6D" }}
             ></text>
           </Marker>
@@ -158,8 +243,6 @@ const MapChart = ({
             />
             <text
               textAnchor="middle"
-              // y={markerOffset}
-
               style={{ fontFamily: "system-ui", fill: "#5D5A6D" }}
             ></text>
           </Marker>
@@ -174,13 +257,29 @@ const MapChart = ({
             />
             <text
               textAnchor="middle"
-              // y={markerOffset}
-
               style={{ fontFamily: "system-ui", fill: "#5D5A6D" }}
             ></text>
           </Marker>
         ))}
       </ComposableMap>
+      {tooltip.display && (
+        <div
+          className="tooltip"
+          style={{
+            position: 'absolute',
+            width:'max-content',
+            top: tooltip.y - 150, 
+            left: tooltip.x - 150, 
+            background: 'white',
+            padding: '5px',
+            border: '1px solid #ccc',
+            zIndex: 1000, 
+            transform: 'translate(-50%, 0)', 
+          }}
+        >
+          {tooltip.content}
+        </div>
+      )}
     </div>
   );
 };

@@ -18,30 +18,28 @@ export const Navbar = () => {
     new Date("2024-03-16"),
   ]);
   const [enterpriseKeys, setEnterpriseKeys] = useState<string[]>([]);
-  const [jsonEnterpriseKeys, setJsonEnterpriseKeys] = useState<string[]>([]);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
 
-  // Define the routes for each dropdown
-  const databaseDropdownRoutes = [
-    "/home-dashboard",
-    "/timeseries",
-    "/sales/sales-by-region", // Add other routes as needed
-  ];
-
-  const jsonDropdownRoutes = [
-    "/sales-dashboard",
-  ];
-
   const hideCalendarRoutes = [
-    "/sales/analysis",
     "/home-dashboard",
     "/timeseries",
-    // Add additional routes where the calendar should be hidden
+    "/sales/analysis",
+    "/user-management"
+  ];
+
+  const hideDropdownRoutes = [
+    "/home-dashboard",
+    "/sales/flow",
+    "/sales/analysis",
+    "/returns",
+    "/timeseries",
+    "/user-management"
   ];
 
   const hideCalendar = hideCalendarRoutes.includes(location.pathname);
+  const hideDropdown = hideDropdownRoutes.includes(location.pathname);
   const { username } = useSelector((store: any) => store.user);
   const enterpriseKey = useSelector((store: any) => store.enterprise.key);
   const cm = useRef<any>(null);
@@ -59,47 +57,45 @@ export const Navbar = () => {
   useEffect(() => {
     const fetchEnterpriseKeys = async () => {
       try {
-        const response = await authFetch('http://localhost:3000/v2/tables/enterprise-keys');
+        const response = await authFetch(
+          "http://localhost:3000/v2/tables/enterprise-keys"
+        );
         console.log(response.data);
         setEnterpriseKeys(response.data);
       } catch (error) {
-        console.error('Error fetching enterprise keys:', error);
+        console.error("Error fetching enterprise keys:", error);
       }
     };
 
-    const fetchJsonEnterpriseKeys = async () => {
-      try {
-        const response = await fetch('/path/to/your/json/file.json'); // Update with actual path
-        const data = await response.json();
-        console.log(data);
-        setJsonEnterpriseKeys(data);
-      } catch (error) {
-        console.error('Error fetching JSON enterprise keys:', error);
-      }
-    };
-
-    if (jsonDropdownRoutes.includes(location.pathname)) {
-      fetchJsonEnterpriseKeys();
-    } else if (databaseDropdownRoutes.includes(location.pathname)) {
-      fetchEnterpriseKeys();
-    }
-  }, [location.pathname]);
+    fetchEnterpriseKeys();
+  }, []);
 
   function handleDateChange(newDates: any) {
     setDatesT(newDates);
     dispatch(setDates(newDates));
   }
 
+  useEffect(() => {
+    console.log("Selected enterprise key:", enterpriseKey);
+  }, [enterpriseKeys, enterpriseKey]);
+
   function handleEnterpriseChange(event: React.ChangeEvent<HTMLSelectElement>) {
     console.log("Selected enterprise key:", event.target.value);
     dispatch(setEnterpriseKey(event.target.value));
   }
+  const getInitials = (name: string) => {
+    if (!name) return ""; 
+    const nameArray = name.split(" ").filter(Boolean);
+    const initials = nameArray.map(n => n[0].toUpperCase()).join("");
+    return initials;
+  };
+  
 
   const start = (
     <div className="flex align-items-center items-center gap-1 divide-x divide-gray-400">
       <div className="flex mr-1 items-center">
         <img alt="logo" src={logo} className="h-10 mr-2" />
-        <h3 className="font-bold text-lg">
+        <h3 className="font-bold text-2xl">
           Data
           <span className="text-violet-800"> Bin</span>
         </h3>
@@ -135,25 +131,11 @@ export const Navbar = () => {
         )}
       </div>
       <div className="flex items-center gap-2">
-        {jsonDropdownRoutes.includes(location.pathname) ? (
-          <div className="flex items-center gap-2">
-            <label htmlFor="jsonEnterpriseKey" className="mr-2">JSON Enterprise Key:</label>
+        {!hideDropdown && (
+          <>
+            <label htmlFor="enterpriseKey" className="mr-2 text-xl font-semibold text-violet-800">Seller:</label>
             <select
-              id="jsonEnterpriseKey"
-              value={enterpriseKey}
-              onChange={handleEnterpriseChange}
-              className="p-inputtext p-component"
-            >
-              {jsonEnterpriseKeys.map(key => (
-                <option key={key} value={key}>{key}</option>
-              ))}
-            </select>
-          </div>
-        ) : (
-          <div className="flex items-center gap-2">
-            <label htmlFor="databaseEnterpriseKey" className="mr-2">Database Enterprise Key:</label>
-            <select
-              id="databaseEnterpriseKey"
+              id="enterpriseKey"
               value={enterpriseKey}
               onChange={handleEnterpriseChange}
               className="p-inputtext p-component"
@@ -162,10 +144,10 @@ export const Navbar = () => {
                 <option key={key} value={key}>{key}</option>
               ))}
             </select>
-          </div>
+          </>
         )}
       </div>
-      <Link to="/settings">
+      <Link to="/user-management">
         <Button
           icon="pi pi-cog"
           className="custom-icon-size"
@@ -179,11 +161,12 @@ export const Navbar = () => {
       <div>
         <ContextMenu model={items} ref={cm} breakpoint="767px" />
         <Avatar
-          image="https://primefaces.org/cdn/primevue/images/avatar/amyelsner.png"
+          label={getInitials(username)}
           shape="circle"
           onContextMenu={(e) => cm.current!.show(e)}
           onClick={(e) => cm.current!.show(e)}
           className="custom-icon-size"
+          style={{ backgroundColor: "#6A1B9A", color: "#FFFFFF" }}
         />
       </div>
     </div>

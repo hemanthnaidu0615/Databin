@@ -9,6 +9,7 @@ export const InventoryCard = ({ dashboardData }: any) => {
       currency: "USD",
     }).format(value)}`;
   };
+
   function formatSeriesData(data: any) {
     return data?.map((item: any) => {
       return {
@@ -19,10 +20,6 @@ export const InventoryCard = ({ dashboardData }: any) => {
       };
     });
   }
-
-  // const renderImage = (rowData: any) => {
-  //   return <img src={rowData.Image} alt={rowData.Product} width="50" />;
-  // };
 
   const inventoryDetails = [
     {
@@ -36,40 +33,42 @@ export const InventoryCard = ({ dashboardData }: any) => {
   ];
 
   return (
-    <div className="flex-1 h-[65%] flex flex-col mt-0 m-2 shadow-lg rounded-sm shadow-slate-300	bg-white">
+    <div className="flex-1 flex flex-col m-2 h-full shadow-lg rounded-sm shadow-slate-300 bg-white">
       <div className="flex justify-between pt-1">
         <div className="flex items-center p-2">
           <h3 className="font-bold ">Top Sellers </h3>
           <span className="text-xs text-black font-light "> - Last 7 days</span>
         </div>
       </div>
-      <div className="flex">
-        <div className="card w-[75%] h-[50%] border-0 m-2">
+      <div className="flex ">
+        <div className="card w-[75%] border-0 m-2" >
           <DataTable
-            value={formatSeriesData(dashboardData?.topSellers.slice(0, 8))}
+            value={formatSeriesData(dashboardData?.topSellers.slice(0, 5))}
             showGridlines
             size="small"
-            className="text-xs border-0 "
+            className="text-xs border-0 h-full"
             pt={{ bodyRow: { className: "border-0 border-transparent h-8" } }}
+            scrollable
+            scrollHeight="flex"
+            style={{ maxHeight: '100%' }}
           >
-            {/* <Column field="itemID" header="Item ID"></Column> */}
             <Column
               field="enterpriseKey"
               header="Enterprise Key"
               pt={{ bodyCell: { className: "h-5 text-center" } }}
-              headerClassName="bg-purple-100 "
+              headerClassName="bg-purple-100"
             ></Column>
             <Column
               field="total"
               header="Total Sale"
               pt={{ bodyCell: { className: "h-5 text-center" } }}
-              headerClassName="bg-purple-100 "
+              headerClassName="bg-purple-100"
             ></Column>
             <Column
               field="qty"
               header="Quantity"
               pt={{ bodyCell: { className: "h-5 text-center" } }}
-              headerClassName="bg-purple-100 "
+              headerClassName="bg-purple-100"
             ></Column>
           </DataTable>
         </div>
