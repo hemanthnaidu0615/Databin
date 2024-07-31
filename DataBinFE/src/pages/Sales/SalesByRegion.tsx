@@ -190,7 +190,7 @@ export const SalesByRegion = () => {
 
         <div className="flex gap-24 py-4 items-center justify-center">
           <div className="w-[500px] flex flex-col">
-          <div className="relative h-[340px]"> 
+          <div className="relative h-[335px]"> 
            <MapChart
              markers={[]}
              markers2={[]}
