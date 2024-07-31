@@ -61,7 +61,7 @@ const Timeseries = () => {
       <ProgressSpinner />
     </div>
   ) : (
-    <div className="flex flex-col px-5 overflow-auto w-full">
+    <div className="flex   flex-col px-5 overflow-auto w-full">
       <div className="flex items-center justify-end">
         <div className="flex items-center justify-center py-2">
           <Calendar
