@@ -82,11 +82,18 @@ export const Navbar = () => {
     dispatch(setEnterpriseKey(event.target.value));
   }
 
+  const getInitials = (name: string) => {
+    const nameArray = name.split(" ");
+    const initials = nameArray.map(n => n[0].toUpperCase()).join("");
+    return initials;
+  };
+  
+
   const start = (
     <div className="flex align-items-center items-center gap-1 divide-x divide-gray-400">
       <div className="flex mr-1 items-center">
         <img alt="logo" src={logo} className="h-10 mr-2" />
-        <h3 className="font-bold text-lg">
+        <h3 className="font-bold text-2xl">
           Data
           <span className="text-violet-800"> Bin</span>
         </h3>
@@ -124,7 +131,7 @@ export const Navbar = () => {
       <div className="flex items-center gap-2">
         {!hideDropdown && (
           <>
-            <label htmlFor="enterpriseKey" className="mr-2">Enterprise Key:</label>
+            <label htmlFor="enterpriseKey" className="mr-2 text-xl font-semibold text-violet-800">Seller:</label>
             <select
               id="enterpriseKey"
               value={enterpriseKey}
@@ -138,7 +145,7 @@ export const Navbar = () => {
           </>
         )}
       </div>
-      <Link to="/settings">
+      <Link to="/user-management">
         <Button
           icon="pi pi-cog"
           className="custom-icon-size"
@@ -152,11 +159,12 @@ export const Navbar = () => {
       <div>
         <ContextMenu model={items} ref={cm} breakpoint="767px" />
         <Avatar
-          image="https://primefaces.org/cdn/primevue/images/avatar/amyelsner.png"
+          label={getInitials(username)}
           shape="circle"
           onContextMenu={(e) => cm.current!.show(e)}
           onClick={(e) => cm.current!.show(e)}
           className="custom-icon-size"
+          style={{ backgroundColor: "#007bff", color: "#ffffff" }}
         />
       </div>
     </div>
