@@ -1,4 +1,3 @@
-// import { Panel } from "primereact/panel";
 import { Button } from "primereact/button";
 import Table from "../components/user-management/Table";
 import { useState } from "react";
@@ -12,7 +11,7 @@ export const UserManagement = () => {
   const fetchUsersData = async () => {
     try {
       const response = await authFetch("/tables/users");
-      // const data = await response.json();
+    
       console.log("API response:", response.data);
       setUsers(response.data);
     } catch (error) {

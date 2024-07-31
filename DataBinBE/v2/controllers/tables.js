@@ -960,11 +960,10 @@ const updateUsers = async (req, res) => {
 };
 
 const deleteUser = async (req, res) => {
-  const { id } = req.params; // Extract the username from the request body
+  const { id } = req.params; 
   console.log(id);
-  
   try {
-    // Perform the delete operation
+    
     const result = await client.query(
       'DELETE FROM users WHERE id = $1',
       [id]

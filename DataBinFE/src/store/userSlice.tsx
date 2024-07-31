@@ -1,9 +1,8 @@
-// userSlice.js
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   username: "",
-  useremail: "", // Add email property
+  useremail: "", 
   test: "jack",
 };
 
@@ -14,8 +13,7 @@ const userSlice = createSlice({
     setUser: (state, { payload }) => {
       localStorage.setItem("userData", JSON.stringify(payload));
       state.username = payload.firstname ? payload.firstname : "";
-      state.useremail = payload.username ? payload.username : ""; // Update email property
-      
+      state.useremail = payload.username ? payload.username : ""; 
     },
   },
 });

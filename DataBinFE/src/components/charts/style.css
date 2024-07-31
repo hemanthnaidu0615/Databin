@@ -1,21 +1,22 @@
 .node-container .node-content {
-    height: 100px; /* Fixed height */
-    width: 150px; /* Fixed width */
-    background-color: white; /* Background color */
-    border: 1px solid #d3bce6; /* Purple border */
-    border-radius: 5px; /* Rounded corners */
+    height: 5rem; 
+    width: 10rem; 
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     transition: color 0.3s ease-in-out, background-color 0.3s ease-in-out;
-    overflow: hidden; /* Prevent text overflow */
-    text-overflow: ellipsis; /* Add ellipsis if text overflows */
+    overflow: hidden;
+    text-overflow: ellipsis; 
+}
+.node-container{
+   
+    border-radius: 15px;
 }
 
 .node-container .node-content:hover {
-    color: #2c3e50; /* Change text color on hover */
-    background-color: #e0e0e0; /* Change background color on hover */
+    color: #2c3e50;
+    background-color: #e0e0e0; 
 }
 
 .node-label,
@@ -23,9 +24,26 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    text-align: center; /* Center align the text */
+    text-align: center; 
 }
 
-.highlight {
-    border: 1px solid #084717; /* Highlight border for specific nodes */
+.p-datatable .p-datatable-wrapper{ border-radius:5px;}
+.p-datatable.p-datatable-sm .p-datatable-thead > tr{
+    height: 3rem;
+    background-color:#F9FAFB !important;
 }
+
+.p-datatable.p-datatable .p-datatable-thead > tr >th{
+
+    background:none !important;
+    
+}
+.p-datatable.p-datatable .p-datatable-tbody>tr>td{
+    background-color: white !important;
+}
+
+.p-datatable.p-datatable .p-datatable-tbody>tr{
+
+    background-color: none !important;
+}
+

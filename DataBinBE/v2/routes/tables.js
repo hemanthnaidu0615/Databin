@@ -6,7 +6,6 @@ const {
   getFullSalesDataTEST,
   UserLogin,
   getMinMaxValues,
-
   UserRegistration,
   getCustomQueryDate,
   getMapData,

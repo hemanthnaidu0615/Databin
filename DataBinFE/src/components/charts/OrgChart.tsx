@@ -1,42 +1,3 @@
-// import { OrganizationChart } from "primereact/organizationchart";
-// import { TreeNode } from "primereact/treenode";
-// import { useState } from "react";
-
-// export default function OrgChart(props: any) {
-//   const [selection, setSelection] = useState<TreeNode[]>([]);
-
-//   const nodeTemplate = (node: TreeNode) => {
-//     return (
-//       <div className="flex flex-col">
-//         <div className="flex flex-col align-items-center p-2 min-w-24 max-h-20">
-//           <span className="font-bold mb-2">{node.label}</span>
-//           <span>{node.data}</span>
-//         </div>
-//       </div>
-//     );
-//   };
-
-//   return (
-//     <div
-//       className="card "
-//       style={{
-//         transform: `scale(${props?.zoom / 50})`,
-//       }}
-//     >
-//       <OrganizationChart
-//         value={props.data}
-//         selectionMode="multiple"
-//         selection={selection}
-//         onSelectionChange={(e) => setSelection(e.data as any)}
-//         nodeTemplate={nodeTemplate}
-//         pt={{ node: { className: "p-0 text-xs " } }}
-//       />
-//     </div>
-//   );
-// }
-
-//Working Code
-
 import { OrganizationChart } from "primereact/organizationchart";
 import { TreeNode } from "primereact/treenode";
 import { useState } from "react";
@@ -44,19 +5,19 @@ import './style.css';
 
 interface OrgChartProps {
   data: TreeNode[];
-  orientation?: string; // Optional prop
-  zoom?: number; // Optional prop
+  orientation?: string;
+  zoom?: number; 
 }
 
 export default function OrgChart({ data, orientation = "horizontal", zoom = 50 }: OrgChartProps) {
   const [selection, setSelection] = useState<TreeNode[]>([]);
 
   const nodeTemplate = (node: TreeNode) => {
-    const label = node.label || ''; // Ensure label is a string
+    const label = node.label || ''; 
 
     return (
       <div
-        className="node-container" // Fixed className
+        className="node-container"
         style={{
           transform: orientation === "vertical" ? "rotate(-90deg)" : "none",
           transformOrigin: orientation === "vertical" ? "left bottom" : "left top",
@@ -78,7 +39,8 @@ export default function OrgChart({ data, orientation = "horizontal", zoom = 50 }
         transform: orientation === "vertical" ? `rotate(-90deg) scale(${zoom / 50})` : `scale(${zoom / 50})`,
         transformOrigin: orientation === "vertical" ? "left" : "left top",
         overflow: "auto", 
-        display: "inline-block", // Ensure overflow is handled properly
+        display: "inline-block",
+        backgroundColor:"white", 
         maxHeight: "calc(100vh - 200px)"
       }}
     >
@@ -89,6 +51,7 @@ export default function OrgChart({ data, orientation = "horizontal", zoom = 50 }
         onSelectionChange={(e) => setSelection(e.data as any)}
         nodeTemplate={nodeTemplate}
         pt={{ node: { className: "p-0 text-xs" } }}
+        style={{padding:"0px",backgroundColor:"white"}}
       />
     </div>
   );
