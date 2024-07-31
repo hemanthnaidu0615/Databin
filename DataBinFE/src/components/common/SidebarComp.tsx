@@ -19,7 +19,7 @@ export const SidebarComp = () => {
       <a
         className={`sidebar-item flex items-center justify-center text-center px-2 py-6 m-1 text-purple-800  border-r-4 border-transparent ${
           isActive && "border-r-purple-800 text-white bg-purple-400"
-        }	hover:text-white hover:border-r-4 hover:border-r-purple-800 hover:bg-purple-400 cursor-pointer active:border-r-purple-800 `}
+        } hover:text-white hover:border-r-4 hover:border-r-purple-800 hover:bg-purple-400 cursor-pointer active:border-r-purple-800 `}
       >
         <span className={`${item.icon} text-xl font-semibold`} />
         <span className="sidebar-item-label my-0.5 pt-1 delay-200">
@@ -28,11 +28,21 @@ export const SidebarComp = () => {
       </a>
     );
   };
-  const itemRenderer2 = (item: any) => (
-    <a className="flex items-center justify-center p-5 m-1 text-slate-600	cursor-pointer ">
-      <span className="w-fit">{item.label}</span>
-    </a>
-  );
+
+  // Adding the same hover effect to the nested items
+  const itemRenderer2 = (item: any) => {
+    const isActive = currentTab === item.path;
+    return (
+      <a
+        className={`flex items-center justify-center p-5 m-1 text-slate-600 cursor-pointer ${
+          isActive && "border-r-purple-800 text-white bg-purple-400"
+        } hover:text-white hover:border-r-4 hover:border-r-purple-800 hover:bg-purple-400`}
+      >
+        <span className="w-fit">{item.label}</span>
+      </a>
+    );
+  };
+
   const items = [
     {
       label: "Dashboard",
@@ -85,7 +95,7 @@ export const SidebarComp = () => {
     },
     {
       label: "Returns",
-      icon: "pi pi-replay ",
+      icon: "pi pi-replay",
       command: () => {
         navigate("/returns");
       },
@@ -102,7 +112,7 @@ export const SidebarComp = () => {
       template: itemRenderer,
     },
     {
-     label: "User Management",
+      label: "User Management",
       icon: "pi pi-users",
       command: () => {
         navigate("/user-management");
@@ -117,7 +127,7 @@ export const SidebarComp = () => {
       <TieredMenu
         model={items}
         breakpoint="767px"
-        className="w-full h-full text-xs "
+        className="w-full h-full text-xs"
       />
     </div>
   );
