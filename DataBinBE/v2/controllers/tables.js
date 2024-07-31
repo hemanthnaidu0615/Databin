@@ -734,6 +734,7 @@ const getFullSalesDataTEST = (req, res) => {
 };
 
 const UserRegistration = async (req, res) => {
+  console.log("Registering");
   const { firstname, lastname, username, password, role } = req.body;
   try {
     const query = "SELECT * FROM users WHERE username = $1";

@@ -198,7 +198,7 @@ export const AddUser = ({ fetchUsersData }: any) => {
         toast.current.show({
           severity: "error",
           summary: "Error",
-          detail: "Failed to add user",
+          detail: "Failed to add user check details properly" ,
           life: 3000,
         });
       });

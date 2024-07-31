@@ -111,7 +111,8 @@
 //   );
 // };
 
-// export default SalesFlow;
+//export default SalesFlow;
+
 import { TreeNode } from "primereact/treenode";
 import authFetch from "../../axios";
 import OrgChart from "../../components/charts/OrgChart";
@@ -137,7 +138,7 @@ const SalesFlow = () => {
     compactDisplay: "short",
   });
 
-  const fetchData = async (type: any) => {
+  const fetchData = async (type: string) => {
     setLoading(true);
 
     const formattedStartDate = moment(dates[0]).format("YYYY-MM-DD");
@@ -153,7 +154,7 @@ const SalesFlow = () => {
     fetchData(type);
   }, [dates, type]);
 
-  function handleSelectingType(newType: any) {
+  function handleSelectingType(newType: string) {
     setType(newType);
     fetchData(newType);
   }
@@ -176,9 +177,9 @@ const SalesFlow = () => {
       return {
         label: item.key,
         expanded: item.children ? true : false,
-        data: `$${numberFormatter.format(item.original_order_total_amount)}`,
+        data: numberFormatter.format(item.original_order_total_amount), // Fixed formatting
         children: item.children ? convertData(item.children) : [],
-        className: "bg-purple-200 ",
+        className: "bg-purple-200",
       };
     });
   };
@@ -219,9 +220,7 @@ const SalesFlow = () => {
             <i className="pi pi-search-minus"></i>
             <Slider
               value={zoomValue}
-              onChange={(e: any) => {
-                setZoomValue(e.value);
-              }}
+              onChange={(e: any) => setZoomValue(e.value)}
               className="w-32"
             />
             <i className="pi pi-search-plus"></i>
@@ -242,4 +241,3 @@ const SalesFlow = () => {
 };
 
 export default SalesFlow;
-

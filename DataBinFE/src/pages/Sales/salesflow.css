@@ -1,0 +1,32 @@
+.node-container .node-content {
+    height: 100px; /* Fixed height */
+    width: 150px; /* Fixed width */
+    background-color: white; /* Background color */
+    border: 1px solid #ceb6e2; /* Purple border */
+    border-radius: 5px; /* Rounded corners */
+    display: flex;
+    font-size: 12px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: color 0.3s ease-in-out, background-color 0.3s ease-in-out;
+    overflow: hidden; /* Prevent text overflow */
+    text-overflow: ellipsis; /* Add ellipsis if text overflows */
+}
+
+.node-container .node-content:hover {
+    color: #2c3e50; /* Change text color on hover */
+    background-color: #ebe9e9; /* Change background color on hover */
+}
+
+.node-label,
+.node-data {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: center; /* Center align the text */
+}
+
+.highlight {
+    border: 2px solid #084717; /* Highlight border for specific nodes */
+}
