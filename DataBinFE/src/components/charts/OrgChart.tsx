@@ -11,7 +11,7 @@ interface OrgChartProps {
 
 export default function OrgChart({ data, orientation = "horizontal", zoom = 50 }: OrgChartProps) {
   const [selection, setSelection] = useState<TreeNode[]>([]);
-
+  
   const nodeTemplate = (node: TreeNode) => {
     const label = node.label || ''; 
     

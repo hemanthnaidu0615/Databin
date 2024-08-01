@@ -15,7 +15,7 @@
 
 .node-container .node-content:hover{
     color: #062f58;
-    background-color:#d9bbfb; /*purple is not looking good*/
+    background-color:#d9bbfb; 
     margin:'none'
    
 }
