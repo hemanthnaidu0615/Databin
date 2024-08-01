@@ -44,6 +44,18 @@ const SalesFlow = () => {
     fetchData(newType);
   }
 
+  const handleZoomChange = (e: any) => {
+    setZoomValue(e.value);
+  };
+
+  const incrementZoom = () => {
+    setZoomValue(prev => Math.min(prev + 10, 100));
+  };
+
+  const decrementZoom = () => {
+    setZoomValue(prev => Math.max(prev - 10, 0));
+  };
+
   const orientationOptions = [
     { label: "Horizontal", value: "horizontal" },
     { label: "Vertical", value: "vertical" },
@@ -62,7 +74,7 @@ const SalesFlow = () => {
       return {
         label: item.key,
         expanded: item.children ? true : false,
-        data: numberFormatter.format(item.original_order_total_amount), // Fixed formatting
+        data: numberFormatter.format(item.original_order_total_amount), 
         children: item.children ? convertData(item.children) : [],
         className: "bg-purple-200",
       };
@@ -89,6 +101,15 @@ const SalesFlow = () => {
                 key={index}
                 className="p-2 text-sm bg-purple-500 border-0"
                 onClick={() => handleSelectingType(btn.value)}
+                style={{
+                  transition: "background-color 0.3s",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = "#9f7aea";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = "#7c3aed";
+                }}
               >
                 {btn.name}
               </Button>
@@ -102,13 +123,16 @@ const SalesFlow = () => {
             className="w-32"
           />
           <div className="flex items-center gap-2 mr-6">
-            <i className="pi pi-search-minus"></i>
+            <i className="pi pi-search-minus" onClick={decrementZoom}></i>
             <Slider
               value={zoomValue}
-              onChange={(e: any) => setZoomValue(e.value)}
+              onChange={handleZoomChange}
               className="w-32"
+              step={10}
+              min={0}
+              max={100}
             />
-            <i className="pi pi-search-plus"></i>
+            <i className="pi pi-search-plus" onClick={incrementZoom}></i>
           </div>
         </div>
         <div

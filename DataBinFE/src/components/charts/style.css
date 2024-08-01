@@ -10,14 +10,26 @@
     text-overflow: ellipsis; 
 }
 .node-container{
-   
     border-radius: 15px;
 }
 
-.node-container .node-content:hover {
-    color: #2c3e50;
-    background-color: #e0e0e0; 
+.node-container .node-content:hover{
+    color: #062f58;
+    background-color:#d9bbfb; 
+    margin:'none'
+   
 }
+
+.p-organizationchart .p-organizationchart-line-top {
+    border-top: 3px solid #e5e7eb;
+    border-color:#e5e7eb;
+}
+
+.p-organizationchart .p-organizationchart-line-left {
+    border-right: 3px solid #e5e7eb;
+    border-color: #e5e7eb;
+}
+
 
 .node-label,
 .node-data {
@@ -46,4 +58,6 @@
 
     background-color: none !important;
 }
+ 
 
+ 
