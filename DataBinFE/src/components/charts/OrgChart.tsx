@@ -1,6 +1,6 @@
 import { OrganizationChart } from "primereact/organizationchart";
 import { TreeNode } from "primereact/treenode";
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import './style.css';
 
 interface OrgChartProps {
@@ -14,14 +14,15 @@ export default function OrgChart({ data, orientation = "horizontal", zoom = 50 }
 
   const nodeTemplate = (node: TreeNode) => {
     const label = node.label || ''; 
-
+    
+  
     return (
       <div
         className="node-container"
         style={{
           transform: orientation === "vertical" ? "rotate(-90deg)" : "none",
           transformOrigin: orientation === "vertical" ? "left bottom" : "left top",
-          margin: orientation === "vertical" ? "10px 0" : "0 10px"
+          margin: orientation === "vertical" ? "10px 0" : "0px 0px"
         }}
       >
         <div className="node-content">
