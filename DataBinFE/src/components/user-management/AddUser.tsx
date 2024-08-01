@@ -73,7 +73,7 @@ export const AddUser = ({ fetchUsersData }: any) => {
     <div className="flex flex-col mx-3">
       <Toast ref={toast} />
       <div className="flex items-center">
-        <p className="text-sm font-semibold my-4">Create User</p>
+        <p className="text-2sm font-semibold my-4 ">Create User</p>
         <Button
           icon="pi pi-plus-circle"
           className="h-5 ml-2 w-4"
