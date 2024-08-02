@@ -14,6 +14,10 @@ import { Bar } from "react-chartjs-2";
 import { useSelector } from "react-redux";
 import authFetch from "../../axios";
 import { InputNumber, InputNumberChangeEvent } from "primereact/inputnumber";
+import { Dialog } from 'primereact/dialog';
+import { Calendar } from 'primereact/calendar';
+
+
 
 export const Analysis = () => {
   const [tableName, setTableName] = useState<string>("order_book_header");
@@ -25,6 +29,15 @@ export const Analysis = () => {
   const [globalFilterValue, setGlobalFilterValue] = useState<string>("");
 
   const { dates } = useSelector((store: any) => store.dateRange);
+
+  const [showSchedulerDialog, setShowSchedulerDialog] = useState(false);
+  const [schedulerData, setSchedulerData] = useState({
+    startDate: null,
+    recurrencePattern: null,
+    emailAddress: '',
+    tableSelection: '',
+    columnSelection: []
+  });
 
   const fetchData = async (tablename: string) => {
     const formattedStartDate = moment(dates[0]).format("YYYY-MM-DD HH:mm:ss");
@@ -43,6 +56,91 @@ export const Analysis = () => {
     }
   };
 
+  const handleSaveScheduler = async () => {
+    try {
+      const { tableSelection, columnSelection, startDate, recurrencePattern, emailAddress, timeFrame } = schedulerData;
+  
+      const formattedStartDate = moment(startDate).format('YYYY-MM-DDTHH:mm:ss');
+      let formattedEndDate = moment().format('YYYY-MM-DDTHH:mm:ss');
+  
+      if (timeFrame === 'last_year') {
+        formattedEndDate = moment().subtract(1, 'year').format('YYYY-MM-DDTHH:mm:ss');
+      } else if (timeFrame === 'last_month') {
+        formattedEndDate = moment().subtract(1, 'month').format('YYYY-MM-DDTHH:mm:ss');
+      } else if (timeFrame === 'last_week') {
+        formattedEndDate = moment().subtract(1, 'week').format('YYYY-MM-DDTHH:mm:ss');
+      }
+  
+      const payload = {
+        email: emailAddress,
+        recurrencePattern,
+        startDate: formattedStartDate,
+        tableSelection,
+        columnSelection,
+        timeFrame,
+      };
+  
+      const response = await authFetch('http://localhost:3000/v2/tables/scheduler', {
+        method: 'POST',
+        data: payload, 
+        headers: {
+          'Content-Type': 'application/json', 
+        }
+      });
+  
+      console.log('Response object:', response);
+      console.log('Response status:', response.status);
+  
+      if (response.status !== 200) {
+        throw new Error(`HTTP error! Status: ${response.status}, Message: ${response.statusText}`);
+      }
+  
+      console.log('Scheduler data saved and email sent successfully:', response.data.message);
+      setShowSchedulerDialog(false);
+  
+    } catch (error) {
+      console.error('Error saving scheduler data:', error);
+    }
+  };
+  
+  // Single function to get time frames based on recurrence pattern
+  function getTimeFrames(recurrencePattern:any) {
+    const timeFrames = {
+      daily: [
+        { label: 'Today', value: 'Today' },
+        { label: 'Past Week', value: 'Past Week' },
+        { label: 'Past Month', value: 'Past Month' },
+        { label: 'Past 3 Months', value: 'Past 3 Months' },
+        { label: 'Past 6 Months', value: 'Past 6 Months' },
+        { label: 'Past Year', value: 'Past Year' },
+      ],
+      weekly: [
+        { label: 'Past Week', value: 'Past Week' },
+        { label: 'Past Month', value: 'Past Month' },
+        { label: 'Past 3 Months', value: 'Past 3 Months' },
+        { label: 'Past 6 Months', value: 'Past 6 Months' },
+        { label: 'Past Year', value: 'Past Year' },
+      ],
+      monthly: [
+        { label: 'Past Month', value: 'Past Month' },
+        { label: 'Past 3 Months', value: 'Past 3 Months' },
+        { label: 'Past 6 Months', value: 'Past 6 Months' },
+        { label: 'Past Year', value: 'Past Year' },
+        { label: 'Past 2 Years', value: 'Past 2 Years' },
+        { label: 'Past 5 Years', value: 'Past 5 Years' },
+        { label: 'Past 10 Years', value: 'Past 10 Years' },
+      ],
+      yearly: [
+        { label: 'Past Year', value: 'Past Year' },
+        { label: 'Past 2 Years', value: 'Past 2 Years' },
+        { label: 'Past 5 Years', value: 'Past 5 Years' },
+        { label: 'Past 10 Years', value: 'Past 10 Years' },
+      ],
+    };
+    return timeFrames[recurrencePattern] || [];
+  }
+  
+  
   const initializeFilters = (data: any[]) => {
     const initialFilters: DataTableFilterMeta = {
       global: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -376,6 +474,18 @@ const exportExcel = () => {
         tooltipOptions={{ position: "top" }}
         tooltip="xls"
       />
+
+      <Button
+        type="button"
+        icon="pi pi-calendar"
+        rounded
+        onClick={() => setShowSchedulerDialog(true)}
+        data-pr-tooltip="Schedule"
+        className="bg-purple-500 border-0 h-10 w-10"
+        tooltipOptions={{ position: "top" }}
+        tooltip="Schedule"
+      />
+
     </div>
   );
 
@@ -426,7 +536,7 @@ const exportExcel = () => {
           </div>
         ) : (
           <DataTable
-            className={showBarChart ? "m-1 w-[99%] " : "m-1 w-[99%]"}
+            className="m-1 w-[99%]"
             showGridlines
             size="small"
             paginator
@@ -491,6 +601,92 @@ const exportExcel = () => {
 </DataTable>
         )}
       </div>
+      <Dialog
+        visible={showSchedulerDialog}
+        onHide={() => setShowSchedulerDialog(false)}
+        header="Scheduler"
+        footer={
+          <div className="flex justify-end">
+            <Button label="Save" icon="pi pi-check" onClick={handleSaveScheduler} />
+            <Button label="Cancel" icon="pi pi-times" onClick={() => setShowSchedulerDialog(false)} className="p-button-secondary" />
+          </div>
+        }
+        style={{ width: '50vw' }}
+      >
+        <div className="p-fluid">
+          <div className="p-field">
+            <label htmlFor="startDate">Start Date</label>
+            <Calendar
+              id="startDate"
+              value={schedulerData.startDate}
+              onChange={(e) => setSchedulerData({ ...schedulerData, startDate: e.value })}
+              showTime
+            />
+          </div>
+          <div className="p-field">
+            <label htmlFor="recurrencePattern">Recurrence Pattern</label>
+            <Dropdown
+              id="recurrencePattern"
+              value={schedulerData.recurrencePattern}
+              options={[
+                { label: 'Daily', value: 'daily' },
+                { label: 'Weekly', value: 'weekly' },
+                { label: 'Monthly', value: 'monthly' },
+                { label: 'Yearly', value: 'yearly' }
+              ]}
+              onChange={(e) => {
+                setSchedulerData({
+                  ...schedulerData,
+                  recurrencePattern: e.value,
+                  timeFrame: getTimeFrames(e.value) 
+                });
+              }}
+            />
+          </div>
+          <div className="p-field">
+            <label htmlFor="timeFrame">Time Frame</label>
+            <Dropdown
+              id="timeFrame"
+              value={schedulerData.timeFrame}
+              options={getTimeFrames(schedulerData.recurrencePattern)}
+              onChange={(e) => setSchedulerData({ ...schedulerData, timeFrame: e.value })}
+            />
+          </div>
+          <div className="p-field">
+            <label htmlFor="emailAddress">Email Address</label>
+            <InputText
+              id="emailAddress"
+              value={schedulerData.emailAddress}
+              onChange={(e) => setSchedulerData({ ...schedulerData, emailAddress: e.target.value })}
+            />
+          </div>
+          <div className="p-field">
+            <label htmlFor="tableSelection">Table Selection</label>
+            <Dropdown
+              id="tableSelection"
+              value={schedulerData.tableSelection}
+              options={[
+                { label: 'Order Book Header', value: 'order_book_header' },
+                { label: 'Order Book Line', value: 'order_book_line' },
+                { label: 'Order Book Taxes', value: 'order_book_taxes' },
+              ]}
+              onChange={(e) => setSchedulerData({ ...schedulerData, tableSelection: e.value })}
+            />
+          </div>
+          <div className="p-field">
+            <label htmlFor="columnSelection">Column Selection</label>
+            <MultiSelect
+              id="columnSelection"
+              value={schedulerData.columnSelection}
+              options={getTableColumns(data).slice(1)}
+              onChange={(e) => setSchedulerData({ ...schedulerData, columnSelection: e.value })}
+              optionLabel="header"
+              display="chip"
+              placeholder="Select Columns"
+            />
+          </div>
+        </div>
+      </Dialog>
     </div>
   );
 };

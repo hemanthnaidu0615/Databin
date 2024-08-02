@@ -8,6 +8,11 @@ const authToken = process.env.AUTH_TOKEN;
 // const smsKey = process.env.SMS_SECRET_KEY;
 let twilioNum = process.env.TWILIO_PHONE_NUMBER;
 const twilioClient = require("twilio")(accountSid, authToken);
+const schedule = require('node-schedule');
+const axios = require('axios');
+const fs = require("fs");
+const path = require("path");
+
 
 const {
   formatDate,
@@ -42,13 +47,167 @@ const getCustomQueryDate = (req, res) => {
     }
   });
 };
+
+const scheduleTask = async (req, res) => {
+  try {
+    const { email, startDate, recurrencePattern, tableSelection, columnSelection, timeFrame } = req.body;
+
+    if (!email || !startDate || !recurrencePattern || !tableSelection || !columnSelection || !timeFrame) {
+      return res.status(400).json({ error: 'All fields are required' });
+    }
+
+    console.log('Received data:', req.body);
+
+    const transporter = nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      port: 587,
+      secure: false,
+      requireTLS: true,
+      auth: {
+        user: "guitarcenter.xit@gmail.com",
+        pass: "blnsziorfgrueolw",
+      },
+    });
+
+    const recurrenceMap = {
+      daily: '0 0 * * *',
+      weekly: '0 0 * * 0',
+      monthly: '0 0 1 * *',
+    };
+    const cronPattern = recurrenceMap[recurrencePattern] || '* * * * *';
+
+    console.log('Scheduling job with start date:', new Date(startDate).toString());
+    console.log('Current server time:', new Date().toString());
+
+    const initialJob = schedule.scheduleJob(new Date(startDate), async function () {
+      console.log('Initial job executed at:', new Date());
+      await executeTask(email, startDate, tableSelection, columnSelection, timeFrame, transporter);
+
+      if (recurrencePattern !== 'once') {
+        const recurringJob = schedule.scheduleJob(cronPattern, async function () {
+          console.log('Recurring job executed at:', new Date());
+          await executeTask(email, startDate, tableSelection, columnSelection, timeFrame, transporter);
+        });
+
+        console.log('Recurring job scheduled successfully with pattern:', cronPattern);
+      }
+    });
+
+    if (initialJob) {
+      console.log('Initial job scheduled successfully');
+      res.status(200).json({ message: 'Task scheduled successfully' });
+    } else {
+      console.error('Failed to schedule initial job');
+      res.status(500).json({ error: 'Failed to schedule job' });
+    }
+
+  } catch (error) {
+    console.error('Error in scheduleTask:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+const executeTask = async (email, startDate, tableSelection, columnSelection, timeFrame, transporter) => {
+  try {
+    let formattedStartDate = moment(startDate).format('YYYY-MM-DDTHH:mm:ss');
+    let formattedEndDate = moment().format('YYYY-MM-DDTHH:mm:ss');
+
+    if (timeFrame === 'last_year') {
+      formattedStartDate = moment().subtract(1, 'year').format('YYYY-MM-DDTHH:mm:ss');
+    } else if (timeFrame === 'last_month') {
+      formattedStartDate = moment().subtract(1, 'month').format('YYYY-MM-DDTHH:mm:ss');
+    } else if (timeFrame === 'last_week') {
+      formattedStartDate = moment().subtract(1, 'week').format('YYYY-MM-DDTHH:mm:ss');
+    }
+
+    console.log('Fetching data for table:', tableSelection);
+    console.log('Columns:', columnSelection);
+
+    const response = await axios.get(`http://localhost:3000/v2/tables`, {
+      params: {
+        table: tableSelection,
+        startDate: formattedStartDate,
+        endDate: formattedEndDate,
+      }
+    });
+
+    const data = response.data;
+
+    console.log('Data fetched successfully:', data.length, 'rows');
+
+    const selectedColumnsData = data.map((row) => {
+      const newRow = {};
+      columnSelection.forEach((column) => {
+        newRow[formatHeaderKey(column.field)] = formatValue(column.field, row[column.field]);
+      });
+      return newRow;
+    });
+
+    const xlsx = (await import('xlsx')).default;
+    const worksheet = xlsx.utils.json_to_sheet(selectedColumnsData);
+    const workbook = { Sheets: { data: worksheet }, SheetNames: ['data'] };
+    const excelBuffer = xlsx.write(workbook, { bookType: 'xlsx', type: 'array' });
+
+    const filePath = path.join(__dirname, 'temp.xlsx');
+    fs.writeFileSync(filePath, Buffer.from(excelBuffer));
+    console.log('Excel file created at path:', filePath);
+
+    await transporter.sendMail({
+      from: "guitarcenter.xit@gmail.com",
+      to: email,
+      subject: 'Scheduled Report',
+      text: 'Please find the attached report.',
+      attachments: [{ filename: 'report.xlsx', path: filePath }],
+    });
+
+    console.log('Email sent successfully to:', email);
+
+    fs.unlinkSync(filePath);
+    console.log('Temporary file deleted');
+
+  } catch (error) {
+    console.error('Error in executeTask:', error);
+  }
+};
+
+const formatHeaderKey = (key) => {
+  return key
+    .split("_")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+};
+
+const formatValue = (field, value) => {
+  if (field.toLowerCase().includes("date")) {
+    return typeof value === "string" ? value.slice(0, 10) : value;
+  }
+  if (
+    field.toLowerCase().includes("amount") ||
+    field.toLowerCase().includes("_tax") ||
+    field.toLowerCase().includes("margin") ||
+    field.toLowerCase().includes("_charge") ||
+    field.toLowerCase().includes("cost") ||
+    field.toLowerCase().includes("intl") ||
+    field.toLowerCase().includes("line_other") ||
+    field.toLowerCase().includes("line_tax") ||
+    field.toLowerCase().includes("line_total") ||
+    field.toLowerCase().includes("list_price") ||
+    field.toLowerCase().includes("unit")
+  ) {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+    }).format(value);
+  }
+  return value;
+};
+
 const getFullSalesData = (req, res) => {
   const start_date = req.query.start_date;
   const end_date = req.query.end_date;
   const intervaltime = req.query.intervaltime;
   const enterprise_key = req.query.enterprise_key; 
 
-  // 2022-11-17 22:12
   const start_date_formatted = moment(start_date, "YYYY-MM-DD HH:mm").format(
     "YYYY-MM-DD HH:mm:ss"
   );
@@ -56,7 +215,6 @@ const getFullSalesData = (req, res) => {
     "YYYY-MM-DD HH:mm:ss"
   );
 
-  // Updated query to filter by enterprise_key
   const query = `
     SELECT gettotalsalesdata('${start_date_formatted}','${end_date_formatted}', ${intervaltime},'Ref1', 'Ref2','Ref3', 'Ref4','Ref5', 'Ref6','Ref7', 'Ref8' );
     FETCH ALL IN "Ref1";
@@ -112,13 +270,11 @@ const getFullSalesData = (req, res) => {
               line_fulfillment_type,
             } = item;
 
-            // Find existing enterprise key group
             let enterpriseKeyGroup = result.find(
               (group) => group.name === enterprise_key
             );
 
             if (!enterpriseKeyGroup) {
-              // Create a new enterprise key group if not found
               enterpriseKeyGroup = {
                 name: enterprise_key,
                 original_order_total_amount: 0,
@@ -130,7 +286,6 @@ const getFullSalesData = (req, res) => {
               result.push(enterpriseKeyGroup);
             }
 
-            // Update original_order_total_amount and line_ordered_qty
             enterpriseKeyGroup.original_order_total_amount += parseInt(
               item.original_order_total_amount
             );
@@ -138,7 +293,6 @@ const getFullSalesData = (req, res) => {
               item.line_ordered_qty
             );
 
-            // Group by order_capture_channel
             let orderCaptureChannelGroup =
               enterpriseKeyGroup.ORDER_CAPTURE_CHANNEL_GROUPED.find(
                 (group) => group.name === order_capture_channel
@@ -155,7 +309,6 @@ const getFullSalesData = (req, res) => {
               );
             }
 
-            // Update original_order_total_amount and line_ordered_qty within the order_capture_channel group
             orderCaptureChannelGroup.original_order_total_amount += parseInt(
               item.original_order_total_amount
             );
@@ -163,7 +316,6 @@ const getFullSalesData = (req, res) => {
               item.line_ordered_qty
             );
 
-            // Group by ITEM_INFO
             let itemInfoGroup = enterpriseKeyGroup.ITEM_INFO_GROUPED.find(
               (group) => group.name === item_info
             );
@@ -177,13 +329,11 @@ const getFullSalesData = (req, res) => {
               enterpriseKeyGroup.ITEM_INFO_GROUPED.push(itemInfoGroup);
             }
 
-            // Update original_order_total_amount and line_ordered_qty within the ITEM_INFO group
             itemInfoGroup.original_order_total_amount += parseInt(
               item.original_order_total_amount
             );
             itemInfoGroup.line_ordered_qty += parseInt(item.line_ordered_qty);
 
-            // Group by LINE_FULFILLMENT_TYPE
             let lineFulfillmentTypeGroup =
               enterpriseKeyGroup.LINE_FULFILLMENT_TYPE_GROUPED.find(
                 (group) =>
@@ -202,7 +352,6 @@ const getFullSalesData = (req, res) => {
               );
             }
 
-            // Update original_order_total_amount and line_ordered_qty within the LINE_FULFILLMENT_TYPE group
             lineFulfillmentTypeGroup.original_order_total_amount += parseInt(
               item.original_order_total_amount
             );
@@ -1420,6 +1569,7 @@ const getSalesAvgData = async (req, res) => {
 
 module.exports = {
   getTableData,
+  scheduleTask,
   getFullSalesData,
   getFullSalesDataTEST,
   getCustomQueryDate,
