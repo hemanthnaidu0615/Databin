@@ -141,22 +141,42 @@ export const Analysis = () => {
     );
   }
 
-  const groupedData: any = [];
-  if (tableName === "order_book_line") {
-    data.forEach((item: any) => {
-      const formattedDate = moment(
-        item.order_date,
-        "DD-MMM-YY HH.mm.ss.SSSSSS a"
-      ).format("DD-MMM-YY");
-      const key = `${item.enterprise_key}-${formattedDate}`;
-
-      if (!groupedData[key]) {
-        groupedData[key] = [item];
-      } else {
-        groupedData[key].push(item);
-      }
+  const formatDateColumns = (data: any[]) => {
+    return data.map(item => {
+        const newItem = { ...item };
+        Object.keys(newItem).forEach(key => {
+            // Assuming the date columns have "date" in their field names
+            if (key.toLowerCase().includes('date')) {
+                const originalDate = newItem[key];
+                const formattedDate = moment(originalDate, "DD-MMM-YY HH.mm.ss.SSSSSS a").isValid()
+                    ? moment(originalDate, "DD-MMM-YY HH.mm.ss.SSSSSS a").format("DD-MMM-YY")
+                    : moment(originalDate).isValid() 
+                        ? moment(originalDate).format("DD-MMM-YY")
+                        : originalDate;
+                newItem[key] = formattedDate;
+            }
+        });
+        return newItem;
     });
-  }
+};
+
+const groupedData: any = {};
+if (tableName === "order_book_line") {
+    const formattedData = formatDateColumns(data);
+    formattedData.forEach((item: any) => {
+        const formattedDate = item.order_date; 
+        const key = `${item.enterprise_key}-${formattedDate}`;
+
+        if (!groupedData[key]) {
+            groupedData[key] = [item];
+        } else {
+            groupedData[key].push(item);
+        }
+    });
+}
+
+
+
 
   const separateOrdersByEnterpriseKey = (data: any) => {
     const AWDOrders: any[] = [];
@@ -420,60 +440,69 @@ export const Analysis = () => {
           </div>
         ) : (
           <DataTable
-            className={showBarChart ? "m-1 w-[99%] " : "m-1 w-[99%]"}
-            showGridlines
-            size="small"
-            paginator
-            rows={10}
-            value={data}
-            header={header}
-            filters={filters}
-            filterDisplay="row"
-            globalFilterFields={Object.keys(filters)}
-            >
-            {getTableColumns(data).slice(1).map((col, index) => { // Exclude the first column
-            if (
-              col.header.toLowerCase().includes("amount") ||
-              col.header.toLowerCase().includes("charges")
-            ) {
+    className={showBarChart ? "m-1 w-[99%]" : "m-1 w-[99%]"}
+    showGridlines
+    size="small"
+    paginator
+    rows={10}
+    value={formatDateColumns(data)} 
+    header={header}
+    filters={filters}
+    filterDisplay="row"
+    globalFilterFields={Object.keys(filters)}
+>
+    {getTableColumns(data).slice(1).map((col, index) => { 
+        if (
+            col.header.toLowerCase().includes("amount") ||
+            col.header.toLowerCase().includes("charges")
+        ) {
             return (
-            <Column
-            sortable
-            key={index}
-            field={col.field}
-            header={col.header}
-            style={{ minWidth: "350px" }}
-            dataType="numeric"
-            filterField={col.field}
-            filter
-            filterElement={balanceFilterTemplate}
-            body={(rowData) => formatValue(col.field, rowData[col.field])}
-          />
-         );
-       }
-    return (
-      <Column
-        sortable
-        key={index}
-        field={col.field}
-        style={{ minWidth: "350px" }}
-        header={col.header}
-        filter
-        filterElement={
-          <InputText
-            value={filters[col.field]?.value || ""}
-            onChange={(e) => onColumnFilterChange(e, col.field)}
-            placeholder={`Search ${col.header}`}
-            className="max-w-40 text-sm p-1"
-          />
+                <Column
+                    sortable
+                    key={index}
+                    field={col.field}
+                    header={col.header}
+                    style={{ minWidth: "350px" }}
+                    dataType="numeric"
+                    filterField={col.field}
+                    filter
+                    filterElement={balanceFilterTemplate}
+                    body={(rowData) => formatValue(col.field, rowData[col.field])}
+                />
+            );
         }
-        filterPlaceholder={`Search by ${col.header}`}
-        body={(rowData) => formatValue(col.field, rowData[col.field])}
-      />
-    );
-  })}
+        return (
+            <Column
+                sortable
+                key={index}
+                field={col.field}
+                style={{ minWidth: "350px" }}
+                header={col.header}
+                filter
+                filterElement={
+                    <InputText
+                        value={filters[col.field]?.value || ""}
+                        onChange={(e) => onColumnFilterChange(e, col.field)}
+                        placeholder={`Search ${col.header}`}
+                        className="max-w-40 text-sm p-1"
+                    />
+                }
+                filterPlaceholder={`Search by ${col.header}`}
+                body={(rowData) => {
+                    if (col.header.toLowerCase().includes("date")) {
+                        const formattedDate = moment(rowData[col.field], "DD-MMM-YY HH.mm.ss.SSSSSS a").isValid()
+                            ? moment(rowData[col.field], "DD-MMM-YY HH.mm.ss.SSSSSS a").format("DD-MMM-YY")
+                            : moment(rowData[col.field]).isValid() 
+                                ? moment(rowData[col.field]).format("DD-MMM-YY")
+                                : rowData[col.field];
+                        return formattedDate;
+                    }
+                    return formatValue(col.field, rowData[col.field]);
+                }}
+            />
+        );
+    })}
 </DataTable>
-
         )}
       </div>
     </div>
