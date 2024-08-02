@@ -28,7 +28,6 @@ const Timeseries = () => {
 
   useEffect(() => {
     setLoading(true);
-    console.log(activeIndex);
     authFetch
       .get(
         `/tables/getDataForTimeSeries?date=${moment(date).format(
@@ -36,7 +35,6 @@ const Timeseries = () => {
         )}&userid=78`
       )
       .then((res) => {
-        console.log("milestones", res?.data);
         setMilestonesData(res?.data);
         setLoading(false);
       });
@@ -47,7 +45,6 @@ const Timeseries = () => {
         )}&userid=78`
       )
       .then((res) => {
-        console.log("timeseries", res?.data);
         setTimeseriesData(res?.data);
       });
   }, [date]);
@@ -75,7 +72,6 @@ const Timeseries = () => {
             inputStyle={{ fontSize: "12px" }}
             pt={{
               panel: { className: " h-[270px] w-[250px] p-0" },
-              //   trigger: { className: "h-2 w-3 mt-1" },
               root: { className: "p-0 " },
               day: { className: "text-xs w-10 p-0" },
               dayLabel: { className: "h-5 w-5 my-1" },
@@ -86,63 +82,63 @@ const Timeseries = () => {
           />
         </div>
       </div>
-      <TabView
-        activeIndex={activeIndex}
-        onTabChange={(e) => setActiveIndex(e.index)}
-        className="border overflow-y-auto h-full  bg-white"
-        pt={{
-          panelContainer: { className: "p-1 " },
-          nav: { className: getNavClassName(activeIndex) },
-          inkbar: { className: "bg-purple-700 text-black" },
-        }}
-      >
-        <TabPanel
-          header="Milestones"
-          pt={{ headerTitle: { className: "text-purple-700" } }}
+      <div className="relative">
+        <TabView
+          activeIndex={activeIndex}
+          onTabChange={(e) => setActiveIndex(e.index)}
+          className="border overflow-y-auto h-full bg-white"
+          pt={{
+            panelContainer: { className: "p-1 " },
+            nav: { className: getNavClassName(activeIndex) },
+            inkbar: { className: "bg-purple-700 text-black" },
+          }}
         >
-          <div className="flex flex-1  items-center font-semibold text-violet-800">
-            <div className="flex-[2]"></div>
-            <div className="flex-1 text-center p-2">Total</div>
+          <TabPanel
+            header="Milestones"
+            pt={{ headerTitle: { className: "text-purple-700" } }}
+          >
+            <div className="flex flex-col">
+              <div className="flex flex-1 items-center font-semibold text-violet-800">
+                <div className="flex-[2]"></div>
+                <div className="flex-1 text-center p-2">Total</div>
 
-            {milestonesData?.timeLineDates?.map((time: any) => {
-              return (
-                <div
-                  className="p-2 flex flex-col items-center justify-center flex-1"
-                  key={time?.date}
-                >
-                  <div>{time?.milestone} Days</div>
-                  <div>{time?.date}</div>
+                {milestonesData?.timeLineDates?.map((time: any) => (
+                  <div
+                    className="p-2 flex flex-col items-center justify-center flex-1"
+                    key={time?.date}
+                  >
+                    <div>{time?.milestone} Days</div>
+                    <div>{time?.date}</div>
+                  </div>
+                ))}
+                <div className="p-2 flex flex-col items-center justify-center flex-1">
+                  <div>
+                    {`> ${
+                      milestonesData?.timeLineDates[
+                        milestonesData?.timeLineDates?.length - 1
+                      ]?.milestone
+                    } Days`}
+                  </div>
                 </div>
-              );
-            })}
-            <div className="p-2 flex flex-col items-center justify-center flex-1">
-              <div>
-                {" "}
-                {`> ${
-                  milestonesData?.timeLineDates[
-                    milestonesData?.timeLineDates?.length - 1
-                  ]?.milestone
-                } Days`}{" "}
               </div>
-            </div>
-          </div>
-          {milestonesData?.mergedData
-            ?.filter((m: any) => allowedStatusNames.includes(m?.status_name))
-            ?.map((status: any) => {
-              return (
-                <div className="flex items-center  border-b-[1px] border-purple-400 p-4">
-                  <div className="flex-[2] text-violet-800">
-                    {status?.status_name}
-                  </div>
-                  <div className="cursor-pointer timeseries-status flex-1 text-center border-l-[1px] border-purple-400 flex items-center justify-between px-2">
-                    <div className="line-total-sum text-center w-full">
-                      {abbrvalue(status?.lineTotalSumTotal)}
+
+              {milestonesData?.mergedData
+                ?.filter((m: any) => allowedStatusNames.includes(m?.status_name))
+                ?.map((status: any) => (
+                  <div className="flex items-center border-b-[1px] border-purple-400 p-4" key={status?.status_name}>
+                    <div className="flex-[2] text-violet-800">
+                      {status?.status_name}
                     </div>
-                  </div>
-                  {status?.lineTotalSum?.map((sum: any, i: number) => {
-                    return (
-                      <div className="cursor-pointer timeseries-status flex-1 text-center border-l-[1px] border-purple-400 flex items-center justify-between px-2">
-                        <i className="pi pi-arrow-left"></i>
+                    <div className="cursor-pointer timeseries-status flex-1 text-center border-l-[1px] border-purple-400 flex items-center justify-between px-2">
+                      <div className="line-total-sum text-center w-full">
+                        {abbrvalue(status?.lineTotalSumTotal)}
+                      </div>
+                    </div>
+                    {status?.lineTotalSum?.map((sum: any, i: number) => (
+                      <div
+                        className="cursor-pointer timeseries-status flex-1 text-center border-l-[1px] border-purple-400 flex items-center justify-center px-2"
+                        key={i}
+                      >
                         <div className="line-total-sum">
                           {sum > 0
                             ? Math.round(
@@ -159,60 +155,67 @@ const Timeseries = () => {
                           }).format(sum)}{" "}
                           | {status?.QtySum[i]}
                         </div>
-                        <i className="pi pi-arrow-right"></i>
                       </div>
-                    );
-                  })}
-                </div>
-              );
-            })}
-        </TabPanel>
-        <TabPanel
-          header="Timeseries"
-          pt={{ headerTitle: { className: "text-purple-700" } }}
-          className="w-fit"
-        >
-          <div className="flex flex-col">
-            <div className="flex text-xs font-semibold text-violet-800 p-4">
-              <div className="flex-[3] "></div>
-              <div className="flex-1 flex justify-center min-w-[75px]">
-                Total
+                    ))}
+                  </div>
+                ))}
+            </div>
+            {/* Footer Row with Note */}
+            <div className="flex items-center border-t-[1px] border-purple-400 p-4 text-sm text-gray-600">
+              <div className="flex-[2]">
+                Note: Hover over percentage values to see the amount and the quantity.
               </div>
-              {timeseriesData?.dates?.map((date: any, i: number) => {
-                return (
+            </div>
+          </TabPanel>
+          <TabPanel
+            header="Timeseries"
+            pt={{ headerTitle: { className: "text-purple-700" } }}
+            className="w-fit"
+          >
+            <div className="flex flex-col">
+              <div className="flex text-xs font-semibold text-violet-800 p-4">
+                <div className="flex-[3] "></div>
+                <div className="flex-1 flex justify-center min-w-[75px]">
+                  Total
+                </div>
+                {timeseriesData?.dates?.map((date: any, i: number) => (
                   <div
                     key={i}
                     className="border-l-[1px] border-purple-400 flex-1 flex text-center min-w-[75px] justify-center"
                   >
                     {date}
                   </div>
-                );
-              })}
-            </div>
-            {timeseriesData?.timeSeries
-              ?.filter((t: any) => allowedStatusNames.includes(t?.status_name))
-              ?.map((ts: any) => {
-                return (
-                  <div className="flex border-b-[1px] border-purple-400 p-4 h-16">
-                    <div className="flex-[3] text-nowrap text-violet-800">
+                ))}
+              </div>
+              {timeseriesData?.timeSeries
+                ?.filter((t: any) => allowedStatusNames.includes(t?.status_name))
+                ?.map((ts: any) => (
+                  <div className="flex border-b-[1px] border-purple-400 p-4 h-16" key={ts?.status_name}>
+                    <div className="flex-[3] max-w-80 overflow-hidden text-violet-800"
+                    style={{
+                      whiteSpace: "nowrap",  
+                      textOverflow: "ellipsis", 
+                      overflow: "hidden",  
+                    }}>
                       {ts?.status_name}
                     </div>
                     <div className="flex-1 flex min-w-[75px] justify-center">
                       {ts?.sum}
                     </div>
-                    {ts?.date_values?.map((dv: any) => {
-                      return (
-                        <div className="border-l-[1px] border-purple-400 flex-1 flex min-w-[75px] justify-center">
-                          {dv}
-                        </div>
-                      );
-                    })}
+                    {ts?.date_values?.map((dv: any, i: number) => (
+                      <div
+                        key={i}
+                        className="border-l-[1px] border-purple-400 flex-1 flex min-w-[75px] justify-center"
+                      >
+                        {dv}
+                      </div>
+                    ))}
                   </div>
-                );
-              })}
-          </div>
-        </TabPanel>
-      </TabView>
+                ))}
+            </div>
+          </TabPanel>
+        </TabView>
+      </div>
     </div>
   );
 };

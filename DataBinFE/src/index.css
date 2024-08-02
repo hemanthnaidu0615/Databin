@@ -24,25 +24,9 @@
 }
 
 .custom-icon-size .pi {
-  font-size: 1.2rem; /* Adjust the font size as needed */
+  font-size: 1.2rem; 
 }
 
 .p-submenu-list {
   z-index: 9999 !important;
-}
-
-.p-datatable .p-column-header-content {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.org-chart.vertical-layout .p-organizationchart {
-  display: flex;
-  flex-direction: column;
-}
-
-.org-chart.horizontal-layout .p-organizationchart {
-  display: flex;
-  flex-direction: row;
 }
