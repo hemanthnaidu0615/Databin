@@ -60,7 +60,6 @@ export const Analysis = () => {
 
   useEffect(() => {
     fetchData(tableName);
-    // console.log(groupedData);
   }, [dates[1]]);
 
   const handleSelectingTable = (newTableName: string) => {
@@ -235,50 +234,36 @@ if (tableName === "order_book_line") {
     setShowBarChart(false);
   };
 
-  const exportExcel = () => {
-    import("xlsx").then((xlsx) => {
-      // const selectedColumnsData: Record<string, any>[] = data.map(
-      //   (row: any) => {
-      //     const newRow: Record<string, any> = {};
-      //     selectedColumns.forEach((column: any) => {
-      //       newRow[column.field] = formatValue(column.field, row[column.field]);
-      //     });
-      //     return newRow;
-      //   }
-      // );
-      const selectedColumnsData: Record<string, any>[] = data.map(
-        (row: any) => {
-          const newRow: Record<string, any> = {};
-          if (selectedColumns.length > 0) {
-            selectedColumns.forEach((column: any) => {
-              newRow[column.field] = formatValue(
-                column.field,
-                row[column.field]
-              );
-            });
-          } else {
-            Object.keys(row).forEach((key) => {
-              newRow[key] = formatValue(key, row[key]);
-            });
-          }
-          return newRow;
-        }
-      );
-
-      // const worksheet = selectedColumnsData
-      //   ? xlsx.utils.json_to_sheet(selectedColumnsData)
-      //   : xlsx.utils.json_to_sheet(data);
-      const worksheet = xlsx.utils.json_to_sheet(selectedColumnsData);
-      const workbook = { Sheets: { data: worksheet }, SheetNames: ["data"] };
-      const excelBuffer = xlsx.write(workbook, {
-        bookType: "xlsx",
-        type: "array",
-      });
-
-      setSelectedColumns([]);
-      saveAsExcelFile(excelBuffer, "data");
+const exportExcel = () => {
+  import("xlsx").then((xlsx) => {
+    const selectedColumnsData: Record<string, any>[] = data.map((row: any) => {
+      const newRow: Record<string, any> = {};
+      if (selectedColumns.length > 0) {
+        selectedColumns.forEach((column: any) => {
+          newRow[formatHeaderKey(column.field)] = formatValue(
+            column.field,
+            row[column.field]
+          );
+        });
+      } else {
+        Object.keys(row).forEach((key) => {
+          newRow[formatHeaderKey(key)] = formatValue(key, row[key]);
+        });
+      }
+      return newRow;
     });
-  };
+
+    const worksheet = xlsx.utils.json_to_sheet(selectedColumnsData);
+    const workbook = { Sheets: { data: worksheet }, SheetNames: ["data"] };
+    const excelBuffer = xlsx.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+
+    saveAsExcelFile(excelBuffer, "data");
+  });
+};
+
 
   const saveAsExcelFile = (buffer: any, fileName: any) => {
     import("file-saver").then((module) => {
@@ -318,7 +303,6 @@ if (tableName === "order_book_line") {
           options.filterCallback(e.value, options.index);
           console.log(e.value);
         }}
-        // onChange={(e: any) => onColumnFilterChange(e, col.field)}
         mode="currency"
         currency="USD"
         locale="en-US"
@@ -354,20 +338,22 @@ if (tableName === "order_book_line") {
         }}
       />
       <MultiSelect
-        value={selectedColumns}
-        options={getTableColumns(data).slice(1)}
-        onChange={(e) => setSelectedColumns(e.value)}
-        optionLabel="header"
-        display="chip"
-        placeholder="Select Columns"
-        className="p-multiselect-sm p-multiselect-panel h-[34px]  text-xs p-1 border-2 "
-        pt={{
-          label: { className: "text-xs p-0 " },
-          trigger: { className: "h-2 w-3 ml-2 " },
-          root: { className: " items-center justify-center" },
-        }}
-        style={{ width: "15rem" }}
-      />
+    value={selectedColumns}
+    options={getTableColumns(data).slice(1)}
+    onChange={(e) => setSelectedColumns(e.value)}
+    optionLabel="header"
+    display="chip"
+    placeholder="Select Columns"
+    selectAll={true}
+    selectAllLabel={selectedColumns.length === getTableColumns(data).slice(1).length ? "Deselect All" : "Select All"}
+    className="p-multiselect-sm p-multiselect-panel h-[34px] text-xs p-1 border-2"
+    pt={{
+        label: { className: "text-xs p-0" },
+        trigger: { className: "h-2 w-3 ml-2" },
+        root: { className: "items-center justify-center" },
+    }}
+    style={{ width: "15rem" }}
+/>
       {tableName === "order_book_line" && (
         <Button
           type="button"
@@ -440,22 +426,22 @@ if (tableName === "order_book_line") {
           </div>
         ) : (
           <DataTable
-    className={showBarChart ? "m-1 w-[99%]" : "m-1 w-[99%]"}
-    showGridlines
-    size="small"
-    paginator
-    rows={10}
-    value={formatDateColumns(data)} 
-    header={header}
-    filters={filters}
-    filterDisplay="row"
-    globalFilterFields={Object.keys(filters)}
->
-    {getTableColumns(data).slice(1).map((col, index) => { 
-        if (
-            col.header.toLowerCase().includes("amount") ||
-            col.header.toLowerCase().includes("charges")
-        ) {
+            className={showBarChart ? "m-1 w-[99%] " : "m-1 w-[99%]"}
+            showGridlines
+            size="small"
+            paginator
+            rows={10}
+            value={data}
+            header={header}
+            filters={filters}
+            filterDisplay="row"
+            globalFilterFields={Object.keys(filters)}
+            >
+            {getTableColumns(data).slice(1).map((col, index) => { // Exclude the first column
+            if (
+              col.header.toLowerCase().includes("amount") ||
+              col.header.toLowerCase().includes("charges")
+            ) {
             return (
                 <Column
                     sortable
