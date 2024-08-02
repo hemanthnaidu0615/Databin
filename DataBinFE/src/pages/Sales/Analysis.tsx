@@ -60,7 +60,6 @@ export const Analysis = () => {
 
   useEffect(() => {
     fetchData(tableName);
-    // console.log(groupedData);
   }, [dates[1]]);
 
   const handleSelectingTable = (newTableName: string) => {
@@ -141,22 +140,42 @@ export const Analysis = () => {
     );
   }
 
-  const groupedData: any = [];
-  if (tableName === "order_book_line") {
-    data.forEach((item: any) => {
-      const formattedDate = moment(
-        item.order_date,
-        "DD-MMM-YY HH.mm.ss.SSSSSS a"
-      ).format("DD-MMM-YY");
-      const key = `${item.enterprise_key}-${formattedDate}`;
-
-      if (!groupedData[key]) {
-        groupedData[key] = [item];
-      } else {
-        groupedData[key].push(item);
-      }
+  const formatDateColumns = (data: any[]) => {
+    return data.map(item => {
+        const newItem = { ...item };
+        Object.keys(newItem).forEach(key => {
+            // Assuming the date columns have "date" in their field names
+            if (key.toLowerCase().includes('date')) {
+                const originalDate = newItem[key];
+                const formattedDate = moment(originalDate, "DD-MMM-YY HH.mm.ss.SSSSSS a").isValid()
+                    ? moment(originalDate, "DD-MMM-YY HH.mm.ss.SSSSSS a").format("DD-MMM-YY")
+                    : moment(originalDate).isValid() 
+                        ? moment(originalDate).format("DD-MMM-YY")
+                        : originalDate;
+                newItem[key] = formattedDate;
+            }
+        });
+        return newItem;
     });
-  }
+};
+
+const groupedData: any = {};
+if (tableName === "order_book_line") {
+    const formattedData = formatDateColumns(data);
+    formattedData.forEach((item: any) => {
+        const formattedDate = item.order_date; 
+        const key = `${item.enterprise_key}-${formattedDate}`;
+
+        if (!groupedData[key]) {
+            groupedData[key] = [item];
+        } else {
+            groupedData[key].push(item);
+        }
+    });
+}
+
+
+
 
   const separateOrdersByEnterpriseKey = (data: any) => {
     const AWDOrders: any[] = [];
@@ -215,50 +234,36 @@ export const Analysis = () => {
     setShowBarChart(false);
   };
 
-  const exportExcel = () => {
-    import("xlsx").then((xlsx) => {
-      // const selectedColumnsData: Record<string, any>[] = data.map(
-      //   (row: any) => {
-      //     const newRow: Record<string, any> = {};
-      //     selectedColumns.forEach((column: any) => {
-      //       newRow[column.field] = formatValue(column.field, row[column.field]);
-      //     });
-      //     return newRow;
-      //   }
-      // );
-      const selectedColumnsData: Record<string, any>[] = data.map(
-        (row: any) => {
-          const newRow: Record<string, any> = {};
-          if (selectedColumns.length > 0) {
-            selectedColumns.forEach((column: any) => {
-              newRow[column.field] = formatValue(
-                column.field,
-                row[column.field]
-              );
-            });
-          } else {
-            Object.keys(row).forEach((key) => {
-              newRow[key] = formatValue(key, row[key]);
-            });
-          }
-          return newRow;
-        }
-      );
-
-      // const worksheet = selectedColumnsData
-      //   ? xlsx.utils.json_to_sheet(selectedColumnsData)
-      //   : xlsx.utils.json_to_sheet(data);
-      const worksheet = xlsx.utils.json_to_sheet(selectedColumnsData);
-      const workbook = { Sheets: { data: worksheet }, SheetNames: ["data"] };
-      const excelBuffer = xlsx.write(workbook, {
-        bookType: "xlsx",
-        type: "array",
-      });
-
-      setSelectedColumns([]);
-      saveAsExcelFile(excelBuffer, "data");
+const exportExcel = () => {
+  import("xlsx").then((xlsx) => {
+    const selectedColumnsData: Record<string, any>[] = data.map((row: any) => {
+      const newRow: Record<string, any> = {};
+      if (selectedColumns.length > 0) {
+        selectedColumns.forEach((column: any) => {
+          newRow[formatHeaderKey(column.field)] = formatValue(
+            column.field,
+            row[column.field]
+          );
+        });
+      } else {
+        Object.keys(row).forEach((key) => {
+          newRow[formatHeaderKey(key)] = formatValue(key, row[key]);
+        });
+      }
+      return newRow;
     });
-  };
+
+    const worksheet = xlsx.utils.json_to_sheet(selectedColumnsData);
+    const workbook = { Sheets: { data: worksheet }, SheetNames: ["data"] };
+    const excelBuffer = xlsx.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+
+    saveAsExcelFile(excelBuffer, "data");
+  });
+};
+
 
   const saveAsExcelFile = (buffer: any, fileName: any) => {
     import("file-saver").then((module) => {
@@ -298,7 +303,6 @@ export const Analysis = () => {
           options.filterCallback(e.value, options.index);
           console.log(e.value);
         }}
-        // onChange={(e: any) => onColumnFilterChange(e, col.field)}
         mode="currency"
         currency="USD"
         locale="en-US"
@@ -334,20 +338,22 @@ export const Analysis = () => {
         }}
       />
       <MultiSelect
-        value={selectedColumns}
-        options={getTableColumns(data).slice(1)}
-        onChange={(e) => setSelectedColumns(e.value)}
-        optionLabel="header"
-        display="chip"
-        placeholder="Select Columns"
-        className="p-multiselect-sm p-multiselect-panel h-[34px]  text-xs p-1 border-2 "
-        pt={{
-          label: { className: "text-xs p-0 " },
-          trigger: { className: "h-2 w-3 ml-2 " },
-          root: { className: " items-center justify-center" },
-        }}
-        style={{ width: "15rem" }}
-      />
+    value={selectedColumns}
+    options={getTableColumns(data).slice(1)}
+    onChange={(e) => setSelectedColumns(e.value)}
+    optionLabel="header"
+    display="chip"
+    placeholder="Select Columns"
+    selectAll={true}
+    selectAllLabel={selectedColumns.length === getTableColumns(data).slice(1).length ? "Deselect All" : "Select All"}
+    className="p-multiselect-sm p-multiselect-panel h-[34px] text-xs p-1 border-2"
+    pt={{
+        label: { className: "text-xs p-0" },
+        trigger: { className: "h-2 w-3 ml-2" },
+        root: { className: "items-center justify-center" },
+    }}
+    style={{ width: "15rem" }}
+/>
       {tableName === "order_book_line" && (
         <Button
           type="button"
@@ -437,43 +443,52 @@ export const Analysis = () => {
               col.header.toLowerCase().includes("charges")
             ) {
             return (
-            <Column
-            sortable
-            key={index}
-            field={col.field}
-            header={col.header}
-            style={{ minWidth: "350px" }}
-            dataType="numeric"
-            filterField={col.field}
-            filter
-            filterElement={balanceFilterTemplate}
-            body={(rowData) => formatValue(col.field, rowData[col.field])}
-          />
-         );
-       }
-    return (
-      <Column
-        sortable
-        key={index}
-        field={col.field}
-        style={{ minWidth: "350px" }}
-        header={col.header}
-        filter
-        filterElement={
-          <InputText
-            value={filters[col.field]?.value || ""}
-            onChange={(e) => onColumnFilterChange(e, col.field)}
-            placeholder={`Search ${col.header}`}
-            className="max-w-40 text-sm p-1"
-          />
+                <Column
+                    sortable
+                    key={index}
+                    field={col.field}
+                    header={col.header}
+                    style={{ minWidth: "350px" }}
+                    dataType="numeric"
+                    filterField={col.field}
+                    filter
+                    filterElement={balanceFilterTemplate}
+                    body={(rowData) => formatValue(col.field, rowData[col.field])}
+                />
+            );
         }
-        filterPlaceholder={`Search by ${col.header}`}
-        body={(rowData) => formatValue(col.field, rowData[col.field])}
-      />
-    );
-  })}
+        return (
+            <Column
+                sortable
+                key={index}
+                field={col.field}
+                style={{ minWidth: "350px" }}
+                header={col.header}
+                filter
+                filterElement={
+                    <InputText
+                        value={filters[col.field]?.value || ""}
+                        onChange={(e) => onColumnFilterChange(e, col.field)}
+                        placeholder={`Search ${col.header}`}
+                        className="max-w-40 text-sm p-1"
+                    />
+                }
+                filterPlaceholder={`Search by ${col.header}`}
+                body={(rowData) => {
+                    if (col.header.toLowerCase().includes("date")) {
+                        const formattedDate = moment(rowData[col.field], "DD-MMM-YY HH.mm.ss.SSSSSS a").isValid()
+                            ? moment(rowData[col.field], "DD-MMM-YY HH.mm.ss.SSSSSS a").format("DD-MMM-YY")
+                            : moment(rowData[col.field]).isValid() 
+                                ? moment(rowData[col.field]).format("DD-MMM-YY")
+                                : rowData[col.field];
+                        return formattedDate;
+                    }
+                    return formatValue(col.field, rowData[col.field]);
+                }}
+            />
+        );
+    })}
 </DataTable>
-
         )}
       </div>
     </div>
