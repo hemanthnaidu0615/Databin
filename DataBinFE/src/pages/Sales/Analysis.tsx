@@ -74,24 +74,7 @@ export const Analysis = () => {
         formattedEndDate = moment().subtract(1, 'week').format('YYYY-MM-DDTHH:mm:ss');
       }
   
-      const response = await authFetch(`/tables?table=${tableSelection}&startDate=${formattedStartDate}&endDate=${formattedEndDate}`);
-      const data = await response.json();
-  
-      const selectedColumnsData = data.map((row) => {
-        const newRow = {};
-        columnSelection.forEach((column) => {
-          newRow[column] = row[column];
-        });
-        return newRow;
-      });
-  
-      const xlsx = (await import('xlsx')).default;
-      const worksheet = xlsx.utils.json_to_sheet(selectedColumnsData);
-      const workbook = { Sheets: { data: worksheet }, SheetNames: ['data'] };
-      const excelBuffer = xlsx.write(workbook, { bookType: 'xlsx', type: 'array' });
-  
       const formData = new FormData();
-      formData.append('file', new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }), 'data.xlsx');
       formData.append('email', emailAddress);
       formData.append('recurrencePattern', recurrencePattern);
       formData.append('startDate', formattedStartDate);
@@ -99,14 +82,32 @@ export const Analysis = () => {
       formData.append('columnSelection', JSON.stringify(columnSelection));
       formData.append('timeFrame', timeFrame);
   
-      await authFetch('/scheduler', { method: 'POST', body: formData });
+      const response = await authFetch('http://localhost:3000/v2/tables/scheduler', {
+        method: 'POST',
+        data: formData,  // Use 'data' instead of 'body'
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
   
-      console.log('Scheduler data saved and email sent successfully');
+      console.log('Response object:', response);
+      console.log('Response status:', response.status);
+  
+      if (response.status !== 200) {
+        throw new Error(`HTTP error! Status: ${response.status}, Message: ${response.statusText}`);
+      }
+  
+      // Axios automatically parses JSON, so response.data should already be an object
+      console.log('Scheduler data saved and email sent successfully:', response.data.message);
       setShowSchedulerDialog(false);
+  
     } catch (error) {
       console.error('Error saving scheduler data:', error);
     }
   };
+  
+  
+  
   
   function getDefaultTimeFrame(recurrencePattern) {
     switch (recurrencePattern) {

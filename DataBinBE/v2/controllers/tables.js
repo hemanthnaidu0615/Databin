@@ -8,10 +8,9 @@ const authToken = process.env.AUTH_TOKEN;
 // const smsKey = process.env.SMS_SECRET_KEY;
 let twilioNum = process.env.TWILIO_PHONE_NUMBER;
 const twilioClient = require("twilio")(accountSid, authToken);
-const nodemailer = require('nodemailer');
-const nodeSchedule = require('node-schedule');
-const nodemailer = require('nodemailer');
-const ExcelJS = require('exceljs');
+const schedule = require('node-schedule');
+const authFetch = require("../axios.ts")
+
 
 const {
   formatDate,
@@ -52,12 +51,16 @@ const scheduleTask = async (req, res) => {
     const { email, startDate, recurrencePattern, tableSelection, columnSelection, timeFrame } = req.body;
 
     const transporter = nodemailer.createTransport({
-      service: 'gmail',
+      host: "smtp.gmail.com",
+      port: 587,
+      secure: false,
+      requireTLS: true,
       auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
+        user: "guitarcenter.xit@gmail.com",
+        pass: "blnsziorfgrueolw",
       },
     });
+    
 
     const recurrenceMap = {
       daily: '0 0 * * *',
@@ -68,6 +71,7 @@ const scheduleTask = async (req, res) => {
 
     schedule.scheduleJob(cronPattern, async () => {
       try {
+        console.log('Scheduled job started');
         const formattedStartDate = moment(startDate).format('YYYY-MM-DDTHH:mm:ss');
         let formattedEndDate = moment().format('YYYY-MM-DDTHH:mm:ss');
 
@@ -97,14 +101,16 @@ const scheduleTask = async (req, res) => {
 
         const filePath = path.join(__dirname, 'temp.xlsx');
         fs.writeFileSync(filePath, Buffer.from(excelBuffer));
+        console.log('Excel file created at path:', filePath);
 
         await transporter.sendMail({
-          from: process.env.EMAIL_USER,
+          from: "guitarcenter.xit@gmail.com",
           to: email,
           subject: 'Scheduled Report',
           text: 'Please find the attached report.',
           attachments: [{ filename: 'report.xlsx', path: filePath }],
         });
+        console.log('Attempting to send email to:', email);
 
         fs.unlinkSync(filePath);
       } catch (error) {
@@ -112,10 +118,10 @@ const scheduleTask = async (req, res) => {
       }
     });
 
-    res.status(200).send('Task scheduled successfully');
+    res.status(200).json({ message: 'Task scheduled successfully' });
   } catch (error) {
     console.error('Error scheduling task:', error);
-    res.status(500).send('Internal Server Error');
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 
