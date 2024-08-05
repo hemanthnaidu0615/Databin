@@ -29,7 +29,7 @@ export const SidebarComp = () => {
     );
   };
 
-  // Adding the same hover effect to the nested items
+  
   const itemRenderer2 = (item: any) => {
     const isActive = currentTab === item.path;
     return (

@@ -29,8 +29,6 @@ export const HalfPiechart = (props: any) => {
       <ResponsivePie
         data={props.data}
         colors={{ datum: "data.color" }}
-        // colors={{ scheme: "pastel1" }}
-        // colors={props.color}
         margin={{ top: 0, right: 25, bottom: 0, left: 25 }}
         startAngle={-90}
         endAngle={90}

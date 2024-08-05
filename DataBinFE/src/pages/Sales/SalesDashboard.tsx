@@ -25,7 +25,6 @@ export const SalesDashboard = () => {
     order_capture_channel: string | null;
     original_order_total_amount: number;
     line_ordered_qty: number;
-    // Add other fields as needed
   }
   
   type SalesData = SalesDataItem[];
@@ -135,7 +134,6 @@ export const SalesDashboard = () => {
   
     return channels.map((channel) => {
       const dataPoints = inputData.flatMap((dataset: any) => {
-        // Ensure dataset is an array
         if (!Array.isArray(dataset)) {
           return [];
         }
@@ -300,27 +298,22 @@ export const SalesDashboard = () => {
             >
               <TabPanel headerTemplate={tab1HeaderTemplate} header="Chart">
                 <SalesCardPie
-                  // dataForLineChart={formatSeriesDataLinechart(
-                  //   (Object.values(lineData)[i] as any)?.series
-                  // )}
-                  dataForLineChart={formatSeriesDataLinechart(
+                   dataForLineChart={formatSeriesDataLinechart(
                     separateOrderChannels(type?.chartSeries.series)
                   )}
                   dataForPieChart={formatSeriesData(
                     type?.salesCategories.ORDER_CAPTURE_CHANNEL_GROUPED
                   )}
-                  // dataForBarChart={(Object.values(lineData)[i] as any)?.series}
+                  
                   dataForBarChart={separateOrderChannels(
                     type?.chartSeries.series
                   )}
-                  // dataForTable={(Object.values(lineData)[i] as any)?.series}
                   dataForTable={type?.chartSeries.series}
                   brandName={type?.name}
                   progressbarValue={
                     type?.salesCategories?.original_order_total_amount
                   }
                   logo={logos[i] as any}
-                  // bottomLegend={dates?.[0]}
                   leftLegend={"Order Amount ($)"}
                 />
               </TabPanel>
