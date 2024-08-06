@@ -111,8 +111,8 @@ export const SalesByRegion = () => {
     fetchData();
   }, [dates, enterpriseKey]);
 
-  console.log("Dates from Redux:", dates); // Debug log
-  console.log("Enterprise Key from Redux:", enterpriseKey); // Debug log
+  console.log("Dates from Redux:", dates); 
+  console.log("Enterprise Key from Redux:", enterpriseKey); 
   
   if (!mapData) {
     return (

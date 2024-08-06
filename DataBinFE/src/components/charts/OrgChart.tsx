@@ -1,6 +1,6 @@
 import { OrganizationChart } from "primereact/organizationchart";
 import { TreeNode } from "primereact/treenode";
-import { useState,useEffect } from "react";
+import { useState } from "react";
 import './style.css';
 
 interface OrgChartProps {

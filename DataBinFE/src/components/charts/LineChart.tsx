@@ -12,7 +12,6 @@ export const LineChart = (props: any) => {
   
 
   const formatXAxis = (value: any) => {
-    // Assuming the format is "DD MMM HH:mm", we split by space and take the last part
     const parts = value.split(" ");
     return parts.length === 3 ? parts[2] : value;
   };
@@ -43,17 +42,10 @@ export const LineChart = (props: any) => {
           tickSize: 0.5,
           tickPadding: 3,
           tickRotation: -40,
-          // legend: props.bottomLegend,
           legendOffset: 36,
           legendPosition: "middle",
           format: formatXAxis,
-          // format: customTickFormat,
-          // format: () => {
-          //   props.length > 15 ? "" : customTickFormat;
-          // },
-          // format: () => "",
-          // props.length > 24 && props.length < 3 ? () => "" : customTickFormat,
-        }}
+          }}
         axisLeft={{
           tickSize: 3,
           tickPadding: 4,

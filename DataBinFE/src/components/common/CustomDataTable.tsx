@@ -41,8 +41,7 @@ function CustomDataTable({
               ? `$${rowData[column.field]}`
               : rowData[column.field]
           }
-          // bodyClassName={column.format ? "text-right" : "text-left"}
-        ></Column>
+          ></Column>
       ))}
     </DataTable>
   );

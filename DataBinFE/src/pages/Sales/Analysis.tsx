@@ -136,8 +136,6 @@ export const Analysis = () => {
     }
   };
   
-  
-  // Single function to get time frames based on recurrence pattern
   function getTimeFrames(recurrencePattern: string): { label: string; value: string }[] {
     const timeFrames: Record<string, { label: string; value: string }[]> = {
       daily: [
@@ -276,7 +274,6 @@ export const Analysis = () => {
     return data.map(item => {
         const newItem = { ...item };
         Object.keys(newItem).forEach(key => {
-            // Assuming the date columns have "date" in their field names
             if (key.toLowerCase().includes('date')) {
                 const originalDate = newItem[key];
                 const formattedDate = moment(originalDate, "DD-MMM-YY HH.mm.ss.SSSSSS a").isValid()
@@ -581,7 +578,7 @@ const exportExcel = () => {
             filterDisplay="row"
             globalFilterFields={Object.keys(filters)}
             >
-            {getTableColumns(data).slice(1).map((col, index) => { // Exclude the first column
+            {getTableColumns(data).slice(1).map((col, index) => { 
             if (
               col.header.toLowerCase().includes("amount") ||
               col.header.toLowerCase().includes("charges")
