@@ -96,13 +96,13 @@ export const AddUser = ({ fetchUsersData }: any) => {
             <Button
               label="Cancel"
               icon="pi pi-times"
-              className="p-button-text text-purple-800"
+              className="p-button-text text-purple-700"
               onClick={() => setShowAddUser(false)}
             />
             <Button
               label="Add User"
               icon="pi pi-check"
-              className="bg-purple-800 "
+              className="bg-purple-500 border-none"
               onClick={handleAddUser}
             />
           </div>

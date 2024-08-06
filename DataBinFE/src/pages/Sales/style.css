@@ -2,9 +2,29 @@
     display: flex;
     flex-direction: column;
   }
-  
-  .horizontal-layout .p-organizationchart .p-organizationchart-node-content {
-    display: flex;
-    flex-direction: row;
-  }
-  
+
+
+/* Custom Toast Styles */
+.custom-toast .p-toast-message {
+  background-color: #c87ed5; /* Green background for success */
+  color: white; /* White text */
+  border: 1px solid #ab20c4; /* Darker green border */
+  border-radius: 0.25rem; /* Rounded corners */
+  padding: 1rem; /* Padding inside the Toast */
+}
+
+/* Icon color to match background */
+.custom-toast .p-toast-message-success .p-toast-message-icon {
+  color: #ab20c4; /* Green icon for success */
+}
+
+/* Ensure text colors are correct */
+.custom-toast .p-toast-message-success .p-toast-message-summary,
+.custom-toast .p-toast-message-success .p-toast-message-detail {
+  color: white; /* White text for summary and detail */
+}
+
+/* Optional: Adjust the position if needed */
+.p-toast {
+  z-index: 9999; /* Ensure Toast appears above other content */
+}
