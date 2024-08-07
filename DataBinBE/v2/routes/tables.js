@@ -22,6 +22,7 @@ const {
   deleteUser,
   getSalesAvgData,
   getUserRoleByEmail,
+  generatePassword,
 } = require("../controllers/tables");
 
 const router = express.Router();
@@ -45,7 +46,8 @@ router.post("/thresholdInfo", thresholdInfo);
 router.post("/sendSMS", sendSMS);
 router.put("/updateUsers/:id",updateUsers);
 router.delete("/deleteUser/:id",deleteUser);
-router.get("/user-role",getUserRoleByEmail)
+router.get("/user-role",getUserRoleByEmail);
+router.post('/forgot-password',generatePassword);
 router.get("/getSalesAvgData", getSalesAvgData);
 
 module.exports = router;
