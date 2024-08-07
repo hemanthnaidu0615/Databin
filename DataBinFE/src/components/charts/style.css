@@ -58,6 +58,65 @@
 
     background-color: none !important;
 }
- 
 
- 
+
+
+/* Vertical Flowchart  */
+/* Ensure to use different class names from horizontal styling */
+
+/* Container for the entire flowchart */
+.flowchart-container {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto; /* Horizontal scrolling */
+    background-color: #fff;
+  }
+  
+  .node-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .node {
+    background-color: #d9bbfb;
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+    width: 150px;
+  }
+  
+  .node-container:hover .node {
+    background-color: #9f7aea;
+    color: #fff;
+  }
+  
+  /* Connectors between nodes */
+  .connector-line {
+    width: 2px;
+    background-color: #e5e7eb;
+    height: 20px;
+    margin: 0 auto;
+  }
+  
+  .children-container {
+    display: flex;
+    flex-direction: row;
+  }
+  
+  .children {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .child-container {
+    display: flex;
+    flex-direction: row;
+    margin: 0 10px;
+  }
+  
+  .node-group {
+    display: flex;
+    flex-direction: column;
+  }
+  

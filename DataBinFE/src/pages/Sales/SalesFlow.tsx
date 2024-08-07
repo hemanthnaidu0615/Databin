@@ -1,6 +1,7 @@
 import { TreeNode } from "primereact/treenode";
 import authFetch from "../../axios";
 import OrgChart from "../../components/charts/OrgChart";
+import FlowChart from "../../components/charts/verticalFlowChart"; // Import FlowChart for vertical flow
 import { useEffect, useState } from "react";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { Button } from "primereact/button";
@@ -14,7 +15,7 @@ const SalesFlow = () => {
   const [loading, setLoading] = useState(true);
   const [type, setType] = useState("item-info");
   const [zoomValue, setZoomValue] = useState(50);
-  const [orientation, setOrientation] = useState("horizontal");
+  const [orientation, setOrientation] = useState("Vertical"); // State to track dropdown value
 
   const { dates } = useSelector((store: any) => store.dateRange);
 
@@ -56,11 +57,6 @@ const SalesFlow = () => {
     setZoomValue(prev => Math.max(prev - 10, 0));
   };
 
-  const orientationOptions = [
-    { label: "Horizontal", value: "horizontal" },
-    { label: "Vertical", value: "vertical" },
-  ];
-
   if (loading) {
     return (
       <div className="flex justify-center items-center my-auto mx-auto">
@@ -74,7 +70,7 @@ const SalesFlow = () => {
       return {
         label: item.key,
         expanded: item.children ? true : false,
-        data: numberFormatter.format(item.original_order_total_amount), 
+        data: numberFormatter.format(item.original_order_total_amount),
         children: item.children ? convertData(item.children) : [],
         className: "bg-purple-200",
       };
@@ -87,15 +83,20 @@ const SalesFlow = () => {
     { name: "Fulfillment", value: "fulfillment" },
   ];
 
+  const orientationOptions = [
+    { label: "Vertical", value: "Vertical" },
+    { label: "Horizontal", value: "Horizontal" },
+  ];
+
   return (
     <div className="flex-1 flex flex-col border-2 m-2 rounded-lg bg-white overflow-hidden">
       <div className="w-full h-2 bg-purple-300 rounded-t-lg"></div>
       <h1 className="font-semibold text-md text-violet-800 py-2 px-3">
         Sales Flow
       </h1>
-      <div className="flex-1 flex flex-col gap-20 shadow-lg rounded-lg border-slate-200 border-2">
-        <div className="flex justify-between items-center">
-          <div className="flex m-2 gap-2">
+      <div className="flex justify-between items-center p-4">
+        <div className="flex gap-4">
+          <div className="flex gap-2">
             {buttonData.map((btn, index) => (
               <Button
                 key={index}
@@ -120,34 +121,33 @@ const SalesFlow = () => {
             options={orientationOptions}
             onChange={(e) => setOrientation(e.value)}
             placeholder="Select Orientation"
-            className="w-32"
+            className="w-48"
           />
-          <div className="flex items-center gap-2 mr-6">
-            <i className="pi pi-search-minus" onClick={decrementZoom}></i>
-            <Slider
-              value={zoomValue}
-              onChange={handleZoomChange}
-              className="w-32"
-              step={10}
-              min={0}
-              max={100}
-            />
-            <i className="pi pi-search-plus" onClick={incrementZoom}></i>
-          </div>
         </div>
-        <div
-          className="overflow-auto flex-1"
-          style={{
-            height: orientation === "horizontal" ? "calc(100vh - 200px)" : "auto",
-            width: orientation === "vertical" ? "calc(100vw - 200px)" : "auto",
-          }}
-        >
+        <div className="flex items-center gap-2">
+          <i className="pi pi-search-minus cursor-pointer" onClick={decrementZoom}></i>
+          <Slider
+            value={zoomValue}
+            onChange={handleZoomChange}
+            className="w-32"
+            step={10}
+            min={0}
+            max={100}
+          />
+          <i className="pi pi-search-plus cursor-pointer" onClick={incrementZoom}></i>
+        </div>
+      </div>
+      <div className="overflow-auto flex-1" style={{ height: "calc(100vh - 200px)" }}>
+        {orientation === "Vertical" ? (
+          <FlowChart
+            data={convertData(data)} // Use the same API data but formatted for vertical flow
+          />
+        ) : (
           <OrgChart data={convertData(data)} zoom={zoomValue} orientation={orientation} />
-        </div>
+        )}
       </div>
     </div>
   );
 };
 
 export default SalesFlow;
-
