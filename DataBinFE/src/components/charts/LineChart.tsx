@@ -9,7 +9,6 @@ export const LineChart = (props: any) => {
     }
     return value.toString();
   };
-  
 
   const formatXAxis = (value: any) => {
     const parts = value.split(" ");
@@ -25,7 +24,7 @@ export const LineChart = (props: any) => {
           "rgba(253, 88, 173, 0.8)",
           "rgba(125, 221, 187, 0.68)",
         ]}
-        margin={{ top: 10, right: 110, bottom: 60, left: 70 }}
+        margin={{ top: 10, right: 110, bottom: 60, left: 80 }}  // Adjust left margin for space
         xScale={{ type: "point" }}
         yScale={{
           type: "linear",
@@ -42,16 +41,17 @@ export const LineChart = (props: any) => {
           tickSize: 0.5,
           tickPadding: 3,
           tickRotation: -40,
+          legend: "Dates",  // Label for x-axis
           legendOffset: 36,
           legendPosition: "middle",
           format: formatXAxis,
-          }}
+        }}
         axisLeft={{
           tickSize: 3,
           tickPadding: 4,
           tickRotation: 0,
-          legend: props.leftLegend,
-          legendOffset: -40,
+          legend: props.leftLegend,  // Label for y-axis
+          legendOffset: -50,  // Adjust offset for space
           legendPosition: "middle",
           format: formatYAxis,
         }}
