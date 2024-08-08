@@ -1,10 +1,9 @@
 import { Button } from "primereact/button";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import { Dialog } from "primereact/dialog";
 import { Toast } from "primereact/toast";
-import { useRef } from "react";
 import authFetch from "../../axios";
 
 interface Role {
@@ -19,6 +18,13 @@ export const AddUser = ({ fetchUsersData }: any) => {
   const [lastName, setLastName] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [errors, setErrors] = useState({
+    firstName: "",
+    lastName: "",
+    username: "",
+    password: "",
+    role: "",
+  });
   const toast = useRef<any>(null);
 
   const roles = [
@@ -28,6 +34,20 @@ export const AddUser = ({ fetchUsersData }: any) => {
   ];
 
   function handleAddUser() {
+    const newErrors = {
+      firstName: !firstName ? "First name is required" : "",
+      lastName: !lastName ? "Last name is required" : "",
+      username: !username ? "Username is required" : "",
+      password: !password ? "Password is required" : "",
+      role: !selectedRole ? "Role is required" : "",
+    };
+
+    setErrors(newErrors);
+
+    if (Object.values(newErrors).some((error) => error)) {
+      return;
+    }
+
     const data = {
       firstname: firstName,
       lastname: lastName,
@@ -63,7 +83,7 @@ export const AddUser = ({ fetchUsersData }: any) => {
         toast.current.show({
           severity: "error",
           summary: "Error",
-          detail: "Failed to add user check details properly" ,
+          detail: "Failed to add user, please check details",
           life: 3000,
         });
       });
@@ -73,7 +93,7 @@ export const AddUser = ({ fetchUsersData }: any) => {
     <div className="flex flex-col mx-3">
       <Toast ref={toast} />
       <div className="flex items-center">
-        <p className="text-lg font-semibold my-4 ">Create User</p>
+        <p className="text-lg font-semibold my-4">Create User</p>
         <Button
           icon="pi pi-plus-circle"
           className="h-5 ml-2 w-4"
@@ -82,7 +102,10 @@ export const AddUser = ({ fetchUsersData }: any) => {
             background: "none",
             border: "none",
           }}
-          onClick={() => setShowAddUser(true)}
+          onClick={(e) => {
+            e.currentTarget.blur();
+            setShowAddUser(true);
+          }}
         />
       </div>
       <Dialog
@@ -102,7 +125,7 @@ export const AddUser = ({ fetchUsersData }: any) => {
             <Button
               label="Add User"
               icon="pi pi-check"
-              className="bg-purple-800 "
+              className="bg-purple-800"
               onClick={handleAddUser}
             />
           </div>
@@ -115,6 +138,7 @@ export const AddUser = ({ fetchUsersData }: any) => {
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
           />
+          {errors.firstName && <small className="p-error">{errors.firstName}</small>}
         </div>
         <div className="field">
           <label htmlFor="lastName">Last Name</label>
@@ -123,6 +147,7 @@ export const AddUser = ({ fetchUsersData }: any) => {
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
           />
+          {errors.lastName && <small className="p-error">{errors.lastName}</small>}
         </div>
         <div className="field">
           <label htmlFor="username">Username</label>
@@ -131,6 +156,7 @@ export const AddUser = ({ fetchUsersData }: any) => {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
           />
+          {errors.username && <small className="p-error">{errors.username}</small>}
         </div>
         <div className="field">
           <label htmlFor="password">Password</label>
@@ -140,6 +166,7 @@ export const AddUser = ({ fetchUsersData }: any) => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
+          {errors.password && <small className="p-error">{errors.password}</small>}
         </div>
         <div className="field">
           <label htmlFor="role">Role</label>
@@ -151,6 +178,7 @@ export const AddUser = ({ fetchUsersData }: any) => {
             optionLabel="name"
             placeholder="Select a Role"
           />
+          {errors.role && <small className="p-error">{errors.role}</small>}
         </div>
       </Dialog>
     </div>

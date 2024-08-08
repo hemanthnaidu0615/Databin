@@ -28,7 +28,6 @@ const Table: React.FC<TableProps> = ({ fetchUsersData, users }) => {
   const [editedData, setEditedData] = useState<Partial<User>>({});
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [userToDelete, setUserToDelete] = useState<number | null>(null);
-
   const statuses = [
     { label: "Admin", value: "admin" },
     { label: "User", value: "user" },
@@ -142,12 +141,19 @@ const Table: React.FC<TableProps> = ({ fetchUsersData, users }) => {
         <Button
           icon="pi pi-save"
           style={{background:"none",color:"grey",border:"none",marginRight:"0.5rem",outline:"none"}}
-          onClick={() => onRowSave(rowData.id)}
+          onClick={(e) => {
+            e.currentTarget.blur(); 
+            onRowSave(rowData.id);
+          }}
+        
         />
         <Button
           icon="pi pi-times"
           style={{background:"none",color:"red",border:"none",marginRight:"0.5rem"}}
-          onClick={() => setEditRowIndex(null)}
+          onClick={(e) => {
+            e.currentTarget.blur(); 
+            setEditRowIndex(null);
+          }}
         />
       </>
     ) : (
@@ -160,7 +166,11 @@ const Table: React.FC<TableProps> = ({ fetchUsersData, users }) => {
         <Button
           icon="pi pi-trash"
           style={{background:"none",color:"red",border:"none"}}
-          onClick={() => confirmDelete(rowData.id)}
+          onClick={(e) => {
+            e.currentTarget.blur(); 
+            confirmDelete(rowData.id);
+          }}
+        
         />
       </>
     );
@@ -212,7 +222,6 @@ const Table: React.FC<TableProps> = ({ fetchUsersData, users }) => {
         />
       </DataTable>
 
-      {/* Confirmation Dialog */}
       <Dialog
         header="Confirm Deletion"
         visible={showDeleteConfirm}
