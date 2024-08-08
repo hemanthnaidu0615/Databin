@@ -61,62 +61,66 @@
 
 
 
-/* Vertical Flowchart  */
-/* Ensure to use different class names from horizontal styling */
 
-/* Container for the entire flowchart */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Vertical Flowchart */
 .flowchart-container {
     display: flex;
     flex-direction: row;
-    overflow-x: auto; /* Horizontal scrolling */
+    align-items: flex-start;
+    overflow: auto;
     background-color: #fff;
-  }
-  
-  .node-container {
+    position: relative;
+    padding: 20px;
+}
+
+.node-container {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-  }
-  
-  .node {
+    position: relative;
+    margin: 0 20px;
+}
+
+.node {
     background-color: #d9bbfb;
     border-radius: 10px;
     padding: 10px;
     text-align: center;
     width: 150px;
-  }
-  
-  .node-container:hover .node {
+}
+
+.node:hover {
     background-color: #9f7aea;
     color: #fff;
-  }
-  
-  /* Connectors between nodes */
-  .connector-line {
-    width: 2px;
-    background-color: #e5e7eb;
-    height: 20px;
-    margin: 0 auto;
-  }
-  
-  .children-container {
-    display: flex;
-    flex-direction: row;
-  }
-  
-  .children {
+}
+
+.children-container {
     display: flex;
     flex-direction: column;
-  }
-  
-  .child-container {
+    align-items: center;
+    margin-left: 30px;
+}
+
+.child-container {
     display: flex;
     flex-direction: row;
-    margin: 0 10px;
-  }
-  
-  .node-group {
-    display: flex;
-    flex-direction: column;
-  }
-  
+    align-items: center;
+    margin-top: 20px; 
+}

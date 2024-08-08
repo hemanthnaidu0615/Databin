@@ -1,7 +1,7 @@
 import { TreeNode } from "primereact/treenode";
 import authFetch from "../../axios";
 import OrgChart from "../../components/charts/OrgChart";
-import FlowChart from "../../components/charts/verticalFlowChart"; // Import FlowChart for vertical flow
+import FlowChart from "../../components/charts/FlowChart"; // Import FlowChart for vertical flow
 import { useEffect, useState } from "react";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { Button } from "primereact/button";
