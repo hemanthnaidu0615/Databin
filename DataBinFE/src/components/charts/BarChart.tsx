@@ -6,11 +6,11 @@ Chart.register(CategoryScale);
 export const BarChart = ({ chartData }: any) => {
   const formatValue = (value: number) => {
     if (value >= 1_000_000) {
-      return `$${(value / 1_000_000).toFixed(1)}M`;
+      return `${(value / 1_000_000).toFixed(1)}M`;
     } else if (value >= 1_000) {
-      return `$${(value / 1_000_000).toFixed(1)}M`;
+      return `${(value / 1_000_000).toFixed(1)}M`;
     }
-    return `$${value.toLocaleString()}`;
+    return `${value.toLocaleString()}`;
   };
   return (
     <div className="chart-container h-48 w-full">
@@ -44,7 +44,7 @@ export const BarChart = ({ chartData }: any) => {
               },
               title : {
                 display: true,
-                text: 'Order Amount',
+                text: 'Order Amount ($)',
               },
             },
           },
