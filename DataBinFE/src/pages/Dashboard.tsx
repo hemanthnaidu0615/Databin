@@ -21,14 +21,14 @@ export const Dashboard = () => {
   }, []);
 
   return (
-    <div className="flex h-screen w-screen flex-col dashboard-container" >
+    <div className="flex h-screen w-screen flex-col dashboard-container">
       {loading ? (
         <div className="flex items-center justify-center h-full">
           <ProgressSpinner />
         </div>
       ) : (
         <>
-          <div className="flex flex-col" style={{overflowY:'hidden'}}>
+          <div className="flex flex-col" style={{ overflowY: 'hidden', overflowX: 'hidden' }}>
             <div className="flex flex-1">
               <div className="flex-1 m-2 flex flex-col shadow-lg shadow-slate-300 rounded-lg">
                 <CardLinechart dashboardData={dashboardData} />
