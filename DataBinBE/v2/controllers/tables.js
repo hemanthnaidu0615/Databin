@@ -110,6 +110,14 @@ const scheduleTask = async (req, res) => {
 
 const executeTask = async (email, startDate, recurrencePattern, tableSelection, columnSelection, timeFrame, transporter) => {
   try {
+
+    const tableLabels = {
+      'order_book_header': 'Order Book Header',
+      'order_book_line': 'Order Book Line',
+      'order_book_taxes': 'Order Book Taxes',
+    };
+
+    
     let formattedStartDate = moment(startDate);
     let formattedEndDate = moment();
 
@@ -189,13 +197,15 @@ const executeTask = async (email, startDate, recurrencePattern, tableSelection, 
     fs.writeFileSync(filePath, Buffer.from(excelBuffer));
     console.log('Excel file created at path:', filePath);
 
+    const tableLabel = tableLabels[tableSelection] || tableSelection;
+
     await transporter.sendMail({
       from: "guitarcenter.xit@gmail.com",
       to: email,
-      subject: 'Your Scheduled Report from Guitar Center',
+      subject: `Your Scheduled Report for ${tableLabel}`,
       html: `
             <p>Hi,</p>
-            <p>Your scheduled report for the table <strong>${tableSelection}</strong> has been generated.</p>
+            <p>Your scheduled report for <strong>${tableLabel}</strong> has been generated.</p>
             <p><strong>Report Details:</strong></p>
             <ul>
               <li><strong>Start Date:</strong> ${formattedStartDate.format('YYYY-MM-DD')}</li>
