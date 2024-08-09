@@ -8,11 +8,11 @@ const CustomTooltip = ({ point }:any) => (
       background: "white",
       padding: "5px",
       border: "1px solid #ccc",
-      zIndex: 1000, // Ensure tooltip is on top
-      position: "absolute", // Absolute positioning for more control
-      top: point.y - 50, // Adjust the positioning as needed
+      zIndex: 1000, 
+      position: "absolute", 
+      top: point.y - 50, 
       width:'35vh',
-      pointerEvents: "none", // Prevent mouse events on tooltip
+      pointerEvents: "none", 
     }}
   >
     <strong>{point.serieId}</strong>
@@ -86,7 +86,7 @@ export const CardLinechart = ({ dashboardData }: any) => {
               pointBorderColor={{ from: "serieColor" }}
               pointLabelYOffset={-12}
               useMesh={true}
-              tooltip={CustomTooltip} // Use custom tooltip
+              tooltip={CustomTooltip} 
             />
           </div>
         </div>

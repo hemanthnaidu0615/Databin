@@ -21,7 +21,6 @@ export const BarChart = ({ chartData }: any) => {
           plugins: {
             title: {
               display: true,
-              //   text: "Users Gained between 2016-2020",
             },
             legend: {
               display: true,
