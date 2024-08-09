@@ -3,28 +3,23 @@
     flex-direction: column;
   }
 
-
-/* Custom Toast Styles */
 .custom-toast .p-toast-message {
-  background-color: #c87ed5; /* Green background for success */
-  color: white; /* White text */
-  border: 1px solid #ab20c4; /* Darker green border */
-  border-radius: 0.25rem; /* Rounded corners */
-  padding: 1rem; /* Padding inside the Toast */
+  background-color: #c87ed5; 
+  color: white; 
+  border: 1px solid #ab20c4; 
+  border-radius: 0.25rem; 
+  padding: 1rem; 
 }
 
-/* Icon color to match background */
 .custom-toast .p-toast-message-success .p-toast-message-icon {
-  color: #ab20c4; /* Green icon for success */
+  color: #ab20c4; 
 }
 
-/* Ensure text colors are correct */
 .custom-toast .p-toast-message-success .p-toast-message-summary,
 .custom-toast .p-toast-message-success .p-toast-message-detail {
-  color: white; /* White text for summary and detail */
+  color: white; 
 }
 
-/* Optional: Adjust the position if needed */
 .p-toast {
-  z-index: 9999; /* Ensure Toast appears above other content */
+  z-index: 9999; 
 }
