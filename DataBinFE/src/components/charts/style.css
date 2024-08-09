@@ -79,26 +79,35 @@
 
 
 
-.d3-flowchart-container {
-  overflow: auto; /* Allows scrolling */
-  display: block;
+
+
+
+
+
+
+
+
+/* style.css */
+.flowchart-container {
   width: 100%;
-  height: calc(100vh - 200px); /* Adjust height for viewport */
+  height: calc(100vh - 200px);
+  overflow: auto; /* Allows scrolling */
 }
 
-.d3-flowchart-svg {
+.flowchart-svg {
   border: 1px solid #ccc;
   background-color: #f9f9f9;
+  display: block; /* Ensures SVG scales correctly */
 }
 
-.d3-node-rect {
+.flowchart-node-rect {
   fill: #d9bbfb;
   stroke: #333;
-  stroke-width: 2px;
+  stroke-width: 1px; /* Reduced stroke-width for cleaner lines */
 }
 
-.d3-node-label {
-  font-size: 14px;
+.flowchart-node-label {
+  font-size: 12px; /* Slightly smaller font size for better fit */
   font-weight: bold;
   text-align: center;
   overflow: hidden;
@@ -106,13 +115,13 @@
   white-space: nowrap;
 }
 
-.d3-link {
+.flowchart-link {
   fill: none;
   stroke: #999;
-  stroke-width: 2px;
+  stroke-width: 1px; /* Consistent stroke-width for links */
 }
 
-.d3-node {
+.flowchart-node {
   cursor: pointer;
+  margin-bottom: 0rem; /* Consistent margin for better spacing */
 }
-
