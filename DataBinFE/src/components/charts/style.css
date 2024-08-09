@@ -59,5 +59,9 @@
     background-color: none !important;
 }
  
+.p-organizationchart-line-down {
+    background: #e5e7eb;
+    height: 1.6rem;
+}
 
  

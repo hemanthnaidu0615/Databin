@@ -1173,6 +1173,26 @@ const deleteUser = async (req, res) => {
   }
 };
 
+const getUserRoleByEmail = async (req, res) => {
+  const { email } = req.query;
+  if (!email) {
+    return res.status(400).json({ message: 'Email is required' });
+  }
+
+  try {
+    const result = await client.query('SELECT role FROM users WHERE username = $1', [email]);
+    
+    if (result.rows.length > 0) {
+      return res.json({ role: result.rows[0].role });
+    } else {
+      return res.status(404).json({ message: 'User not found' });
+    }
+  } catch (err) {
+    console.error(err.message);
+    return res.status(500).json({ message: 'Server error' });
+  }
+};
+
 const getAllUser = async (req, res) => {
   try {
     console.log("Users");
@@ -1647,5 +1667,6 @@ module.exports = {
   getThresholdInfo,
   sendSMS,
   getSalesAvgData,
-  deleteUser
+  deleteUser,
+  getUserRoleByEmail
 };
