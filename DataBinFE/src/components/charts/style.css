@@ -79,48 +79,40 @@
 
 
 
-/* Vertical Flowchart */
-.flowchart-container {
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    overflow: auto;
-    background-color: #fff;
-    position: relative;
-    padding: 20px;
+.d3-flowchart-container {
+  overflow: auto; /* Allows scrolling */
+  display: block;
+  width: 100%;
+  height: calc(100vh - 200px); /* Adjust height for viewport */
 }
 
-.node-container {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    position: relative;
-    margin: 0 20px;
+.d3-flowchart-svg {
+  border: 1px solid #ccc;
+  background-color: #f9f9f9;
 }
 
-.node {
-    background-color: #d9bbfb;
-    border-radius: 10px;
-    padding: 10px;
-    text-align: center;
-    width: 150px;
+.d3-node-rect {
+  fill: #d9bbfb;
+  stroke: #333;
+  stroke-width: 2px;
 }
 
-.node:hover {
-    background-color: #9f7aea;
-    color: #fff;
+.d3-node-label {
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.children-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-left: 30px;
+.d3-link {
+  fill: none;
+  stroke: #999;
+  stroke-width: 2px;
 }
 
-.child-container {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    margin-top: 20px; 
+.d3-node {
+  cursor: pointer;
 }
+
