@@ -1,17 +1,36 @@
 import { TieredMenu } from "primereact/tieredmenu";
 import { useLocation, useNavigate } from "react-router-dom";
-
+import { useSelector } from 'react-redux';
 import "primeicons/primeicons.css";
-import { useEffect, useState } from "react";
-
+import { useEffect, useState} from "react";
+import { RootState } from '../../store/store';
 export const SidebarComp = () => {
   const navigate = useNavigate();
   const [currentTab, setCurrentTab] = useState("");
   const router = useLocation();
-
+  const userEmail = useSelector((state: RootState) => state.user.useremail);
+  const [userRole, setUserRole] = useState('');
   useEffect(() => {
     setCurrentTab(router.pathname);
   }, [router.pathname]);
+
+  useEffect(() => {
+    // Fetch user role from backend
+    if (userEmail) {
+      
+      fetch(`http://localhost:3000/v2/tables/user-role?email=${userEmail}`)
+        .then((response) => response.json())
+        .then((data) => {
+         
+          if (data.role) {
+            setUserRole(data.role.toLowerCase());
+          }
+        })
+        .catch((error) => {
+          console.error('Error fetching user role:', error);
+        });
+    }
+  }, []);
 
   const itemRenderer = (item: any) => {
     const isActive = currentTab === item.path;
@@ -111,16 +130,23 @@ export const SidebarComp = () => {
       path: "/timeseries",
       template: itemRenderer,
     },
-    {
-      label: "User Management",
-      icon: "pi pi-users",
-      command: () => {
-        navigate("/user-management");
-      },
-      path: "/user-management",
-      template: itemRenderer,
-    },
+    
+    ...(userRole === 'admin' || userRole === 'manager'
+      ? [
+          {
+            label: 'User Management',
+            icon: 'pi pi-users',
+            command: () => {
+              navigate('/user-management');
+            },
+            path: '/user-management',
+            template: itemRenderer,
+          },
+        ]
+      : []), 
+     
   ];
+  
 
   return (
     <div className="min-w-[5%] hover:min-w-[9%] transition-all duration-300 sidebar-container">
@@ -132,3 +158,4 @@ export const SidebarComp = () => {
     </div>
   );
 };
+

@@ -11,6 +11,7 @@ import { Calendar } from "primereact/calendar";
 import { setDates } from "../../store/dateRangeSlice";
 import { setEnterpriseKey } from "../../store/enterpriseSlice";
 import authFetch from "../../axios";
+import { RootState } from '../../store/store';
 
 export const Navbar = () => {
   const [datesT, setDatesT] = useState<Date[]>([
@@ -21,6 +22,8 @@ export const Navbar = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
+  const [userRole, setUserRole] = useState('');
+  const userEmail = useSelector((state: RootState) => state.user.useremail);
 
   const hideCalendarRoutes = [
     "/home-dashboard",
@@ -69,6 +72,21 @@ export const Navbar = () => {
 
     fetchEnterpriseKeys();
   }, []);
+
+  useEffect(() => {
+    if (userEmail) {
+      fetch(`http://localhost:3000/v2/tables/user-role?email=${userEmail}`)
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.role) {
+            setUserRole(data.role.toLowerCase());
+          }
+        })
+        .catch((error) => {
+          console.error('Error fetching user role:', error);
+        });
+    }
+  }, [userEmail]);
 
   function handleDateChange(newDates: any) {
     setDatesT(newDates);
@@ -147,17 +165,22 @@ export const Navbar = () => {
           </>
         )}
       </div>
-      <Link to="/user-management">
-        <Button
-          icon="pi pi-cog"
-          className="custom-icon-size"
-          style={{
-            color: "black",
-            background: "none",
-            border: "none",
-          }}
-        />
-      </Link>
+      {userRole === 'admin' || userRole === 'manager' ? (
+        <Link to="/user-management">
+          <Button
+            icon="pi pi-cog"
+            className="custom-icon-size"
+            style={{
+              color: "black",
+              background: "none",
+              border: "none",
+            }}
+            onClick={(e) => e.currentTarget.blur()}
+          />
+        </Link>
+      ) : (
+        ""
+      )}
       <div>
         <ContextMenu model={items} ref={cm} breakpoint="767px" />
         <Avatar
