@@ -73,6 +73,7 @@ const scheduleTask = async (req, res) => {
       daily: '0 0 * * *',
       weekly: '0 0 * * 0',
       monthly: '0 0 1 * *',
+      yearly: '0 0 1 1 *',
     };
     const cronPattern = recurrenceMap[recurrencePattern] || '* * * * *';
 
@@ -81,12 +82,12 @@ const scheduleTask = async (req, res) => {
 
     const initialJob = schedule.scheduleJob(new Date(startDate), async function () {
       console.log('Initial job executed at:', new Date());
-      await executeTask(email, startDate, tableSelection, columnSelection, timeFrame, transporter);
+      await executeTask(email, startDate, recurrencePattern, tableSelection, columnSelection, timeFrame, transporter);
 
       if (recurrencePattern !== 'once') {
         const recurringJob = schedule.scheduleJob(cronPattern, async function () {
           console.log('Recurring job executed at:', new Date());
-          await executeTask(email, startDate, tableSelection, columnSelection, timeFrame, transporter);
+          await executeTask(email, startDate, recurrencePattern, tableSelection, columnSelection, timeFrame, transporter);
         });
 
         console.log('Recurring job scheduled successfully with pattern:', cronPattern);
@@ -107,27 +108,71 @@ const scheduleTask = async (req, res) => {
   }
 };
 
-const executeTask = async (email, startDate, tableSelection, columnSelection, timeFrame, transporter) => {
+const executeTask = async (email, startDate, recurrencePattern, tableSelection, columnSelection, timeFrame, transporter) => {
   try {
-    let formattedStartDate = moment(startDate).format('YYYY-MM-DDTHH:mm:ss');
-    let formattedEndDate = moment().format('YYYY-MM-DDTHH:mm:ss');
 
-    if (timeFrame === 'last_year') {
-      formattedStartDate = moment().subtract(1, 'year').format('YYYY-MM-DDTHH:mm:ss');
-    } else if (timeFrame === 'last_month') {
-      formattedStartDate = moment().subtract(1, 'month').format('YYYY-MM-DDTHH:mm:ss');
-    } else if (timeFrame === 'last_week') {
-      formattedStartDate = moment().subtract(1, 'week').format('YYYY-MM-DDTHH:mm:ss');
+    const tableLabels = {
+      'order_book_header': 'Order Book Header',
+      'order_book_line': 'Order Book Line',
+      'order_book_taxes': 'Order Book Taxes',
+    };
+
+    
+    let formattedStartDate = moment(startDate);
+    let formattedEndDate = moment();
+
+    switch (timeFrame) {
+      case 'Today':
+        formattedStartDate = moment().startOf('day');
+        formattedEndDate = moment().endOf('day');
+        break;
+      case 'Past Week':
+        formattedStartDate = moment().subtract(1, 'week').startOf('day');
+        formattedEndDate = moment().endOf('day');
+        break;
+      case 'Past Month':
+        formattedStartDate = moment().subtract(1, 'month').startOf('day');
+        formattedEndDate = moment().endOf('day');
+        break;
+      case 'Past 3 Months':
+        formattedStartDate = moment().subtract(3, 'months').startOf('day');
+        formattedEndDate = moment().endOf('day');
+        break;
+      case 'Past 6 Months':
+        formattedStartDate = moment().subtract(6, 'months').startOf('day');
+        formattedEndDate = moment().endOf('day');
+        break;
+      case 'Past Year':
+        formattedStartDate = moment().subtract(1, 'year').startOf('day');
+        formattedEndDate = moment().endOf('day');
+        break;
+      case 'Past 2 Years':
+        formattedStartDate = moment().subtract(2, 'years').startOf('day');
+        formattedEndDate = moment().endOf('day');
+        break;
+      case 'Past 5 Years':
+        formattedStartDate = moment().subtract(5, 'years').startOf('day');
+        formattedEndDate = moment().endOf('day');
+        break;
+      case 'Past 10 Years':
+        formattedStartDate = moment().subtract(10, 'years').startOf('day');
+        formattedEndDate = moment().endOf('day');
+        break;
+      default:
+        formattedStartDate = moment().startOf('day');
+        formattedEndDate = moment().endOf('day');
+        break;
     }
 
     console.log('Fetching data for table:', tableSelection);
     console.log('Columns:', columnSelection);
+    console.log('Data Range:', formattedStartDate.format(), 'to', formattedEndDate.format());
 
     const response = await axios.get(`http://localhost:3000/v2/tables`, {
       params: {
         table: tableSelection,
-        startDate: formattedStartDate,
-        endDate: formattedEndDate,
+        startDate: formattedStartDate.format('YYYY-MM-DDTHH:mm:ss'),
+        endDate: formattedEndDate.format('YYYY-MM-DDTHH:mm:ss'),
       }
     });
 
@@ -152,11 +197,25 @@ const executeTask = async (email, startDate, tableSelection, columnSelection, ti
     fs.writeFileSync(filePath, Buffer.from(excelBuffer));
     console.log('Excel file created at path:', filePath);
 
+    const tableLabel = tableLabels[tableSelection] || tableSelection;
+
     await transporter.sendMail({
       from: "guitarcenter.xit@gmail.com",
       to: email,
-      subject: 'Scheduled Report',
-      text: 'Please find the attached report.',
+      subject: `Your Scheduled Report for ${tableLabel}`,
+      html: `
+            <p>Hi,</p>
+            <p>Your scheduled report for <strong>${tableLabel}</strong> has been generated.</p>
+            <p><strong>Report Details:</strong></p>
+            <ul>
+              <li><strong>Start Date:</strong> ${formattedStartDate.format('YYYY-MM-DD')}</li>
+              <li><strong>End Date:</strong> ${formattedEndDate.format('YYYY-MM-DD')}</li>
+              <li><strong>Columns Selected:</strong> ${columnSelection.map(col => col.header).join(', ')}</li>
+            </ul>
+            <p>Please find the attached report for your reference.</p>
+            <p>Thank you,</p>
+            <p>Guitar Center Admin</p>
+          `,
       attachments: [{ filename: 'report.xlsx', path: filePath }],
     });
 
@@ -169,6 +228,7 @@ const executeTask = async (email, startDate, tableSelection, columnSelection, ti
     console.error('Error in executeTask:', error);
   }
 };
+
 
 const formatHeaderKey = (key) => {
   return key

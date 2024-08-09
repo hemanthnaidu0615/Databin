@@ -228,8 +228,8 @@ const Table: React.FC<TableProps> = ({ fetchUsersData, users }) => {
         style={{ width: '30vw' }}
         footer={
           <div>
-            <Button label="No" icon="pi pi-times" onClick={() => setShowDeleteConfirm(false)} className="text-red-800 bg-white border-white"  />
-            <Button label="Yes" icon="pi pi-check" onClick={handleDelete} autoFocus className=" bg-purple-800 border-white" />
+            <Button label="No" icon="pi pi-times" onClick={() => setShowDeleteConfirm(false)} className="text-red-700 bg-white border-white"  />
+            <Button label="Yes" icon="pi pi-check" onClick={handleDelete} autoFocus className=" bg-purple-500 border-white" />
           </div>
         }
         onHide={() => setShowDeleteConfirm(false)}
