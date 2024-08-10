@@ -9,28 +9,27 @@ export const SidebarComp = () => {
   const [currentTab, setCurrentTab] = useState("");
   const router = useLocation();
   const userEmail = useSelector((state: RootState) => state.user.useremail);
-  const [userRole, setUserRole] = useState('');
+  const [userRole, setUserRole] = useState(localStorage.getItem('userRole') || '');
   useEffect(() => {
     setCurrentTab(router.pathname);
   }, [router.pathname]);
 
   useEffect(() => {
-    // Fetch user role from backend
-    if (userEmail) {
-      
+    if (userEmail && !userRole) {  
       fetch(`http://localhost:3000/v2/tables/user-role?email=${userEmail}`)
         .then((response) => response.json())
         .then((data) => {
-         
           if (data.role) {
-            setUserRole(data.role.toLowerCase());
+            const role = data.role.toLowerCase();
+            setUserRole(role);
+            localStorage.setItem('userRole', role); 
           }
         })
         .catch((error) => {
           console.error('Error fetching user role:', error);
         });
     }
-  }, []);
+  }, [userEmail, userRole]);
 
   const itemRenderer = (item: any) => {
     const isActive = currentTab === item.path;
