@@ -39,26 +39,6 @@
     text-align: center; 
 }
 
-.p-datatable .p-datatable-wrapper{ border-radius:5px;}
-.p-datatable.p-datatable-sm .p-datatable-thead > tr{
-    height: 3rem;
-    background-color:#F9FAFB !important;
-}
-
-.p-datatable.p-datatable .p-datatable-thead > tr >th{
-
-    background:none !important;
-    
-}
-.p-datatable.p-datatable .p-datatable-tbody>tr>td{
-    background-color: white !important;
-}
-
-.p-datatable.p-datatable .p-datatable-tbody>tr{
-
-    background-color: none !important;
-}
- 
 .p-organizationchart-line-down {
     background: #e5e7eb;
     height: 1.6rem;
