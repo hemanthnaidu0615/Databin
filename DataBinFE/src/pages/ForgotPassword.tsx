@@ -20,7 +20,7 @@ export const ForgotPassword = () => {
     authFetch
       .post("http://localhost:3000/v2/tables/forgot-password", { username })
       .then((response) => {
-        toast.success("Password reset email sent!", { position: "top-center" });
+        toast.success("Password reset Email sent!", { position: "top-center" });
         navigate("/");
       })
       .catch((error) => {
