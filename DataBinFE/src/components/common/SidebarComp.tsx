@@ -2,14 +2,16 @@ import { TieredMenu } from "primereact/tieredmenu";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSelector } from 'react-redux';
 import "primeicons/primeicons.css";
-import { useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import { RootState } from '../../store/store';
+
 export const SidebarComp = () => {
   const navigate = useNavigate();
   const [currentTab, setCurrentTab] = useState("");
   const router = useLocation();
   const userEmail = useSelector((state: RootState) => state.user.useremail);
   const [userRole, setUserRole] = useState(localStorage.getItem('userRole') || '');
+
   useEffect(() => {
     setCurrentTab(router.pathname);
   }, [router.pathname]);
@@ -29,7 +31,9 @@ export const SidebarComp = () => {
           console.error('Error fetching user role:', error);
         });
     }
+
   }, [userEmail, userRole]);
+
 
   const itemRenderer = (item: any) => {
     const isActive = currentTab === item.path;
@@ -38,16 +42,16 @@ export const SidebarComp = () => {
         className={`sidebar-item flex items-center justify-center text-center px-2 py-6 m-1 text-purple-800  border-r-4 border-transparent ${
           isActive && "border-r-purple-800 text-white bg-purple-400"
         } hover:text-white hover:border-r-4 hover:border-r-purple-800 hover:bg-purple-400 cursor-pointer active:border-r-purple-800 `}
+        style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} 
       >
         <span className={`${item.icon} text-xl font-semibold`} />
-        <span className="sidebar-item-label my-0.5 pt-1 delay-200">
+        <span className="sidebar-item-label my-0.5 pt-1 delay-200" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
           {item.label}
         </span>
       </a>
     );
   };
 
-  
   const itemRenderer2 = (item: any) => {
     const isActive = currentTab === item.path;
     return (
@@ -55,8 +59,11 @@ export const SidebarComp = () => {
         className={`flex items-center justify-center p-5 m-1 text-slate-600 cursor-pointer ${
           isActive && "border-r-purple-800 text-white bg-purple-400"
         } hover:text-white hover:border-r-4 hover:border-r-purple-800 hover:bg-purple-400`}
+        style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} 
       >
-        <span className="w-fit">{item.label}</span>
+        <span className="w-fit" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          {item.label}
+        </span>
       </a>
     );
   };
@@ -129,7 +136,6 @@ export const SidebarComp = () => {
       path: "/timeseries",
       template: itemRenderer,
     },
-    
     ...(userRole === 'admin' || userRole === 'manager'
       ? [
           {
@@ -142,10 +148,8 @@ export const SidebarComp = () => {
             template: itemRenderer,
           },
         ]
-      : []), 
-     
+      : []),
   ];
-  
 
   return (
     <div className="min-w-[5%] hover:min-w-[9%] transition-all duration-300 sidebar-container">
@@ -157,4 +161,3 @@ export const SidebarComp = () => {
     </div>
   );
 };
-
