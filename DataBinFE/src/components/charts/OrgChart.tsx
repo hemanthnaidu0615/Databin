@@ -17,14 +17,7 @@ export default function OrgChart({ data, orientation = "horizontal", zoom = 50 }
     
   
     return (
-      <div
-        className="node-container"
-        style={{
-          transform: orientation === "vertical" ? "rotate(-90deg)" : "none",
-          transformOrigin: orientation === "vertical" ? "left bottom" : "left top",
-          margin: orientation === "vertical" ? "10px 0" : "0px 0px"
-        }}
-      >
+      <div className="node-container">
         <div className="node-content">
           <span className="node-label font-bold mb-2">{label}</span>
           <span className="node-data">{node.data}</span>

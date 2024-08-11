@@ -65,3 +65,61 @@
 }
 
  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.d3-flowchart-container {
+    overflow: auto;
+    width: 100%;
+    height: 100vh; /* Full viewport height */
+    padding: 10px;
+    background-color: #f0f4f8; /* Light gray background for contrast */
+    border: 1px solid #ccc;
+    box-sizing: border-box; /* Include padding in the element's total width and height */
+  }
+  
+  .d3-flowchart-svg {
+    display: block;
+    background-color: #ffffff; /* White background for nodes */
+  }
+  
+  .d3-node-rect {
+    fill: #4a90e2; /* Professional blue color */
+    stroke: #333;
+    stroke-width: 1.5px;
+  }
+  
+  .d3-node-label {
+    font-size: 14px;
+    font-weight: 500;
+    text-align: center;
+    fill: #ffffff; /* White text for contrast */
+  }
+  
+  .d3-link {
+    fill: none;
+    stroke: #999;
+    stroke-width: 2px;
+  }
+  
+  .d3-node {
+    cursor: pointer;
+  }
+  

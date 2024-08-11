@@ -1,6 +1,7 @@
 import { TreeNode } from "primereact/treenode";
 import authFetch from "../../axios";
 import OrgChart from "../../components/charts/OrgChart";
+import HorizontalComponent from "../../components/charts/HorizontalComponent"; // Import your new component
 import { useEffect, useState } from "react";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { Button } from "primereact/button";
@@ -142,7 +143,11 @@ const SalesFlow = () => {
             width: orientation === "vertical" ? "calc(100vw - 200px)" : "auto",
           }}
         >
-          <OrgChart data={convertData(data)} zoom={zoomValue} orientation={orientation} />
+          {orientation === "vertical" ? (
+            <HorizontalComponent data={convertData(data)} />
+          ) : (
+            <OrgChart data={convertData(data)} zoom={zoomValue} />
+          )}
         </div>
       </div>
     </div>
@@ -150,4 +155,3 @@ const SalesFlow = () => {
 };
 
 export default SalesFlow;
-
