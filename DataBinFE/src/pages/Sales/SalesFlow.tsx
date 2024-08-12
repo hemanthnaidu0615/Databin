@@ -1,7 +1,7 @@
 import { TreeNode } from "primereact/treenode";
 import authFetch from "../../axios";
 import OrgChart from "../../components/charts/OrgChart";
-import HorizontalComponent from "../../components/charts/HorizontalComponent"; // Import your new component
+import VerticalComponent from "../../components/charts/VerticalComponent"; // Import your new component
 import { useEffect, useState } from "react";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { Button } from "primereact/button";
@@ -144,7 +144,7 @@ const SalesFlow = () => {
           }}
         >
           {orientation === "vertical" ? (
-            <HorizontalComponent data={convertData(data)} />
+            <VerticalComponent data={convertData(data)} />
           ) : (
             <OrgChart data={convertData(data)} zoom={zoomValue} />
           )}

@@ -35,3 +35,13 @@
   height: 100%;
   overflow-y: hidden;
 }
+/* Table Headers Alignment */
+.p-datatable .p-column-header-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.p-datatable.p-datatable .p-datatable-tbody>tr>td{
+ text-align: center;
+}

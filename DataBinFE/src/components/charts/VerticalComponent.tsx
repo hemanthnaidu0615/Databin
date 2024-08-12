@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import * as d3 from 'd3';
-import './style.css'; // Import specific CSS for d3.js component
+import './style.css'; 
 
 interface FlowChartNode {
   id: string;
@@ -11,20 +11,19 @@ interface FlowChartNode {
 
 
 
-const HorizontalComponent = ({ data }: { data: FlowChartNode[] }) => {
+const VerticalComponent = ({ data }: { data: FlowChartNode[] }) => {
   const svgRef = useRef<SVGSVGElement>(null);
 
   useEffect(() => {
     if (!svgRef.current) return;
 
     const svg = d3.select(svgRef.current);
-    svg.selectAll("*").remove(); // Clear previous render
+    svg.selectAll("*").remove(); 
 
     const containerWidth = svgRef.current.parentElement?.clientWidth || 800;
     const containerHeight = svgRef.current.parentElement?.clientHeight || 600;
     const padding = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--padding'), 10) || 200;
 
-    // Create the tree layout
     const root = d3.hierarchy(data[0], d => d.children);
     const treeLayout = d3.tree<d3.HierarchyNode<FlowChartNode>>()
       .size([containerHeight * 2, containerWidth - padding])
@@ -38,11 +37,9 @@ const HorizontalComponent = ({ data }: { data: FlowChartNode[] }) => {
 
     const nodes = treeLayout(root);
 
-    // Calculate required width and height for centering
-    const maxX = Math.max(...nodes.descendants().map(d => d.x + 120)); // Adjust for padding
+    const maxX = Math.max(...nodes.descendants().map(d => d.x + 120)); 
     const maxY = Math.max(...nodes.descendants().map(d => d.y));
 
-    // Set SVG dimensions based on the content size
     const svgWidth = Math.max(containerWidth, maxY + padding);
     const svgHeight = Math.max(containerHeight, maxX + padding);
 
@@ -50,11 +47,9 @@ const HorizontalComponent = ({ data }: { data: FlowChartNode[] }) => {
     svg.attr("width", svgWidth)
        .attr("height", svgHeight);
 
-    // Center the tree within the SVG
     const translateX = (svgWidth - maxY - padding) / 2;
     const translateY = (svgHeight - maxX - padding) / 2;
 
-    // Draw links as straight branches
     svg.selectAll(".d3-link")
       .data(nodes.links())
       .enter().append("path")
@@ -66,12 +61,10 @@ const HorizontalComponent = ({ data }: { data: FlowChartNode[] }) => {
         const targetY = d.target.x + padding / 2 + translateY;
         
         if (d.source.children && d.source.children.length > 1) {
-          // Draw horizontal line and vertical branches
-          const midX = (d.source.y + d.target.y) / 2; // Midpoint for horizontal line
+          const midX = (d.source.y + d.target.y) / 2; 
 
           return `M${sourceX},${sourceY} H${midX} V${targetY} H${targetX}`;
         } else {
-          // Direct connection
           return `M${sourceX},${sourceY} H${targetX} V${targetY}`;
         }
       })
@@ -79,7 +72,6 @@ const HorizontalComponent = ({ data }: { data: FlowChartNode[] }) => {
       .attr("stroke", "#999")
       .attr("stroke-width", 2);
 
-    // Draw nodes
     svg.selectAll(".d3-node")
       .data(nodes.descendants())
       .enter().append("g")
@@ -94,8 +86,8 @@ const HorizontalComponent = ({ data }: { data: FlowChartNode[] }) => {
           .attr("width", nodeWidth)
           .attr("height", nodeHeight)
           .attr("rx", getComputedStyle(document.documentElement).getPropertyValue('--node-border-radius') || '15px')
-          .attr("x", -nodeWidth / 2)  // Center the rectangle horizontally
-          .attr("y", -nodeHeight / 2); // Center the rectangle vertically
+          .attr("x", -nodeWidth / 2)  
+          .attr("y", -nodeHeight / 2); 
 
         d3.select(this).append("text")
           .attr("class", "d3-node-label")
@@ -114,4 +106,4 @@ const HorizontalComponent = ({ data }: { data: FlowChartNode[] }) => {
   );
 };
 
-export default HorizontalComponent;
+export default VerticalComponent;
