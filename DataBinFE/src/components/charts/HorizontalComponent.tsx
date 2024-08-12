@@ -6,7 +6,10 @@ interface FlowChartNode {
   id: string;
   label: string;
   children?: FlowChartNode[];
+  zoom?: number; 
 }
+
+
 
 const HorizontalComponent = ({ data }: { data: FlowChartNode[] }) => {
   const svgRef = useRef<SVGSVGElement>(null);
@@ -19,7 +22,7 @@ const HorizontalComponent = ({ data }: { data: FlowChartNode[] }) => {
 
     const containerWidth = svgRef.current.parentElement?.clientWidth || 800;
     const containerHeight = svgRef.current.parentElement?.clientHeight || 600;
-    const padding = 200;
+    const padding = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--padding'), 10) || 200;
 
     // Create the tree layout
     const root = d3.hierarchy(data[0], d => d.children);
@@ -27,9 +30,9 @@ const HorizontalComponent = ({ data }: { data: FlowChartNode[] }) => {
       .size([containerHeight * 2, containerWidth - padding])
       .separation((a, b) => {
         if (a.parent === b.parent) {
-          return 1.5; // Increase sibling spacing
+          return parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--sibling-spacing')) || 1.5;
         } else {
-          return 2; // Increase spacing between levels
+          return parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--level-spacing')) || 2;
         }
       });
 
@@ -51,7 +54,7 @@ const HorizontalComponent = ({ data }: { data: FlowChartNode[] }) => {
     const translateX = (svgWidth - maxY - padding) / 2;
     const translateY = (svgHeight - maxX - padding) / 2;
 
-    // Draw links
+    // Draw links as straight branches
     svg.selectAll(".d3-link")
       .data(nodes.links())
       .enter().append("path")
@@ -61,7 +64,16 @@ const HorizontalComponent = ({ data }: { data: FlowChartNode[] }) => {
         const sourceY = d.source.x + padding / 2 + translateY;
         const targetX = d.target.y + padding / 2 + translateX;
         const targetY = d.target.x + padding / 2 + translateY;
-        return `M${sourceX},${sourceY} L${targetX},${targetY}`;
+        
+        if (d.source.children && d.source.children.length > 1) {
+          // Draw horizontal line and vertical branches
+          const midX = (d.source.y + d.target.y) / 2; // Midpoint for horizontal line
+
+          return `M${sourceX},${sourceY} H${midX} V${targetY} H${targetX}`;
+        } else {
+          // Direct connection
+          return `M${sourceX},${sourceY} H${targetX} V${targetY}`;
+        }
       })
       .attr("fill", "none")
       .attr("stroke", "#999")
@@ -74,13 +86,16 @@ const HorizontalComponent = ({ data }: { data: FlowChartNode[] }) => {
       .attr("class", "d3-node")
       .attr("transform", d => `translate(${d.y + padding / 2 + translateX},${d.x + padding / 2 + translateY})`)
       .each(function(d) {
+        const nodeWidth = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--node-width')) || 180;
+        const nodeHeight = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--node-height')) || 60;
+        
         d3.select(this).append("rect")
           .attr("class", "d3-node-rect")
-          .attr("width", 240) // Set width of node box
-          .attr("height", 60) // Set height of node box
-          .attr("rx", 10) // Rounded corners
-          .attr("x", -120)  // Center the rectangle horizontally
-          .attr("y", -30);  // Center the rectangle vertically
+          .attr("width", nodeWidth)
+          .attr("height", nodeHeight)
+          .attr("rx", getComputedStyle(document.documentElement).getPropertyValue('--node-border-radius') || '15px')
+          .attr("x", -nodeWidth / 2)  // Center the rectangle horizontally
+          .attr("y", -nodeHeight / 2); // Center the rectangle vertically
 
         d3.select(this).append("text")
           .attr("class", "d3-node-label")
@@ -89,6 +104,7 @@ const HorizontalComponent = ({ data }: { data: FlowChartNode[] }) => {
           .style("text-anchor", "middle")
           .text(d.data.label);
       });
+
   }, [data]);
 
   return (

@@ -121,7 +121,7 @@ const SalesFlow = () => {
             options={orientationOptions}
             onChange={(e) => setOrientation(e.value)}
             placeholder="Select Orientation"
-            className="w-32"
+            className="w-auto"
           />
           <div className="flex items-center gap-2 mr-6">
             <i className="pi pi-search-minus" onClick={decrementZoom}></i>
