@@ -32,6 +32,23 @@
   display: block;
 }
 .dashboard-container {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
   height: 100%;
-  overflow-y: hidden;
+  width: 100%;
 }
+
+.dashboard-container .flex-1 {
+  flex-shrink: 1;
+  min-width: 0;
+}
+
+.shadow-lg {
+  min-width: 0;
+}
+
+.flex {
+  min-width: 0;
+}
+

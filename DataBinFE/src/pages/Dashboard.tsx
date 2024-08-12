@@ -21,7 +21,7 @@ export const Dashboard = () => {
   }, []);
 
   return (
-    <div className="flex h-screen w-screen flex-col dashboard-container" >
+    <div className="flex h-screen w-screen flex-col dashboard-container">
       {loading ? (
         <div className="flex items-center justify-center h-full">
           <ProgressSpinner />
