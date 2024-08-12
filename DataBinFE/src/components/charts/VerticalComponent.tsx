@@ -1,50 +1,79 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import * as d3 from 'd3';
-import './style.css'; 
+import './style.css';
 
 interface FlowChartNode {
   id: string;
   label: string;
   children?: FlowChartNode[];
-  zoom?: number; 
+  zoom?: number;
 }
-
-
 
 const VerticalComponent = ({ data }: { data: FlowChartNode[] }) => {
   const svgRef = useRef<SVGSVGElement>(null);
+  const [leafPositions, setLeafPositions] = useState<d3.HierarchyNode<FlowChartNode>[]>([]);
 
   useEffect(() => {
     if (!svgRef.current) return;
 
     const svg = d3.select(svgRef.current);
-    svg.selectAll("*").remove(); 
+    svg.selectAll("*").remove();
 
     const containerWidth = svgRef.current.parentElement?.clientWidth || 800;
     const containerHeight = svgRef.current.parentElement?.clientHeight || 600;
     const padding = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--padding'), 10) || 200;
 
+    const fixedLeafSpacing = 120;
+
     const root = d3.hierarchy(data[0], d => d.children);
+
+    // Pre-calculate the x positions for leaf nodes only once
+    if (leafPositions.length === 0) {
+      let leafNodes: d3.HierarchyNode<FlowChartNode>[] = [];
+      const calculateLeafPositions = (node: d3.HierarchyNode<FlowChartNode>, x = 0) => {
+        if (!node.children) {
+          leafNodes.push(node);
+        }
+        if (node.children) {
+          node.children.forEach((child, i) => {
+            calculateLeafPositions(child, x + i * fixedLeafSpacing);
+          });
+        }
+      };
+      calculateLeafPositions(root);
+      setLeafPositions(leafNodes);
+    } else {
+      leafPositions.forEach((leaf, index) => {
+        leaf.y = index * fixedLeafSpacing;
+      });
+    }
+
+    let yPosition = 0;
+    const computeYPosition = (node: d3.HierarchyNode<FlowChartNode>) => {
+      if (!node.children) {
+        node.y = yPosition;
+        yPosition += fixedLeafSpacing;
+      } else {
+        node.children.forEach(child => computeYPosition(child));
+        node.y = d3.mean(node.children.map(child => child.y))!;
+      }
+    };
+    computeYPosition(root);
+
     const treeLayout = d3.tree<d3.HierarchyNode<FlowChartNode>>()
       .size([containerHeight * 2, containerWidth - padding])
-      .separation((a, b) => {
-        if (a.parent === b.parent) {
-          return parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--sibling-spacing')) || 1.5;
-        } else {
-          return parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--level-spacing')) || 2;
-        }
-      });
+      .separation(() => 1);
 
     const nodes = treeLayout(root);
 
-    const maxX = Math.max(...nodes.descendants().map(d => d.x + 120)); 
+    const maxX = Math.max(...nodes.descendants().map(d => d.x + 120));
     const maxY = Math.max(...nodes.descendants().map(d => d.y));
 
     const svgWidth = Math.max(containerWidth, maxY + padding);
     const svgHeight = Math.max(containerHeight, maxX + padding);
 
     svg.attr("width", svgWidth)
-       .attr("height", svgHeight);
+      .attr("height", svgHeight);
 
     const translateX = (svgWidth - maxY - padding) / 2;
     const translateY = (svgHeight - maxX - padding) / 2;
@@ -58,10 +87,9 @@ const VerticalComponent = ({ data }: { data: FlowChartNode[] }) => {
         const sourceY = d.source.x + padding / 2 + translateY;
         const targetX = d.target.y + padding / 2 + translateX;
         const targetY = d.target.x + padding / 2 + translateY;
-        
-        if (d.source.children && d.source.children.length > 1) {
-          const midX = (d.source.y + d.target.y) / 2; 
 
+        if (d.source.children && d.source.children.length > 1) {
+          const midX = (d.source.y + d.target.y) / 2;
           return `M${sourceX},${sourceY} H${midX} V${targetY} H${targetX}`;
         } else {
           return `M${sourceX},${sourceY} H${targetX} V${targetY}`;
@@ -76,17 +104,17 @@ const VerticalComponent = ({ data }: { data: FlowChartNode[] }) => {
       .enter().append("g")
       .attr("class", "d3-node")
       .attr("transform", d => `translate(${d.y + padding / 2 + translateX},${d.x + padding / 2 + translateY})`)
-      .each(function(d) {
+      .each(function (d) {
         const nodeWidth = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--node-width')) || 180;
         const nodeHeight = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--node-height')) || 60;
-        
+
         d3.select(this).append("rect")
           .attr("class", "d3-node-rect")
           .attr("width", nodeWidth)
           .attr("height", nodeHeight)
           .attr("rx", getComputedStyle(document.documentElement).getPropertyValue('--node-border-radius') || '15px')
-          .attr("x", -nodeWidth / 2)  
-          .attr("y", -nodeHeight / 2); 
+          .attr("x", -nodeWidth / 2)
+          .attr("y", -nodeHeight / 2);
 
         d3.select(this).append("text")
           .attr("class", "d3-node-label")
@@ -96,7 +124,7 @@ const VerticalComponent = ({ data }: { data: FlowChartNode[] }) => {
           .text(d.data.label);
       });
 
-  }, [data]);
+  }, [data, leafPositions]);
 
   return (
     <div className="d3-flowchart-container">
