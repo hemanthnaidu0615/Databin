@@ -116,7 +116,7 @@ export const Returns = () => {
     </div>
   ) : (
     <div className="flex overflow-y-auto overflow-x-hidden flex-col m-2 h-full bg-white w-full">
-      <h1 className="text-2xl ml-2 font-bold pl-4 pt-4 py-1">Returns Dashboard</h1>
+      <h1 className="font-semibold text-2xl text-violet-800 py-2 px-3">Returns</h1>
       <div className="card h-full">
         <div className="card flex gap-1 m-1 align-center w-[99%] justify-center">
           <div className="flex-1 card h-full border bg-purple-50 border-gray-200 shadow-lg rounded-lg py-1 px-2 ml-6 m-2">

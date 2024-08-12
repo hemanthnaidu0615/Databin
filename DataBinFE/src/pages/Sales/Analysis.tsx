@@ -611,7 +611,7 @@ const exportExcel = () => {
                         value={filters[col.field]?.value || ""}
                         onChange={(e) => onColumnFilterChange(e, col.field)}
                         placeholder={`Search ${col.header}`}
-                        className="max-w-40 text-sm p-1"
+                        className="max-w-auto text-sm p-1"
                     />
                 }
                 filterPlaceholder={`Search by ${col.header}`}

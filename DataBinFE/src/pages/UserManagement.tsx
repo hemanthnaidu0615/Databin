@@ -21,7 +21,7 @@ export const UserManagement = () => {
   return (
     <div className="flex flex-col w-full min-h-full bg-white m-1 rounded-sm">
       <div className="flex justify-between p-2 items-center">
-      <p className="text-2xl h-[19px] text-purple-800">Settings</p>
+      <p className="font-semibold text-2xl text-violet-800 py-2 px-3">Settings</p>
       <br/> <br/>
       </div>
        {isUserManagementVisible && (
