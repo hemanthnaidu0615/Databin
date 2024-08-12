@@ -43,7 +43,6 @@ const VerticalComponent = ({ data }: { data: FlowChartNode[] }) => {
     const svgWidth = Math.max(containerWidth, maxY + padding);
     const svgHeight = Math.max(containerHeight, maxX + padding);
 
-    // Apply dimensions to SVG
     svg.attr("width", svgWidth)
        .attr("height", svgHeight);
 
