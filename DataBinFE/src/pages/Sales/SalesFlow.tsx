@@ -1,7 +1,7 @@
 import { TreeNode } from "primereact/treenode";
 import authFetch from "../../axios";
 import OrgChart from "../../components/charts/OrgChart";
-import VerticalComponent from "../../components/charts/VerticalComponent"; // Import your new component
+import VerticalComponent from "../../components/charts/VerticalComponent"; 
 import { useEffect, useState } from "react";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { Button } from "primereact/button";
