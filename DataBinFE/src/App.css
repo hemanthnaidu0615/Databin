@@ -52,3 +52,14 @@
   min-width: 0;
 }
 
+/* Table Headers Alignment */
+.p-datatable .p-column-header-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.p-datatable.p-datatable .p-datatable-tbody>tr>td{
+ text-align: center;
+}
+

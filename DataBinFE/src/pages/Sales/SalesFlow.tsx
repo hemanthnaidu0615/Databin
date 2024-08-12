@@ -1,6 +1,7 @@
 import { TreeNode } from "primereact/treenode";
 import authFetch from "../../axios";
 import OrgChart from "../../components/charts/OrgChart";
+import VerticalComponent from "../../components/charts/VerticalComponent"; 
 import { useEffect, useState } from "react";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { Button } from "primereact/button";
@@ -120,7 +121,7 @@ const SalesFlow = () => {
             options={orientationOptions}
             onChange={(e) => setOrientation(e.value)}
             placeholder="Select Orientation"
-            className="w-32"
+            className="w-auto"
           />
           <div className="flex items-center gap-2 mr-6">
             <i className="pi pi-search-minus" onClick={decrementZoom}></i>
@@ -142,7 +143,11 @@ const SalesFlow = () => {
             width: orientation === "vertical" ? "calc(100vw - 200px)" : "auto",
           }}
         >
-          <OrgChart data={convertData(data)} zoom={zoomValue} orientation={orientation} />
+          {orientation === "vertical" ? (
+            <VerticalComponent data={convertData(data)} />
+          ) : (
+            <OrgChart data={convertData(data)} zoom={zoomValue} />
+          )}
         </div>
       </div>
     </div>
@@ -150,4 +155,3 @@ const SalesFlow = () => {
 };
 
 export default SalesFlow;
-
