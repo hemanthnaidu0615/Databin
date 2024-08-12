@@ -52,6 +52,8 @@ export const Navbar = () => {
       icon: "pi pi-sign-out",
       command: () => {
         localStorage.removeItem("accessToken");
+        localStorage.removeItem('userRole');
+        setUserRole('');
         navigate("/");
       },
     },

@@ -188,7 +188,7 @@ const Table: React.FC<TableProps> = ({ fetchUsersData, users }) => {
         dataKey="id"
         showGridlines
         emptyMessage="No users found."
-        paginatorClassName="bg-[#F9FAFB]"
+        paginatorClassName="bg-[#F3E8FF]"
         pt={{ header: { className: "bg-purple-200" } }}
       >
         <Column
@@ -207,18 +207,18 @@ const Table: React.FC<TableProps> = ({ fetchUsersData, users }) => {
           field="username"
           header="Username"
           body={(rowData) => renderEditableCell(rowData, "username")}
-          pt={{ headerCell: { className: "bg-purple-200" } }}
+          pt={{bodyCell: { className: "bg-purple-100" },  headerCell: { className: "bg-purple-200" } }}
         />
         <Column
           field="role"
           header="Role"
           body={renderRoleDropdown}
-          pt={{ headerCell: { className: "bg-purple-200" } }}
+          pt={{ bodyCell: { className: "bg-purple-100" }, headerCell: { className: "bg-purple-200" } }}
         />
         <Column
           header="Actions"
           body={actionBodyTemplate}
-          pt={{ headerCell: { className: "bg-purple-200" } }}
+          pt={{bodyCell: { className: "bg-purple-100" },  headerCell: { className: "bg-purple-200" } }}
         />
       </DataTable>
 
