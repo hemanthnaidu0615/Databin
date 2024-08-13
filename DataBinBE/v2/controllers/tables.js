@@ -115,6 +115,8 @@ const executeTask = async (email, startDate, recurrencePattern, tableSelection, 
       'order_book_header': 'Order Book Header',
       'order_book_line': 'Order Book Line',
       'order_book_taxes': 'Order Book Taxes',
+      'return_order_header': 'Return Order Header',
+      'return_order_line': 'Return order line',
     };
 
     

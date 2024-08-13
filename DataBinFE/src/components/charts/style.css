@@ -58,24 +58,23 @@
 /* Vertical Flowchart  */
 :root {
   --padding: 200px;
-  --sibling-spacing: 20; /* Default sibling spacing */
-  --level-spacing: 2;    /* Default level spacing */
+  --sibling-spacing: 20; 
+  --level-spacing: 2;   
   --node-width: 180px;
   --node-height: 60px;
   --node-border-radius: 15px;
 }
 
-/* Adjust sibling and level spacing for smaller screens */
 @media (max-width: 1200px) {
   :root {
-    --sibling-spacing: 15; /* Decrease spacing on smaller screens */
+    --sibling-spacing: 15; 
     --level-spacing: 1.5;
   }
 }
 
 @media (max-width: 800px) {
   :root {
-    --sibling-spacing: 10; /* Further decrease on very small screens */
+    --sibling-spacing: 10; 
     --level-spacing: 1;
   }
 }

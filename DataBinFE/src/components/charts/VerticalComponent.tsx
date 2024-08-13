@@ -27,7 +27,6 @@ const VerticalComponent = ({ data }: { data: FlowChartNode[] }) => {
 
     const root = d3.hierarchy(data[0], d => d.children);
 
-    // Pre-calculate the x positions for leaf nodes only once
     if (leafPositions.length === 0) {
       let leafNodes: d3.HierarchyNode<FlowChartNode>[] = [];
       const calculateLeafPositions = (node: d3.HierarchyNode<FlowChartNode>, x = 0) => {

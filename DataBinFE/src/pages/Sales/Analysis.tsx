@@ -701,7 +701,7 @@ const exportExcel = () => {
                 { label: 'Order Book Header', value: 'order_book_header' },
                 { label: 'Order Book Line', value: 'order_book_line' },
                 { label: 'Order Book Taxes', value: 'order_book_taxes' },
-                { label: 'Return Order Header Header', value: 'return_order_header' },
+                { label: 'Return Order Header', value: 'return_order_header' },
                 { label: 'Return order line', value: 'return_order_line' }
 
               ]}
