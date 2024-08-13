@@ -611,7 +611,7 @@ const exportExcel = () => {
                         value={filters[col.field]?.value || ""}
                         onChange={(e) => onColumnFilterChange(e, col.field)}
                         placeholder={`Search ${col.header}`}
-                        className="max-w-40 text-sm p-1"
+                        className="max-w-auto text-sm p-1"
                     />
                 }
                 filterPlaceholder={`Search by ${col.header}`}
@@ -701,7 +701,7 @@ const exportExcel = () => {
                 { label: 'Order Book Header', value: 'order_book_header' },
                 { label: 'Order Book Line', value: 'order_book_line' },
                 { label: 'Order Book Taxes', value: 'order_book_taxes' },
-                { label: 'Return Order Header Header', value: 'return_order_header' },
+                { label: 'Return Order Header', value: 'return_order_header' },
                 { label: 'Return order line', value: 'return_order_line' }
 
               ]}

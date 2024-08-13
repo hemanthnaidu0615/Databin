@@ -56,6 +56,29 @@
 }
 
 /* Vertical Flowchart  */
+:root {
+  --padding: 200px;
+  --sibling-spacing: 20; 
+  --level-spacing: 2;   
+  --node-width: 180px;
+  --node-height: 60px;
+  --node-border-radius: 15px;
+}
+
+@media (max-width: 1200px) {
+  :root {
+    --sibling-spacing: 15; 
+    --level-spacing: 1.5;
+  }
+}
+
+@media (max-width: 800px) {
+  :root {
+    --sibling-spacing: 10; 
+    --level-spacing: 1;
+  }
+}
+
 .d3-flowchart-container {
   overflow-x: auto;
   overflow-y: hidden;
@@ -84,14 +107,7 @@
   stroke: #999;
   stroke-width: 2;
 }
+
 .d3-node-rect {
   fill: #d9bbfb;
-  width: var(--node-width, 180px);
-  height: var(--node-height, 60px);
-  rx: var(--node-border-radius, 15px);
 }
-
-.d3-node-label {
-  text-anchor: middle;
-}
-
