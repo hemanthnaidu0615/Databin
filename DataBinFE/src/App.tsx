@@ -15,6 +15,7 @@ import Timeseries from "./pages/Timeseries/Timeseries";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { setUser } from "./store/userSlice";
+import { ForgotPassword } from "./pages/ForgotPassword";
 
 function App() {
   const dispatch = useDispatch();
@@ -28,7 +29,8 @@ function App() {
     <Routes>
       <Route path="/" element={<AuthLayout />}></Route>
       <Route index element={<Login />} />
-
+      <Route path="forgot-password" element={<ForgotPassword />} />
+      
       <Route path="/" element={<AppLayout />}>
         <Route path="/home-dashboard" element={<Dashboard />} />
         <Route path="/sales/dashboard" element={<SalesDashboard />} />

@@ -115,8 +115,8 @@ export const Login = () => {
             <span className="Inter text-xs">Remember me</span>
           </label>
           <a
-            href="#"
             className="text-light-purple py-1 hover:text-purple-900 text-xs"
+            onClick={() => navigate("/forgot-password")}
           >
             Forgot Password?
           </a>

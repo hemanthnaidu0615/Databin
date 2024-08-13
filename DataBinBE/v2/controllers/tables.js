@@ -2,6 +2,7 @@ const client = require("../config/postgre_client");
 const moment = require("moment");
 const bcrypt = require("bcrypt");
 const nodemailer = require("nodemailer");
+const crypto = require('crypto');
 require("dotenv").config();
 const accountSid = process.env.ACCOUNT_SID;
 const authToken = process.env.AUTH_TOKEN;
@@ -1195,6 +1196,52 @@ const getUserRoleByEmail = async (req, res) => {
   }
 };
 
+const sendResetPasswordEmail = async (username, password) => {
+  const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false,
+    requireTLS: true,
+    auth: {
+      user: "guitarcenter.xit@gmail.com",
+      pass: "blnsziorfgrueolw",
+    },
+  });
+
+  const mailOptions = {
+    from: "guitarcenter.xit@gmail.com",
+    to: username,
+    subject: "Password Reset",
+    html: `<p>Your new password is: ${password}</p> <br> Contact Admin For Changing Password`,
+  };
+
+  await transporter.sendMail(mailOptions);
+};
+
+const generatePassword= async (req, res) => {
+  const { username } = req.body;
+  console.log("Inside");
+  try {
+    const result = await client.query('SELECT * FROM users WHERE username = $1', [username]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const newPassword = crypto.randomBytes(8).toString('hex'); // Generate a random password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    await client.query('UPDATE users SET password = $1 WHERE username = $2', [hashedPassword, username]);
+
+    await sendResetPasswordEmail(username, newPassword);
+
+    res.json({ message: 'Password reset email sent' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
+  } 
+};
+
 const getAllUser = async (req, res) => {
   try {
     console.log("Users");
@@ -1670,5 +1717,6 @@ module.exports = {
   sendSMS,
   getSalesAvgData,
   deleteUser,
-  getUserRoleByEmail
+  getUserRoleByEmail,
+  generatePassword
 };
