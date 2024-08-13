@@ -38,7 +38,8 @@ export const Navbar = () => {
     "/sales/analysis",
     "/returns",
     "/timeseries",
-    "/user-management"
+    "/user-management",
+    "/sales/dashboard"
   ];
 
   const hideCalendar = hideCalendarRoutes.includes(location.pathname);

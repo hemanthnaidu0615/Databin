@@ -267,7 +267,7 @@ export const SalesDashboard = () => {
   ];
 
   return (
-    <div className="w-full bg-white m-2 overflow-y-auto rounded-lg shadow-xl h-full flex flex-col">
+    <div className="w-full bg-white m-2 overflow-hidden rounded-lg shadow-xl h-full flex flex-col">
   
       <div className="w-full h-2 bg-purple-300 rounded-t-lg"></div>
       <div className="card p-2 mb-4 h-[20%]">
