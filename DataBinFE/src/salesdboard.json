@@ -1,0 +1,195 @@
+{
+    "data": [
+      {
+        "date": "2024-03-01",
+        "linePriceTotal": 60000,
+        "shippingCharges": 3000,
+        "discount": 8000,
+        "taxCharges": 4000,
+        "totalUnits": 500,
+        "margin": 9000,
+        "ROI": 35
+      },
+      {
+        "date": "2024-03-02",
+        "linePriceTotal": 65000,
+        "shippingCharges": 3200,
+        "discount": 8500,
+        "taxCharges": 4200,
+        "totalUnits": 520,
+        "margin": 9500,
+        "ROI": 37
+      },
+      {
+        "date": "2024-03-03",
+        "linePriceTotal": 70000,
+        "shippingCharges": 3400,
+        "discount": 9000,
+        "taxCharges": 4300,
+        "totalUnits": 530,
+        "margin": 9800,
+        "ROI": 38
+      },
+      {
+        "date": "2024-03-04",
+        "linePriceTotal": 75000,
+        "shippingCharges": 3600,
+        "discount": 9500,
+        "taxCharges": 4500,
+        "totalUnits": 550,
+        "margin": 10500,
+        "ROI": 40
+      },
+      {
+        "date": "2024-03-05",
+        "linePriceTotal": 80000,
+        "shippingCharges": 3700,
+        "discount": 10000,
+        "taxCharges": 4600,
+        "totalUnits": 560,
+        "margin": 11000,
+        "ROI": 42
+      },
+      {
+        "date": "2024-03-06",
+        "linePriceTotal": 85000,
+        "shippingCharges": 3800,
+        "discount": 10500,
+        "taxCharges": 4700,
+        "totalUnits": 580,
+        "margin": 11500,
+        "ROI": 44
+      },
+      {
+        "date": "2024-03-07",
+        "linePriceTotal": 90000,
+        "shippingCharges": 4000,
+        "discount": 11000,
+        "taxCharges": 4800,
+        "totalUnits": 600,
+        "margin": 12000,
+        "ROI": 46
+      },
+      {
+        "date": "2024-03-08",
+        "linePriceTotal": 95000,
+        "shippingCharges": 4200,
+        "discount": 11500,
+        "taxCharges": 4900,
+        "totalUnits": 620,
+        "margin": 12500,
+        "ROI": 48
+      },
+      {
+        "date": "2024-03-09",
+        "linePriceTotal": 100000,
+        "shippingCharges": 4400,
+        "discount": 12000,
+        "taxCharges": 5000,
+        "totalUnits": 630,
+        "margin": 13000,
+        "ROI": 50
+      },
+      {
+        "date": "2024-03-10",
+        "linePriceTotal": 105000,
+        "shippingCharges": 4500,
+        "discount": 12500,
+        "taxCharges": 5100,
+        "totalUnits": 650,
+        "margin": 13500,
+        "ROI": 52
+      },
+      {
+        "date": "2024-03-11",
+        "linePriceTotal": 110000,
+        "shippingCharges": 4600,
+        "discount": 13000,
+        "taxCharges": 5200,
+        "totalUnits": 670,
+        "margin": 14000,
+        "ROI": 54
+      },
+      {
+        "date": "2024-03-12",
+        "linePriceTotal": 115000,
+        "shippingCharges": 4700,
+        "discount": 13500,
+        "taxCharges": 5300,
+        "totalUnits": 680,
+        "margin": 14500,
+        "ROI": 55
+      },
+      {
+        "date": "2024-03-13",
+        "linePriceTotal": 120000,
+        "shippingCharges": 4800,
+        "discount": 14000,
+        "taxCharges": 5400,
+        "totalUnits": 700,
+        "margin": 15000,
+        "ROI": 56
+      },
+      {
+        "date": "2024-03-14",
+        "linePriceTotal": 125000,
+        "shippingCharges": 4900,
+        "discount": 14500,
+        "taxCharges": 5500,
+        "totalUnits": 710,
+        "margin": 15500,
+        "ROI": 57
+      },
+      {
+        "date": "2024-03-15",
+        "linePriceTotal": 130000,
+        "shippingCharges": 5000,
+        "discount": 15000,
+        "taxCharges": 5600,
+        "totalUnits": 730,
+        "margin": 16000,
+        "ROI": 58
+      },
+      {
+        "date": "2024-03-16",
+        "linePriceTotal": 135000,
+        "shippingCharges": 5100,
+        "discount": 15500,
+        "taxCharges": 5700,
+        "totalUnits": 740,
+        "margin": 16500,
+        "ROI": 60
+      },
+      {
+        "date": "2024-03-17",
+        "linePriceTotal": 140000,
+        "shippingCharges": 5200,
+        "discount": 16000,
+        "taxCharges": 5800,
+        "totalUnits": 750,
+        "margin": 17000,
+        "ROI": 62
+      },
+      {
+        "date": "2024-03-18",
+        "linePriceTotal": 145000,
+        "shippingCharges": 5300,
+        "discount": 16500,
+        "taxCharges": 5900,
+        "totalUnits": 770,
+        "margin": 17500,
+        "ROI": 64
+      },
+      {
+        "date": "2024-03-19",
+        "linePriceTotal": 150000,
+        "shippingCharges": 5400,
+        "discount": 17000,
+        "taxCharges": 6000,
+        "totalUnits": 780,
+        "margin": 18000,
+        "ROI": 66
+      }
+    ]
+  }
+  
