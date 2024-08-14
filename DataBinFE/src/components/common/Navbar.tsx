@@ -121,7 +121,7 @@ export const Navbar = () => {
           <span className="text-violet-800"> Bin</span>
         </h3>
       </div>
-      <p className="pl-2">Welcome, {username}</p>
+      <p className="pl-2">Hi, Welcome, {username}</p>
     </div>
   );
 
