@@ -11,6 +11,7 @@ import { ProgressSpinner } from "primereact/progressspinner";
 interface Marker {
   color: string;
   value: string;
+  legend:string;
 }
 
 interface Statess {
@@ -73,12 +74,21 @@ const statess: Statess = {
   WI: 'Wisconsin',
   WY: 'Wyoming',
 };
-
 export const SalesByRegion = () => {
   const [mapData, setMapData] = useState<any>();
   const { dates } = useSelector((store: any) => store.dateRange);
   const enterpriseKey = useSelector((store: any) => store.enterprise.key);
   const [tooltipData, setTooltipData] = useState<{ [key: string]: string }>({});
+
+  const formatter = new Intl.NumberFormat("en-US", {
+    notation: "compact",
+    compactDisplay: "short",
+  });
+
+  const formatterUSD = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -97,11 +107,17 @@ export const SalesByRegion = () => {
         console.log("API response:", response.data);
         setMapData(response.data);
         const tooltipMap: { [key: string]: string } = response.data.reduce((acc: any, item: any) => {
+
           const stateAbbreviation = item[0].split("-")[1].toUpperCase();
           const stateName = statess[stateAbbreviation];
-          acc[stateName] = `$${item[1]}`;
+          const revenue = formatterUSD.format(item[1]);
+
+          const quantity = item[3];
+
+          acc[stateName] = `Revenue: ${revenue} ,Quantity: ${quantity}`;
           return acc;
         }, {});
+       
         setTooltipData(tooltipMap);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -121,7 +137,7 @@ export const SalesByRegion = () => {
       </div>
     );
   }
-
+  
   const stateAbbreviations: { [key: string]: string } = states;
 
   const result: string[][] = mapData.map((subArray: string[]) => {
@@ -130,22 +146,15 @@ export const SalesByRegion = () => {
     return [stateName, ...subArray.slice(1)];
   });
 
-  const formatter = new Intl.NumberFormat("en-US", {
-    notation: "compact",
-    compactDisplay: "short",
-  });
-
-  const formatterUSD = new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  });
-
+ 
   function convertArrayToObject(arr: any) {
     return arr.map((innerArr: any) => ({
       state: innerArr[0],
       totalDollar: `${formatterUSD.format(innerArr[1])}`,
       percentage: `${innerArr[2]} %`,
+      quantity: innerArr[3], 
     }));
+
   }
 
   const tableData = convertArrayToObject(result);
@@ -167,8 +176,9 @@ export const SalesByRegion = () => {
         return "#d6d4d0";
     }
   };
-
+  console.log(topStates)
   const markersList = topStates.map((state: any) => ({
+    legend: state[0].split('-')[1].toUpperCase(),
     color: colorScale(state[0].toUpperCase().substring(3)),
     value: formatter.format(state[1]),
   }));
@@ -198,7 +208,7 @@ export const SalesByRegion = () => {
              markers4={[]}
              markers5={[]}
              colorScale={colorScale}
-              revenueData={tooltipData}
+             revenueData={tooltipData}
            />
           </div>
             <div className="flex flex-col p-2 gap-4 max-w-xs">
@@ -206,14 +216,16 @@ export const SalesByRegion = () => {
               Top 5 revenues
             </div>
             <div className="flex flex-col gap-1">
+             
              {markersList.map((item: Marker) => (
               <span key={item.color} className="flex items-center gap-2">
+              
             <div
               className="rounded-full h-[9px] w-[9px]"
               style={{ backgroundColor: `${item.color}` }}
             ></div>
               <p className="text-xs text-violet-900">
-                 $ {item.value}
+               {item.legend} - ${item.value}
               </p>
           </span>
             ))}
@@ -248,10 +260,17 @@ export const SalesByRegion = () => {
                 pt={{ bodyCell: { className: "h-5 text-center" } }}
                 headerClassName="bg-purple-100"
               />
+              <Column
+                field="quantity"
+                header="Quantity"
+                pt={{ bodyCell: { className: "h-5 text-center" } }}
+                headerClassName="bg-purple-100"
+                />
             </DataTable>
           </div>
         </div>
       </div>
+      
     </div>
   );
 };

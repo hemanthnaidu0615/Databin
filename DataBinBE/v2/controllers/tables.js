@@ -1072,13 +1072,13 @@ const getMapData = async (req, res) => {
   const end_date = req.query.end_date;
   const enterprise_key = req.query.enterprise_key;
 
-  // Format dates
+
   const start_date_formatted = moment(start_date, "YYYY-MM-DD").format("YYYY-MM-DD");
   const end_date_formatted = moment(end_date, "YYYY-MM-DD").format("YYYY-MM-DD");
 
-  // Parameterized query to prevent SQL injection
+  
   const query = `
-    SELECT ship_to_state, SUM(original_order_total_amount) as sum, COUNT(original_order_total_amount) as count
+    SELECT ship_to_state, SUM(original_order_total_amount) as sum, COUNT(original_order_total_amount) as count , SUM(original_ordered_qty) as quantity_sum
     FROM order_book_line
     WHERE order_date_parsed >= $1
       AND order_date_parsed <= $2
@@ -1103,11 +1103,24 @@ const getMapData = async (req, res) => {
       ("us-" + item.ship_to_state.trim()).toLowerCase(),
       +item.sum,
       Math.round((+item.sum / totalSum) * 10000) / 100,
+      +item.quantity_sum
     ]);
+    console.log(output)
+    const uniqueEntries = output.reduce((acc, item) => {
+      const existingEntry = acc.find(entry => entry[0] === item[0]);
+      if (!existingEntry) {
+        acc.push(item);
+      } else if (item[1] > existingEntry[1]) {
+        const index = acc.indexOf(existingEntry);
+        acc[index] = item;
+      }
+      return acc;
+    }, []);
 
-    const sortedArray = output.sort((a, b) => b[1] - a[1]);
+    const sortedArray = uniqueEntries.sort((a, b) => b[1] - a[1]);
+
     console.log('Sorted Data:', sortedArray);
-
+    
     res.status(200).json(sortedArray);
   } catch (error) {
     console.error("Database query error:", error);

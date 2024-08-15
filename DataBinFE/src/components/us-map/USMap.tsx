@@ -109,14 +109,16 @@ const MapChart: React.FC<MapChartProps> = ({
 
   const handleMouseEnter = (e: React.MouseEvent<SVGGeometryElement, MouseEvent>, stateName: string) => {
     const { clientX, clientY } = e;
+    const content = `${stateName}\n---------------\n${revenueData[stateName]?.split(',')[0] || 'No data'}\n${revenueData[stateName]?.split(',')[2] || 'No data'}`;
     setTooltip({
       display: true,
-      content: `${stateName}: ${revenueData[stateName] || 'No data'}`,
+      content,
       x: clientX,
       y: clientY,
     });
   };
 
+ 
   const handleMouseLeave = () => {
     setTooltip({ ...tooltip, display: false });
   };
@@ -180,7 +182,7 @@ const MapChart: React.FC<MapChartProps> = ({
                             strokeLinecap: "round",
                           }}
                         >
-                          <text x={4} fontSize={14} alignmentBaseline="middle">
+                          <text x={4} y={0} textAnchor="middle" fontSize={14} alignmentBaseline="middle">
                             {cur.id}
                           </text>
                         </Annotation>
@@ -201,6 +203,7 @@ const MapChart: React.FC<MapChartProps> = ({
             />
             <text
               textAnchor="middle"
+              alignmentBaseline="middle"
               style={{ fontFamily: "system-ui", fill: "#5D5A6D" }}
             ></text>
           </Marker>
@@ -268,6 +271,7 @@ const MapChart: React.FC<MapChartProps> = ({
           style={{
             position: 'absolute',
             width:'max-content',
+            whiteSpace:'pre-line',
             top: tooltip.y - 150, 
             left: tooltip.x - 150, 
             background: 'white',
@@ -276,6 +280,7 @@ const MapChart: React.FC<MapChartProps> = ({
             zIndex: 1000, 
             transform: 'translate(-50%, 0)', 
           }}
+          
         >
           {tooltip.content}
         </div>
