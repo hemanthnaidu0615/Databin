@@ -75,7 +75,7 @@ const SalesFlow = () => {
     return data.map((item: any) => {
     const dollarValue = numberFormatter.format(item.original_order_total_amount);
     const percentage = total > 0 ? ((item.original_order_total_amount / total) * 100).toFixed(2) + "%" : "0%";
-    const label = item.key || "others"; 
+    const label = item.key || "Others"; 
       return {
         label,
         expanded: item.children ? true : false,
