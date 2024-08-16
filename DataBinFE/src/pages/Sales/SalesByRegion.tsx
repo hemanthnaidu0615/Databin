@@ -113,8 +113,8 @@ export const SalesByRegion = () => {
           const revenue = formatterUSD.format(item[1]);
 
           const quantity = item[3];
-
-          acc[stateName] = `Revenue: ${revenue} ,Quantity: ${quantity}`;
+          
+          acc[stateName] = `Revenue: ${revenue} + Quantity: ${quantity}`;
           return acc;
         }, {});
        

@@ -14,8 +14,8 @@ export default function OrgChart({ data, orientation = "horizontal", zoom = 50 }
   
   const nodeTemplate = (node: TreeNode) => {
     const label = node.label || ''; 
-    
-  
+    const data= node.data || '';
+    console.log(node.data);
     return (
       <div className="node-container">
         <div className="node-content">

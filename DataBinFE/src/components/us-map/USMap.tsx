@@ -106,10 +106,18 @@ const MapChart: React.FC<MapChartProps> = ({
   revenueData,
 }) => {
   const [tooltip, setTooltip] = useState<{ display: boolean, content: string, x: number, y: number }>({ display: false, content: '', x: 0, y: 0 });
-
   const handleMouseEnter = (e: React.MouseEvent<SVGGeometryElement, MouseEvent>, stateName: string) => {
     const { clientX, clientY } = e;
-    const content = `${stateName}\n---------------\n${revenueData[stateName]?.split(',')[0] || 'No data'}\n${revenueData[stateName]?.split(',')[2] || 'No data'}`;
+    console.log(revenueData);
+     // Extract the string for the given state
+     const dataString = revenueData[stateName] || 'No data';
+
+     // Split the dataString to get revenue and quantity
+     const [revenuePart, quantityPart] = dataString.split(' + ');
+ 
+     // Construct the tooltip content
+     const content = `${stateName}\n----------------------- \n${revenuePart || 'No data'}\n${quantityPart || 'No data'}`;
+ 
     setTooltip({
       display: true,
       content,
