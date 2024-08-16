@@ -64,7 +64,7 @@ export const Navbar = () => {
     const fetchEnterpriseKeys = async () => {
       try {
         const response = await authFetch(
-          "http://localhost:3000/v2/tables/enterprise-keys"
+          "/tables/enterprise-keys"
         );
         console.log(response.data);
         setEnterpriseKeys(response.data);
@@ -78,7 +78,7 @@ export const Navbar = () => {
 
   useEffect(() => {
     if (userEmail) {
-      fetch(`http://localhost:3000/v2/tables/user-role?email=${userEmail}`)
+      fetch(`/tables/user-role?email=${userEmail}`)
         .then((response) => response.json())
         .then((data) => {
           if (data.role) {

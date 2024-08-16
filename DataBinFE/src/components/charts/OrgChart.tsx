@@ -14,13 +14,18 @@ export default function OrgChart({ data, orientation = "horizontal", zoom = 50 }
   
   const nodeTemplate = (node: TreeNode) => {
     const label = node.label || ''; 
-    
-  
+    let data= node.data || '';
+    if (label.includes("Sales")) {
+      data = data.replace("100.00%", "");
+    }
+    const [value, percentage] = data.trim().split(' '); 
+    console.log(value+" is"+percentage)
     return (
       <div className="node-container">
         <div className="node-content">
           <span className="node-label font-bold mb-2">{label}</span>
-          <span className="node-data">{node.data}</span>
+          <span className="node-data">{value}</span>
+         {percentage && <span className="node-data">{percentage}</span>}
         </div>
       </div>
     );

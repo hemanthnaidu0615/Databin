@@ -18,7 +18,7 @@ export const SidebarComp = () => {
 
   useEffect(() => {
     if (userEmail && !userRole) {  
-      fetch(`http://localhost:3000/v2/tables/user-role?email=${userEmail}`)
+      fetch(`/tables/user-role?email=${userEmail}`)
         .then((response) => response.json())
         .then((data) => {
           if (data.role) {
