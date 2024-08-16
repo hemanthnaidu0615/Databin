@@ -71,11 +71,15 @@ const SalesFlow = () => {
   }
 
   const convertData = (data: any) => {
+    const total = data.reduce((acc: number, item: any) => acc + item.original_order_total_amount, 0);
     return data.map((item: any) => {
+    const dollarValue = numberFormatter.format(item.original_order_total_amount);
+    const percentage = total > 0 ? ((item.original_order_total_amount / total) * 100).toFixed(2) + "%" : "0%";
+    const label = item.key || "others"; 
       return {
-        label: item.key,
+        label,
         expanded: item.children ? true : false,
-        data: numberFormatter.format(item.original_order_total_amount), 
+        data: ` $${dollarValue} (${percentage})`, // Update to include dollar value and percentage
         children: item.children ? convertData(item.children) : [],
         className: "bg-purple-200",
       };
