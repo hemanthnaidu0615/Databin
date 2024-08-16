@@ -79,7 +79,7 @@ const SalesFlow = () => {
       return {
         label,
         expanded: item.children ? true : false,
-        data: ` $${dollarValue} (${percentage})`, // Update to include dollar value and percentage
+        data: ` $${dollarValue} ${percentage}`, // Update to include dollar value and percentage
         children: item.children ? convertData(item.children) : [],
         className: "bg-purple-200",
       };
