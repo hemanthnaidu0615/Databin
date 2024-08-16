@@ -170,7 +170,7 @@ const executeTask = async (email, startDate, recurrencePattern, tableSelection, 
     console.log('Columns:', columnSelection);
     console.log('Data Range:', formattedStartDate.format(), 'to', formattedEndDate.format());
 
-    const response = await axios.get(`http://localhost:3000/v2/tables`, {
+    const response = await axios.get(`/tables`, {
       params: {
         table: tableSelection,
         startDate: formattedStartDate.format('YYYY-MM-DDTHH:mm:ss'),
