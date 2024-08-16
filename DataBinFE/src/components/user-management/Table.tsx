@@ -47,7 +47,7 @@ const Table: React.FC<TableProps> = ({ fetchUsersData, users }) => {
 
   const onRowSave = async (id: number) => {
     try {
-      await authFetch.put(`http://localhost:3000/v2/tables/updateUsers/${id}`, editedData);
+      await authFetch.put(`/tables/updateUsers/${id}`, editedData);
       setEditRowIndex(null);
       fetchUsersData();
       toast.current.show({
@@ -75,7 +75,7 @@ const Table: React.FC<TableProps> = ({ fetchUsersData, users }) => {
   const handleDelete = async () => {
     if (userToDelete !== null) {
       try {
-        await authFetch.delete(`http://localhost:3000/v2/tables/deleteUser/${userToDelete}`);
+        await authFetch.delete(`/tables/deleteUser/${userToDelete}`);
         setShowDeleteConfirm(false);
         fetchUsersData();
         toast.current.show({

@@ -96,7 +96,7 @@ export const Analysis = () => {
         timeFrame,
       };
   
-      const response = await authFetch('http://localhost:3000/v2/tables/scheduler', {
+      const response = await authFetch('/tables/scheduler', {
         method: 'POST',
         data: payload, 
         headers: {

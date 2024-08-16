@@ -97,7 +97,7 @@ export const SalesByRegion = () => {
       try {
         console.log(`Fetching data with start_date=${formattedStartDate}, end_date=${formattedEndDate}, enterprise_key=${enterpriseKey}`);
         const response = await authFetch(
-          `http://localhost:3000/v2/tables/map?start_date=${formattedStartDate}&end_date=${formattedEndDate}&enterprise_key=${enterpriseKey}`,{
+          `/tables/map?start_date=${formattedStartDate}&end_date=${formattedEndDate}&enterprise_key=${enterpriseKey}`,{
             headers: {
               'Cache-Control': 'no-cache',
               'Pragma': 'no-cache',
