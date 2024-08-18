@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import authFetch from "../../axios";
 import { abbrvalue } from "../../helpers/helpers";
 import { ProgressSpinner } from "primereact/progressspinner";
+import { Paginator } from 'primereact/paginator';
 
 const Timeseries = () => {
   const [milestonesData, setMilestonesData] = useState<any>();
@@ -12,6 +13,8 @@ const Timeseries = () => {
   const [date, setDate] = useState<any>(new Date("01-04-2024"));
   const [activeIndex, setActiveIndex] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [first, setFirst] = useState(0);
+  const columnsPerPage = 10;  
 
   const allowedStatusNames = [
     "Shipped",
@@ -52,6 +55,20 @@ const Timeseries = () => {
   const getNavClassName = (index: any) => {
     return index === 0 ? "w-screen" : "w-fit";
   };
+
+  const paginatedDates = timeseriesData?.dates?.slice(first, first + columnsPerPage);
+  const paginatedTimeSeries = timeseriesData?.timeSeries
+    ?.filter((t: any) => allowedStatusNames.includes(t?.status_name))
+    ?.map((ts: any) => ({
+      ...ts,
+      date_values: ts.date_values.slice(first, first + columnsPerPage),
+    }));
+  
+  const isLastPage = first + columnsPerPage >= timeseriesData?.dates?.length;
+  
+  const dynamicColumnWidth = isLastPage && paginatedDates?.length < columnsPerPage
+    ? `min-w-[${Math.floor(100 / paginatedDates.length)}%]`
+    : 'min-w-[75px]';
 
   return loading ? (
     <div className="flex items-center justify-center h-full mx-auto my-auto">
@@ -160,59 +177,63 @@ const Timeseries = () => {
                   </div>
                 ))}
             </div>
-            {/* Footer Row with Note */}
             <div className="flex items-center border-t-[1px] border-purple-400 p-4 text-sm text-gray-600">
               <div className="flex-[2]">
                 Note: Hover over percentage values to see the amount and the quantity.
               </div>
             </div>
           </TabPanel>
+          {/* Time Series Page */}
           <TabPanel
             header="Timeseries"
             pt={{ headerTitle: { className: "text-purple-700" } }}
-            className="w-fit"
+            className="w-full"
           >
-            <div className="flex flex-col">
-              <div className="flex text-xs font-semibold text-violet-800 p-4">
-                <div className="flex-[3] "></div>
-                <div className="flex-1 flex justify-center min-w-[75px]">
-                  Total
-                </div>
-                {timeseriesData?.dates?.map((date: any, i: number) => (
+            <div className="flex flex-col w-full">
+              <div className="flex text-xs font-semibold text-violet-800 p-4 w-full">
+                <div className="flex-[3]"></div>
+                <div className="flex-1 flex justify-center min-w-[75px]">Total</div>
+                {paginatedDates?.map((date: any, i: number) => (
                   <div
                     key={i}
-                    className="border-l-[1px] border-purple-400 flex-1 flex text-center min-w-[75px] justify-center"
+                    className={`border-l-[1px] border-purple-400 flex-1 flex text-center justify-center ${dynamicColumnWidth}`}
                   >
                     {date}
                   </div>
                 ))}
               </div>
-              {timeseriesData?.timeSeries
-                ?.filter((t: any) => allowedStatusNames.includes(t?.status_name))
-                ?.map((ts: any) => (
-                  <div className="flex border-b-[1px] border-purple-400 p-4 h-16" key={ts?.status_name}>
-                    <div className="flex-[3] max-w-80 overflow-hidden text-violet-800"
+              {paginatedTimeSeries?.map((ts: any) => (
+                <div className="flex border-b-[1px] border-purple-400 p-4 h-16 w-full" key={ts?.status_name}>
+                  <div
+                    className="flex-[3] max-w-80 overflow-hidden text-violet-800"
                     style={{
-                      whiteSpace: "nowrap",  
-                      textOverflow: "ellipsis", 
-                      overflow: "hidden",  
-                    }}>
-                      {ts?.status_name}
-                    </div>
-                    <div className="flex-1 flex min-w-[75px] justify-center">
-                      {ts?.sum}
-                    </div>
-                    {ts?.date_values?.map((dv: any, i: number) => (
-                      <div
-                        key={i}
-                        className="border-l-[1px] border-purple-400 flex-1 flex min-w-[75px] justify-center"
-                      >
-                        {dv}
-                      </div>
-                    ))}
+                      whiteSpace: "nowrap",
+                      textOverflow: "ellipsis",
+                      overflow: "hidden",
+                    }}
+                  >
+                    {ts?.status_name}
                   </div>
-                ))}
+                  <div className="flex-1 flex min-w-[75px] justify-center">
+                    {ts?.sum}
+                  </div>
+                  {ts?.date_values?.map((dv: any, i: number) => (
+                    <div
+                      key={i}
+                      className={`border-l-[1px] border-purple-400 flex-1 flex justify-center ${dynamicColumnWidth}`}
+                    >
+                      {dv}
+                    </div>
+                  ))}
+                </div>
+              ))}
             </div>
+            <Paginator
+              first={first}
+              rows={columnsPerPage}
+              totalRecords={timeseriesData?.dates?.length || 0}
+              onPageChange={(e) => setFirst(e.first)}
+            />
           </TabPanel>
         </TabView>
       </div>
