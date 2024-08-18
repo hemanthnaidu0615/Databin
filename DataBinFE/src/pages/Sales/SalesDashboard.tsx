@@ -1,5 +1,5 @@
 import moment from "moment";
-import React, { useMemo } from "react"; 
+import React from "react";
 import { TabPanel, TabView } from "primereact/tabview";
 import { useEffect, useState } from "react";
 import { SalesCardPie } from "../../components/cards/SalesCardPie";
@@ -7,15 +7,13 @@ import CustomDataTable from "../../components/common/CustomDataTable";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { useSelector } from "react-redux";
 import authFetch from "../../axios";
-import SaleData from "../../salesdboard.json";
-
+import salesData from "../../sales_data.json";
 
 export const SalesDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [typeData, setTypeData] = useState<any>();
   const { dates } = useSelector((store: any) => store.dateRange);
   const enterpriseKey = useSelector((store: any) => store.enterprise.key);
-  const salesDeets = SaleData.data[0];
 
   const getIntervalTime = (days: number) => {
     if (days === 2) return 3600;
@@ -100,7 +98,7 @@ export const SalesDashboard = () => {
     );
   }
 
-
+  const salesDeets = salesData.MFData.totalStats;
 
   const logos = [
     "https://img.logoipsum.com/224.svg",
@@ -226,138 +224,96 @@ export const SalesDashboard = () => {
 };
 
 
-const salesDetails = [
-  {
-    label: "Total Booked",
-    value: `$ ${formatNumber(
-      salesDeets.linePriceTotal + 
-      salesDeets.shippingCharges - 
-      salesDeets.discount + 
-      salesDeets.taxCharges
-    )}`,
-    color: "bg-blue-500",
-    symbol: "=",
-  },
-  {
-    label: "Line Price Total",
-    value: `$ ${formatNumber(salesDeets.linePriceTotal)}`,
-    color: "bg-green-500",
-    symbol: "+",
-  },
-  {
-    label: "Shipping Charges",
-    value: `$ ${formatNumber(salesDeets.shippingCharges)}`,
-    color: "bg-violet-500",
-    symbol: "-",
-  },
-  {
-    label: "Discount",
-    value: `$ ${formatNumber(salesDeets.discount)}`,
-    color: "bg-amber-500",
-    symbol: "+",
-  },
-  {
-    label: "Tax Charges",
-    value: `$ ${formatNumber(salesDeets.taxCharges)}`,
-    color: "bg-red-500",
-    verticalLine: true,
-  },
-  {
-    label: "Total Units",
-    value: formatNumber(salesDeets.totalUnits),
-    color: "bg-purple-500",
-    verticalLine: true,
-  },
-  {
-    label: "Margin",
-    value: `$ ${formatNumber(salesDeets.margin)}`,
-    color: "bg-yellow-500",
-  },
-  {
-    label: "ROI",
-    value: `${salesDeets.ROI}%`,
-    color: "bg-emerald-500",
-  },
-];
-
-
-
+  const salesDetails = [
+    {
+      label: "Total Booked",
+      value: `$ ${formatNumber(salesDeets.original_order_total_amount)}`,
+      color: "bg-blue-500",
+    },
+    {
+      label: "Line Price Total",
+      value: `$ ${formatNumber(Number(salesDeets.line_price_total))}`,
+      color: "bg-green-500",
+    },
+    {
+      label: "Shipping Charges",
+      value: `$ ${formatNumber(Number(salesDeets.shipping_cost))}`,
+      color: "bg-violet-500",
+    },
+    {
+      label: "Discount",
+      value: `$ ${formatNumber(Number(salesDeets.discount))}`,
+      color: "bg-amber-500",
+    },
+    {
+      label: "Tax Charges",
+      value: `$ ${formatNumber(Number(salesDeets.tax))}`,
+      color: "bg-red-500",
+    },
+    {
+      label: "Total Units",
+      value: formatNumber(Number(salesDeets.line_ordered_qty)),
+      color: "bg-purple-500",
+    },
+    {
+      label: "Margin",
+      value: `$ ${formatNumber(Number(salesDeets.line_margin))}`,
+      color: "bg-yellow-500",
+    },
+    {
+      label: "ROI",
+      value: "45%",
+      color: "bg-emerald-500",
+    },
+  ];
 
   return (
-    <div className="w-full bg-white m-2 overflow-y-auto rounded-lg shadow-xl h-full flex flex-col">
-  
-      <div className="w-full h-2 bg-purple-300 rounded-t-lg"></div>
-      <div className="card p-2 mb-4 h-[20%]">
-        <h1 className="text-2xl ml-2 text-violet-800 font-bold">Sales</h1>
-        <div className="flex pt-2 ml-2 w-full items-center">
-  {/* First Section: Total Booked to Tax Charges */}
-  <div className="flex items-center flex-grow border-r-2 border-gray-300 pr-2">
-    {salesDetails.slice(0, 5).map((detail, index) => (
-      <React.Fragment key={index}>
-        <div className="flex flex-col items-center flex-grow">
-          <div className="text-center">
-            <div className="font-semibold text-sm">{detail.label}</div>
-            <div className="text-sm">{detail.value}</div>
+<div className="w-full bg-white m-2 overflow-hidden rounded-lg shadow-xl h-full flex flex-col">
+  <div className="w-full h-2 bg-purple-300 rounded-t-lg"></div>
+  <div className="card p-2 mb-4 h-[20%]">
+    <h1 className="text-2xl ml-2 text-violet-800 font-bold">Sales</h1>
+    <div className="flex items-center justify-between overflow-x-auto">
+      {salesDetails.map((item, index) => (
+        <React.Fragment key={item.label}>
+          <div className="flex flex-col items-center flex-grow mx-1 min-w-max">
+            <p className="text-xs mb-1 pl-1">{item.label}</p>
+            <p className="text-sm text-violet-800 font-medium pl-1">{item.value}</p>
+            <div className={`${item.color} h-1.5 mt-1 w-full max-w-[100px] rounded-b-lg`}></div>
           </div>
-          <div className={`w-full h-1.5 mt-1 rounded-b-lg ${detail.color}`}></div>
-        </div>
-        {detail.symbol && (
-          <div className="text-center flex items-center justify-center mx-1">
-            <span className="text-base">{detail.symbol}</span>
-          </div>
-        )}
-      </React.Fragment>
-    ))}
+
+          {/* Conditional rendering of separators */}
+          {index === 0 && (
+            <span className="text-xl font-bold flex justify-center items-center mx-1">
+              =
+            </span>
+          )}
+          {index === 1 && (
+            <span className="text-xl font-bold flex justify-center items-center mx-1">
+              +
+            </span>
+          )}
+          {index === 2 && (
+            <span className="text-xl font-bold flex justify-center items-center mx-1">
+              -
+            </span>
+          )}
+          {index === 3 && (
+            <span className="text-xl font-bold flex justify-center items-center mx-1">
+              +
+            </span>
+          )}
+
+          {/* Conditional rendering of vertical lines */}
+          {(index === 4 || index === 5) && (
+            <div className="h-8 border-l-2 border-gray-400 mx-1"></div>
+          )}
+        </React.Fragment>
+      ))}
+    </div>
   </div>
+  <div className="card m-2 h-full"></div>
 
-  {/* Second Section: Total Units */}
-  <div className="flex items-center border-r-2 border-gray-300 px-2" style={{ flex: 0.9 }}>
-    {salesDetails.slice(5, 6).map((detail, index) => (
-      <React.Fragment key={index}>
-        <div className="flex flex-col items-center flex-grow">
-          <div className="text-center">
-            <div className="font-semibold text-sm">{detail.label}</div>
-            <div className="text-sm">{detail.value}</div>
-          </div>
-          <div className={`w-full h-1.5 mt-1 rounded-b-lg ${detail.color}`}></div>
-        </div>
-        {detail.verticalLine && (
-          <div className="border-l-2 border-gray-300 h-full mx-1"></div>
-        )}
-      </React.Fragment>
-    ))}
-  </div>
-
-  {/* Third Section: Margin and ROI */}
-  <div className="flex items-center pl-2" style={{ flex: 0.9 }}>
-    {salesDetails.slice(6).map((detail, index) => (
-      <React.Fragment key={index}>
-        <div className="flex flex-col items-center flex-grow">
-          <div className="text-center">
-            <div className="font-semibold text-sm">{detail.label}</div>
-            <div className="text-sm">{detail.value}</div>
-          </div>
-          <div className={`w-full h-1.5 mt-1 rounded-b-lg ${detail.color}`}></div>
-        </div>
-        {index < salesDetails.length - 1 && (
-          <div className="text-center flex items-center justify-center mx-1">
-            <span className="text-base">{detail.symbol}</span>
-          </div>
-        )}
-      </React.Fragment>
-    ))}
-  </div>
-</div>
-
-
-
-
-
-
-
-      </div>
-    <div className="card m-2 h-full"></div>
-      {typeData?.map((type: any, i: any) => {
+{typeData?.map((type: any, i: any) => {
         return (
           <div key={i}>
             <TabView
