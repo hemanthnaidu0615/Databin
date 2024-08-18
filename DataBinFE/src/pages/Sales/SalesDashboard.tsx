@@ -12,7 +12,6 @@ export const SalesDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [typeData, setTypeData] = useState<any>();
   const { dates } = useSelector((store: any) => store.dateRange);
-  const enterpriseKey = useSelector((store: any) => store.enterprise.key);
 
   const getIntervalTime = (days: number) => {
     if (days === 2) return 3600;
@@ -57,45 +56,43 @@ export const SalesDashboard = () => {
   return result;
 }
 
-  
-
-  const fetchData = async (
-    start: moment.Moment,
-    end: moment.Moment,
-    days: number,
-    enterpriseKey: string
-  ) => {
-    if (!start || !end) return;
-    setLoading(true);
-    try {
-      const intervalTime = getIntervalTime(days);
-      const formattedStartDate = start.format("YYYY-MM-DD HH:mm:ss");
-      const formattedEndDate = end.format("YYYY-MM-DD HH:mm:ss");
-      const response1 = await authFetch(
-        `/alsd/get-full-sales-data?start_date=${formattedStartDate}&end_date=${formattedEndDate}&intervaltime=${intervalTime}&enterprise_key=${enterpriseKey}`
-      );
-      setTypeData(response1.data);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
-
-  useEffect(() => {
-    if (dates[0] && dates[1]) {
-      const start = moment(dates[0]);
-      const end = moment(dates[1]);
-      const days = end.diff(start, "days") + 1;
-      fetchData(start, end, days, enterpriseKey);
-    }
-  }, [dates, enterpriseKey]);
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center my-auto mx-auto flex-col">
-        <ProgressSpinner />
-      </div>
+const fetchData = async (
+  start: moment.Moment,
+  end: moment.Moment,
+  days: number
+) => {
+  if (!start || !end) return;
+  setLoading(true);
+  try {
+    const intervalTime = getIntervalTime(days);
+    const formattedStartDate = start.format("YYYY-MM-DD HH:mm:ss");
+    const formattedEndDate = end.format("YYYY-MM-DD HH:mm:ss");
+    const response1 = await authFetch(
+      `/alsd/get-full-sales-data?start_date=${formattedStartDate}&end_date=${formattedEndDate}&intervaltime=${intervalTime}`
     );
+    setTypeData(response1.data);
+    setLoading(false);
+  } catch (error) {
+    console.error("Error fetching data:", error);
   }
+};
+
+useEffect(() => {
+  if (dates[0] && dates[1]) {
+    const start = moment(dates[0]);
+    const end = moment(dates[1]);
+    const days = end.diff(start, "days") + 1;
+    // setDaysDifference(days);
+    fetchData(start, end, days);
+  }
+}, [dates]);
+if (loading) {
+  return (
+    <div className="flex justify-center items-center my-auto mx-auto flex-col">
+      <ProgressSpinner />
+    </div>
+  );
+}
 
   const salesDeets = salesData.MFData.totalStats;
 
@@ -117,11 +114,6 @@ export const SalesDashboard = () => {
 
   type ChannelType = "CallCenter" | "Web" | "AWDSTORE";
 
-  interface OrderData {
-    order_capture_channel: ChannelType;
-    datetime: string;
-    original_order_total_amount: number;
-  }
 
   function formatSeriesDataLinechart(inputData: any): any[] {
     const colors: Record<ChannelType, string> = {
