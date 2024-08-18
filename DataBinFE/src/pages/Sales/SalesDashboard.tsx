@@ -1,4 +1,5 @@
 import moment from "moment";
+import React from "react";
 import { TabPanel, TabView } from "primereact/tabview";
 import { useEffect, useState } from "react";
 import { SalesCardPie } from "../../components/cards/SalesCardPie";
@@ -259,23 +260,52 @@ if (loading) {
   ];
 
   return (
-    <div className="w-full bg-white m-2 overflow-hidden rounded-lg shadow-xl h-full flex flex-col">
-  
-      <div className="w-full h-2 bg-purple-300 rounded-t-lg"></div>
-      <div className="card p-2 mb-4 h-[20%]">
-        <h1 className="text-2xl ml-2 text-violet-800 font-bold">Sales</h1>
-        <div className="flex pt-2 ml-10 w-full space-x-3">
-          {salesDetails.map((item) => (
-            <span key={item.label} className=" w-1/5 flex flex-col space-y-1" style={{width: "15%"}}>
-              <p className="text-xs mb-2 pl-1">{item.label}</p>
-              <p className="text-sm text-violet-800 font-medium pl-1">{item.value}</p>
-              <div className={`${item.color} h-1.5 mt-1 w-20 rounded-b-lg`}></div>
+<div className="w-full bg-white m-2 overflow-hidden rounded-lg shadow-xl h-full flex flex-col">
+  <div className="w-full h-2 bg-purple-300 rounded-t-lg"></div>
+  <div className="card p-2 mb-4 h-[20%]">
+    <h1 className="text-2xl ml-2 text-violet-800 font-bold">Sales</h1>
+    <div className="flex items-center justify-between overflow-x-auto">
+      {salesDetails.map((item, index) => (
+        <React.Fragment key={item.label}>
+          <div className="flex flex-col items-center flex-grow mx-1 min-w-max">
+            <p className="text-xs mb-1 pl-1">{item.label}</p>
+            <p className="text-sm text-violet-800 font-medium pl-1">{item.value}</p>
+            <div className={`${item.color} h-1.5 mt-1 w-full max-w-[100px] rounded-b-lg`}></div>
+          </div>
+
+          {/* Conditional rendering of separators */}
+          {index === 0 && (
+            <span className="text-xl font-bold flex justify-center items-center mx-1">
+              =
             </span>
-          ))}
-        </div>
-      </div>
-    <div className="card m-2 h-full"></div>
-      {typeData?.map((type: any, i: any) => {
+          )}
+          {index === 1 && (
+            <span className="text-xl font-bold flex justify-center items-center mx-1">
+              +
+            </span>
+          )}
+          {index === 2 && (
+            <span className="text-xl font-bold flex justify-center items-center mx-1">
+              -
+            </span>
+          )}
+          {index === 3 && (
+            <span className="text-xl font-bold flex justify-center items-center mx-1">
+              +
+            </span>
+          )}
+
+          {/* Conditional rendering of vertical lines */}
+          {(index === 4 || index === 5) && (
+            <div className="h-8 border-l-2 border-gray-400 mx-1"></div>
+          )}
+        </React.Fragment>
+      ))}
+    </div>
+  </div>
+  <div className="card m-2 h-full"></div>
+
+{typeData?.map((type: any, i: any) => {
         return (
           <div key={i}>
             <TabView
