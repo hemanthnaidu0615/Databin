@@ -59,13 +59,13 @@ const scheduleTask = async (req, res) => {
     console.log('Received data:', req.body);
 
     const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 587,
+      host: process.env.SMTP_HOST,
+      port: process.env.SMTP_PORT,
       secure: false,
       requireTLS: true,
       auth: {
-        user: "guitarcenter.xit@gmail.com",
-        pass: "blnsziorfgrueolw",
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
       },
     });
 
@@ -170,7 +170,7 @@ const executeTask = async (email, startDate, recurrencePattern, tableSelection, 
     console.log('Columns:', columnSelection);
     console.log('Data Range:', formattedStartDate.format(), 'to', formattedEndDate.format());
 
-    const response = await axios.get(`/tables`, {
+    const response = await axios.get(`http://localhost:3000/v2/tables`, {
       params: {
         table: tableSelection,
         startDate: formattedStartDate.format('YYYY-MM-DDTHH:mm:ss'),

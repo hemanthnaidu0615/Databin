@@ -71,20 +71,15 @@ export const Analysis = () => {
       const { tableSelection, columnSelection, startDate, recurrencePattern, emailAddress, timeFrame } = schedulerData;
   
       const formattedStartDate = moment(startDate).format('YYYY-MM-DDTHH:mm:ss');
-      let formattedEndDate = moment().format('YYYY-MM-DDTHH:mm:ss');
   
       if (!schedulerData.startDate || !schedulerData.recurrencePattern || !schedulerData.emailAddress || !schedulerData.columnSelection.length || !schedulerData.timeFrame) {
-        // Show error message using PrimeReact Toast or any other method
-        toast.current.show({ severity: 'error', summary: 'Error', detail: 'Please fill all required fields.', life: 3000 });
+        toast.current?.show({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Please fill all required fields.',
+          life: 3000,
+        });
         return;
-      }
-
-      if (timeFrame === 'last_year') {
-        formattedEndDate = moment().subtract(1, 'year').format('YYYY-MM-DDTHH:mm:ss');
-      } else if (timeFrame === 'last_month') {
-        formattedEndDate = moment().subtract(1, 'month').format('YYYY-MM-DDTHH:mm:ss');
-      } else if (timeFrame === 'last_week') {
-        formattedEndDate = moment().subtract(1, 'week').format('YYYY-MM-DDTHH:mm:ss');
       }
   
       const payload = {
@@ -96,7 +91,7 @@ export const Analysis = () => {
         timeFrame,
       };
   
-      const response = await authFetch('/tables/scheduler', {
+      const response = await authFetch('http://localhost:3000/v2/tables/scheduler', {
         method: 'POST',
         data: payload, 
         headers: {
@@ -113,7 +108,6 @@ export const Analysis = () => {
   
       console.log('Scheduler data saved and email sent successfully:', response.data.message);
   
-      // Clear the form fields and close the dialog
       setSchedulerData({
         tableSelection: '',
         columnSelection: [],
@@ -657,7 +651,7 @@ const exportExcel = () => {
               value={schedulerData.startDate}
               minDate={new Date()}
               placeholder="Select scheduler start date"
-              onChange={(e) => setSchedulerData({ ...schedulerData, startDate: e.value })}
+              onChange={(e) => setSchedulerData({ ...schedulerData, startDate: e.value || null })}
               showTime
             />
           </div>
@@ -677,7 +671,7 @@ const exportExcel = () => {
                 setSchedulerData({
                   ...schedulerData,
                   recurrencePattern: e.value,
-                  timeFrame: getTimeFrames(e.value) 
+                  timeFrame: getTimeFrames(e.value)[0]?.value || ''
                 });
               }}
             />
