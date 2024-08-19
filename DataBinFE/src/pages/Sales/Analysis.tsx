@@ -70,7 +70,7 @@ export const Analysis = () => {
     try {
       const { tableSelection, columnSelection, startDate, recurrencePattern, emailAddress, timeFrame } = schedulerData;
   
-      const formattedStartDate = moment(startDate).format('YYYY-MM-DDTHH:mm:ss');
+      const formattedStartDate = moment(startDate).utc().format('YYYY-MM-DDTHH:mm:ss');
   
       if (!schedulerData.startDate || !schedulerData.recurrencePattern || !schedulerData.emailAddress || !schedulerData.columnSelection.length || !schedulerData.timeFrame) {
         toast.current?.show({

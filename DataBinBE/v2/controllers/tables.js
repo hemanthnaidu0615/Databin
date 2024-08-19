@@ -58,6 +58,7 @@ const scheduleTask = async (req, res) => {
 
     console.log('Received data:', req.body);
 
+    const startDateUTC = new Date(startDate).toISOString(); 
     const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,
       port: process.env.SMTP_PORT,
@@ -77,16 +78,16 @@ const scheduleTask = async (req, res) => {
     };
     const cronPattern = recurrenceMap[recurrencePattern] || '* * * * *';
 
-    console.log('Scheduling job with start date:', new Date(startDate).toString());
-    console.log('Current server time:', new Date().toString());
+    console.log('Scheduling job with start date (UTC):', new Date(startDateUTC).toISOString());
+    console.log('Current server time (UTC):', new Date().toISOString());
 
-    const initialJob = schedule.scheduleJob(new Date(startDate), async function () {
-      console.log('Initial job executed at:', new Date());
+    const initialJob = schedule.scheduleJob(new Date(startDateUTC), async function () {
+      console.log('Initial job executed at (UTC):', new Date().toISOString());
       await executeTask(email, startDate, recurrencePattern, tableSelection, columnSelection, timeFrame, transporter);
 
       if (recurrencePattern !== 'once') {
         const recurringJob = schedule.scheduleJob(cronPattern, async function () {
-          console.log('Recurring job executed at:', new Date());
+          console.log('Recurring job executed at (UTC):', new Date().toISOString());
           await executeTask(email, startDate, recurrencePattern, tableSelection, columnSelection, timeFrame, transporter);
         });
 
@@ -107,6 +108,8 @@ const scheduleTask = async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
+
 
 const executeTask = async (email, startDate, recurrencePattern, tableSelection, columnSelection, timeFrame, transporter) => {
   try {
@@ -230,7 +233,6 @@ const executeTask = async (email, startDate, recurrencePattern, tableSelection, 
     console.error('Error in executeTask:', error);
   }
 };
-
 
 const formatHeaderKey = (key) => {
   return key
