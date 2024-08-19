@@ -7,7 +7,7 @@ import CustomDataTable from "../../components/common/CustomDataTable";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { useSelector } from "react-redux";
 import authFetch from "../../axios";
-import salesData from "../../sales_data.json";
+import salesDataJson from "../../salesdboard.json";
 
 export const SalesDashboard = () => {
   const [loading, setLoading] = useState(true);
@@ -26,6 +26,16 @@ export const SalesDashboard = () => {
     original_order_total_amount: number;
     line_ordered_qty: number;
   }
+
+  interface SalesSummary {
+    linePriceTotal: number;
+    shippingCharges: number;
+    discount: number;
+    taxCharges: number;
+    totalUnits: number;
+    margin: number;
+    ROI: number;
+  }
   
   type SalesData = SalesDataItem[];
 
@@ -35,9 +45,9 @@ export const SalesDashboard = () => {
   data.forEach((item) => {
     const orderDate = moment(item.datetime);
     const now = moment();
-    const format = now.diff(orderDate, 'hours') < 24 ? 'YYYY-MM-DD HH:mm:ss' : 'YYYY-MM-DD';
+    const format = now.diff(orderDate, 'hours') < 24 ? 'DD-MM HH:mm:ss' : 'DD-MM';
     const formattedDate = orderDate.format(format);
-
+    
     const formattedItem = {
       ...item,
       datetime: formattedDate,
@@ -56,7 +66,60 @@ export const SalesDashboard = () => {
 
   return result;
 }
+const [salesDeets, setSalesDeets] = useState<SalesSummary>({
+  linePriceTotal: 0,
+  shippingCharges: 0,
+  discount: 0,
+  taxCharges: 0,
+  totalUnits: 0,
+  margin: 0,
+  ROI: 0,
+})
 
+const calculateSalesSummary = (
+  startDate: string,
+  endDate: string,
+  data: any[]
+): SalesSummary => {
+  // Convert the string dates into moment.js dates for comparison
+  const formattedStartDate = moment(startDate, 'YYYY-MM-DD');
+  const formattedEndDate = moment(endDate, 'YYYY-MM-DD');
+
+  // Filter the data to include only the dates within the specified range
+  const filteredData = data.filter((item) => {
+    const itemDate = moment(item.date, 'YYYY-MM-DD');
+    return itemDate.isBetween(formattedStartDate, formattedEndDate, null, "[]");
+  });
+
+  // Calculate the summary based on the filtered data
+  const summary = filteredData.reduce(
+    (acc, item) => {
+      acc.linePriceTotal += item.linePriceTotal || 0;
+      acc.shippingCharges += item.shippingCharges || 0;
+      acc.discount += item.discount || 0;
+      acc.taxCharges += item.taxCharges || 0;
+      acc.totalUnits += item.totalUnits || 0;
+      acc.margin += item.margin || 0;
+      acc.ROI += item.ROI || 0;
+      return acc;
+    },
+    {
+      linePriceTotal: 0,
+      shippingCharges: 0,
+      discount: 0,
+      taxCharges: 0,
+      totalUnits: 0,
+      margin: 0,
+      ROI: 0,
+    } as SalesSummary
+  );
+
+  // Average the ROI over the filtered data
+  summary.ROI = filteredData.length ? summary.ROI / filteredData.length : 0;
+
+  return summary;
+};
+const salesData = salesDataJson.data;
 const fetchData = async (
   start: moment.Moment,
   end: moment.Moment,
@@ -71,8 +134,10 @@ const fetchData = async (
     const response1 = await authFetch(
       `/alsd/get-full-sales-data?start_date=${formattedStartDate}&end_date=${formattedEndDate}&intervaltime=${intervalTime}`
     );
+    const calculatedData = calculateSalesSummary(formattedStartDate, formattedEndDate, salesData);
     setTypeData(response1.data);
     setLoading(false);
+    setSalesDeets(calculatedData);
   } catch (error) {
     console.error("Error fetching data:", error);
   }
@@ -84,7 +149,9 @@ useEffect(() => {
     const end = moment(dates[1]);
     const days = end.diff(start, "days") + 1;
     // setDaysDifference(days);
+    
     fetchData(start, end, days);
+    
   }
 }, [dates]);
 if (loading) {
@@ -95,7 +162,6 @@ if (loading) {
   );
 }
 
-  const salesDeets = salesData.MFData.totalStats;
 
   const logos = [
     "https://img.logoipsum.com/224.svg",
@@ -216,48 +282,54 @@ if (loading) {
 };
 
 
-  const salesDetails = [
-    {
-      label: "Total Booked",
-      value: `$ ${formatNumber(salesDeets.original_order_total_amount)}`,
-      color: "bg-blue-500",
-    },
-    {
-      label: "Line Price Total",
-      value: `$ ${formatNumber(Number(salesDeets.line_price_total))}`,
-      color: "bg-green-500",
-    },
-    {
-      label: "Shipping Charges",
-      value: `$ ${formatNumber(Number(salesDeets.shipping_cost))}`,
-      color: "bg-violet-500",
-    },
-    {
-      label: "Discount",
-      value: `$ ${formatNumber(Number(salesDeets.discount))}`,
-      color: "bg-amber-500",
-    },
-    {
-      label: "Tax Charges",
-      value: `$ ${formatNumber(Number(salesDeets.tax))}`,
-      color: "bg-red-500",
-    },
-    {
-      label: "Total Units",
-      value: formatNumber(Number(salesDeets.line_ordered_qty)),
-      color: "bg-purple-500",
-    },
-    {
-      label: "Margin",
-      value: `$ ${formatNumber(Number(salesDeets.line_margin))}`,
-      color: "bg-yellow-500",
-    },
-    {
-      label: "ROI",
-      value: "45%",
-      color: "bg-emerald-500",
-    },
-  ];
+const totalBooked = 
+  Number(salesDeets.linePriceTotal) + 
+  Number(salesDeets.shippingCharges) - 
+  Number(salesDeets.discount) + 
+  Number(salesDeets.taxCharges);
+
+const salesDetails = [
+  {
+    label: "Total Booked",
+    value: `$ ${formatNumber(totalBooked)}`,
+    color: "bg-blue-500",
+  },
+  {
+    label: "Line Price Total",
+    value: `$ ${formatNumber(salesDeets.linePriceTotal)}`,
+    color: "bg-green-500",
+  },
+  {
+    label: "Shipping Charges",
+    value: `$ ${formatNumber(salesDeets.shippingCharges)}`,
+    color: "bg-violet-500",
+  },
+  {
+    label: "Discount",
+    value: `$ ${formatNumber(salesDeets.discount)}`,
+    color: "bg-amber-500",
+  },
+  {
+    label: "Tax Charges",
+    value: `$ ${formatNumber(salesDeets.taxCharges)}`,
+    color: "bg-red-500",
+  },
+  {
+    label: "Total Units",
+    value: formatNumber(salesDeets.totalUnits),
+    color: "bg-purple-500",
+  },
+  {
+    label: "Margin",
+    value: `$ ${formatNumber(salesDeets.margin)}`,
+    color: "bg-yellow-500",
+  },
+  {
+    label: "ROI",
+    value: `${Math.round(salesDeets.ROI)}%`,
+    color: "bg-emerald-500",
+  },
+];
 
   return (
 <div className="w-full bg-white m-2 overflow-hidden rounded-lg shadow-xl h-full flex flex-col">
