@@ -263,14 +263,44 @@ if (loading) {
       style: "decimal",
     }).format(roundedValue);
   };
+  
+  const formatItemId = (item_id:any) => {
+    if (!item_id) return "";
+  
+  if (/^[A-Z]/i.test(item_id)) {
+   
+    item_id = 'A' + item_id.slice(1);
+  } else if (/^\d/.test(item_id)) {
+    
+    item_id = 'A' + item_id;
+  }
+  
+    if (item_id.length < 15) {
+      item_id = item_id.padStart(15, '0');
+    }
+  
+    return item_id;
+  };
 
-  const formatCustomDataTableData = (
+const formatCustomDataTableData = (
   data: any[],
   fields: string[],
   prependDollar: boolean = false
 ) => {
   return data.map((item) => {
-    const formattedItem = { ...item };
+    let formattedItem = { ...item };
+    if (!formattedItem.name) {
+      formattedItem.name = "Other";
+    }
+    
+    if(formattedItem.web_category==="Donation Skus"){
+        formattedItem.web_category="Donation";
+    }
+    
+    if (formattedItem.item_id) {
+      formattedItem.item_id = formatItemId(formattedItem.item_id);
+    }
+    formattedItem.item_id = formatItemId(formattedItem.item_id);
     fields.forEach((field) => {
       const value = Math.round(formattedItem[field]);
       formattedItem[field] = prependDollar
@@ -280,7 +310,6 @@ if (loading) {
     return formattedItem;
   });
 };
-
 
 const totalBooked = 
   Number(salesDeets.linePriceTotal) + 
