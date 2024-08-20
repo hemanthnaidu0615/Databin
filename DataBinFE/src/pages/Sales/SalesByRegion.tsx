@@ -111,8 +111,8 @@ export const SalesByRegion = () => {
           const stateAbbreviation = item[0].split("-")[1].toUpperCase();
           const stateName = statess[stateAbbreviation];
           const revenue = formatterUSD.format(item[1]);
-
-          const quantity = item[3];
+         
+          const quantity = new Intl.NumberFormat('en-US').format(item[3]); 
           
           acc[stateName] = `Revenue: ${revenue} + Quantity: ${quantity}`;
           return acc;
@@ -152,7 +152,7 @@ export const SalesByRegion = () => {
       state: innerArr[0],
       totalDollar: `${formatterUSD.format(innerArr[1])}`,
       percentage: `${innerArr[2]} %`,
-      quantity: innerArr[3], 
+      quantity: new Intl.NumberFormat('en-US').format(innerArr[3]),
     }));
 
   }

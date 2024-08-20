@@ -16,6 +16,7 @@ const SalesFlow = () => {
   const [type, setType] = useState("item-info");
   const [zoomValue, setZoomValue] = useState(50);
   const [orientation, setOrientation] = useState("horizontal");
+  const [activeType, setActiveType] = useState(type);
 
   const { dates } = useSelector((store: any) => store.dateRange);
 
@@ -40,8 +41,23 @@ const SalesFlow = () => {
     fetchData(type);
   }, [dates, type]);
 
+  useEffect(() => {
+    const savedType = localStorage.getItem('selectedType');
+    if (savedType) {
+      setActiveType(savedType);
+      setType(savedType);
+      fetchData(savedType);
+    } else {
+      setActiveType(type);
+      fetchData(type);
+    }
+  }, [dates]);
+
+  
   function handleSelectingType(newType: string) {
+    setActiveType(newType);
     setType(newType);
+    localStorage.setItem('selectedType', newType);
     fetchData(newType);
   }
 
@@ -103,21 +119,17 @@ const SalesFlow = () => {
           <div className="flex m-2 gap-2">
             {buttonData.map((btn, index) => (
               <Button
-                key={index}
-                className="p-2 text-sm bg-purple-500 border-0"
-                onClick={() => handleSelectingType(btn.value)}
-                style={{
-                  transition: "background-color 0.3s",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = "#9f7aea";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = "#7c3aed";
-                }}
-              >
-                {btn.name}
-              </Button>
+              key={index}
+              className={`p-2 text-sm border-0 ${
+                activeType === btn.value ? 'bg-purple-800' : 'bg-purple-500'
+              }`}
+              onClick={() => handleSelectingType(btn.value)}
+              style={{
+                transition: "background-color 0.3s",
+              }}
+            >
+              {btn.name}
+            </Button>
             ))}
           </div>
           <Dropdown

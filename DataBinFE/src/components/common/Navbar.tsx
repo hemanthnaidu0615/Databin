@@ -54,6 +54,7 @@ export const Navbar = () => {
       command: () => {
         localStorage.removeItem("accessToken");
         localStorage.removeItem('userRole');
+        localStorage.removeItem("selectedType");
         setUserRole('');
         navigate("/");
       },
