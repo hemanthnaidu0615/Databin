@@ -1,9 +1,9 @@
 import { Menubar } from "primereact/menubar";
 import { Button } from "primereact/button";
 import { Avatar } from "primereact/avatar";
+import { Badge } from "primereact/badge";
 import { ContextMenu } from "primereact/contextmenu";
-import logo from "../../images/logo.png";
-import "primeicons/primeicons.css";
+import { OverlayPanel } from "primereact/overlaypanel";
 import { useRef, useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
@@ -11,7 +11,10 @@ import { Calendar } from "primereact/calendar";
 import { setDates } from "../../store/dateRangeSlice";
 import { setEnterpriseKey } from "../../store/enterpriseSlice";
 import authFetch from "../../axios";
-import { RootState } from '../../store/store';
+import { RootState } from "../../store/store";
+import "primeicons/primeicons.css";
+import logo from "../../images/logo.png";
+import "@fortawesome/fontawesome-free/css/all.min.css"; // Import FontAwesome
 
 export const Navbar = () => {
   const [datesT, setDatesT] = useState<Date[]>([
@@ -22,14 +25,14 @@ export const Navbar = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
-  const [userRole, setUserRole] = useState('');
+  const [userRole, setUserRole] = useState("");
   const userEmail = useSelector((state: RootState) => state.user.useremail);
 
   const hideCalendarRoutes = [
     "/home-dashboard",
     "/timeseries",
     "/sales/analysis",
-    "/user-management"
+    "/user-management",
   ];
 
   const hideDropdownRoutes = [
@@ -39,7 +42,7 @@ export const Navbar = () => {
     "/returns",
     "/timeseries",
     "/user-management",
-    "/sales/dashboard"
+    "/sales/dashboard",
   ];
 
   const hideCalendar = hideCalendarRoutes.includes(location.pathname);
@@ -47,14 +50,16 @@ export const Navbar = () => {
   const { username } = useSelector((store: any) => store.user);
   const enterpriseKey = useSelector((store: any) => store.enterprise.key);
   const cm = useRef<any>(null);
+  const op = useRef<any>(null); // Reference for OverlayPanel
+
   const items = [
     {
       label: "Logout",
       icon: "pi pi-sign-out",
       command: () => {
         localStorage.removeItem("accessToken");
-        localStorage.removeItem('userRole');
-        setUserRole('');
+        localStorage.removeItem("userRole");
+        setUserRole("");
         navigate("/");
       },
     },
@@ -63,9 +68,7 @@ export const Navbar = () => {
   useEffect(() => {
     const fetchEnterpriseKeys = async () => {
       try {
-        const response = await authFetch(
-          "/tables/enterprise-keys"
-        );
+        const response = await authFetch("/tables/enterprise-keys");
         console.log(response.data);
         setEnterpriseKeys(response.data);
       } catch (error) {
@@ -86,7 +89,7 @@ export const Navbar = () => {
           }
         })
         .catch((error) => {
-          console.error('Error fetching user role:', error);
+          console.error("Error fetching user role:", error);
         });
     }
   }, [userEmail]);
@@ -104,13 +107,13 @@ export const Navbar = () => {
     console.log("Selected enterprise key:", event.target.value);
     dispatch(setEnterpriseKey(event.target.value));
   }
+
   const getInitials = (name: string) => {
-    if (!name) return ""; 
+    if (!name) return "";
     const nameArray = name.split(" ").filter(Boolean);
-    const initials = nameArray.map(n => n[0].toUpperCase()).join("");
+    const initials = nameArray.map((n) => n[0].toUpperCase()).join("");
     return initials;
   };
-  
 
   const start = (
     <div className="flex align-items-center items-center gap-1 divide-x divide-gray-400">
@@ -126,7 +129,7 @@ export const Navbar = () => {
   );
 
   const end = (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2 relative">
       <div>
         {!hideCalendar && (
           <Calendar
@@ -154,21 +157,57 @@ export const Navbar = () => {
       <div className="flex items-center gap-2">
         {!hideDropdown && (
           <>
-            {/* <label htmlFor="enterpriseKey" className="mr-2 text-xl font-semibold text-violet-800">Seller:</label> */}
             <select
               id="enterpriseKey"
               value={enterpriseKey}
               onChange={handleEnterpriseChange}
               className="p-inputtext p-component ml-2 h-12 text-sm"
             >
-              {enterpriseKeys.map(key => (
-                <option key={key} value={key}>{key}</option>
+              {enterpriseKeys.map((key) => (
+                <option key={key} value={key}>
+                  {key}
+                </option>
               ))}
             </select>
           </>
         )}
       </div>
-      {userRole === 'admin' || userRole === 'manager' ? (
+
+      <div className="relative flex items-center group">
+        <i
+          className="fas fa-bell text-2xl text-gray-700 hover:text-gray-900 transition-transform duration-300 transform hover:scale-110 cursor-pointer"
+          onClick={(e) => op.current.toggle(e)}
+        ></i>{" "}
+        {/* FontAwesome Bell Icon */}
+        <Badge
+          value="2"
+          severity="danger"
+          className="absolute -top-2 -right-2"
+          style={{
+            fontSize: "0.6rem", // Smaller text size for the badge
+            width: "1rem", // Fixed width
+            height: "1rem", // Fixed height
+            borderRadius: "50%", // Make it round
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            // background: 'linear-gradient(45deg, #ff6b6b, #ff4757)', // Gradient background
+            //border: '2px solid #ffffff', // White border
+            boxShadow: "0 0 3px rgba(0,0,0,0.3)", // Shadow for better visibility
+          }}
+        />
+      </div>
+
+      <OverlayPanel ref={op} dismissable>
+  <div>
+    <p className="m-0"><b>Alert 1: Data Update Notification</b> <br/>John Doe has updated the 'Order Status' column in the 'Orders' table. <br/> The status has been changed from 'Pending' to 'Shipped'</p>
+    <p className="m-0"><b>Alert 2: Record Modification Alert</b><br/>John Doe has modified the 'Price' column in the 'Products' table. <br/>The price for 'Product X' has been increased from $20.00 to $22.50.</p>
+  </div>
+</OverlayPanel>
+
+
+
+      {userRole === "admin" || userRole === "manager" ? (
         <Link to="/user-management">
           <Button
             icon="pi pi-cog"
@@ -184,6 +223,7 @@ export const Navbar = () => {
       ) : (
         ""
       )}
+
       <div>
         <ContextMenu model={items} ref={cm} breakpoint="767px" />
         <Avatar
