@@ -14,7 +14,7 @@ import authFetch from "../../axios";
 import { RootState } from "../../store/store";
 import "primeicons/primeicons.css";
 import logo from "../../images/logo.png";
-import "@fortawesome/fontawesome-free/css/all.min.css"; // Import FontAwesome
+import "@fortawesome/fontawesome-free/css/all.min.css"; 
 
 export const Navbar = () => {
   const [datesT, setDatesT] = useState<Date[]>([
@@ -115,6 +115,12 @@ export const Navbar = () => {
     return initials;
   };
 
+
+  const messages = [
+    "1: Unauthorized Data Access Alert\nJohn Doe has updated the 'Order Status' column in the 'Orders' table.\nThe status has been changed from 'Pending' to 'Shipped'.",
+    "2: Sudden Data Spike Alert\nJohn Doe has modified the 'Price' column in the 'Products' table.\nThe price for 'Product X' has been increased from $20.00 to $22.50.",
+    "3: Data Deletion Alert\nJohn Doe has modified the 'Price' column in the 'Products' table.\nThe price for 'Product X' has been increased from $20.00 to $22.50."
+  ];
   const start = (
     <div className="flex align-items-center items-center gap-1 divide-x divide-gray-400">
       <div className="flex mr-1 items-center">
@@ -178,31 +184,30 @@ export const Navbar = () => {
           className="fas fa-bell text-2xl text-gray-700 hover:text-gray-900 transition-transform duration-300 transform hover:scale-110 cursor-pointer"
           onClick={(e) => op.current.toggle(e)}
         ></i>{" "}
-        {/* FontAwesome Bell Icon */}
+      
         <Badge
-          value="2"
+          value="3"
           severity="danger"
           className="absolute -top-2 -right-2"
           style={{
-            fontSize: "0.6rem", // Smaller text size for the badge
-            width: "1rem", // Fixed width
-            height: "1rem", // Fixed height
-            borderRadius: "50%", // Make it round
+            fontSize: "0.6rem", 
+            width: "1rem", 
+            height: "1rem", 
+            borderRadius: "50%", 
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            // background: 'linear-gradient(45deg, #ff6b6b, #ff4757)', // Gradient background
-            //border: '2px solid #ffffff', // White border
-            boxShadow: "0 0 3px rgba(0,0,0,0.3)", // Shadow for better visibility
+            boxShadow: "0 0 3px rgba(0,0,0,0.3)", 
           }}
         />
       </div>
 
       <OverlayPanel ref={op} dismissable>
   <div>
-    <p className="m-0"><b>Alert 1: Data Update Notification</b> <br/>John Doe has updated the 'Order Status' column in the 'Orders' table. <br/> The status has been changed from 'Pending' to 'Shipped'</p>
-    <p className="m-0"><b>Alert 2: Record Modification Alert</b><br/>John Doe has modified the 'Price' column in the 'Products' table. <br/>The price for 'Product X' has been increased from $20.00 to $22.50.</p>
-  </div>
+    <p className="m-0"><b>1: Unauthorized Data Access Alert</b> <br/>John Doe has updated the 'Order Status' column in the 'Orders' table. <br/> The status has been changed from 'Pending' to 'Shipped'</p>
+    <p className="m-0"><b>2: Sudden Data Spike Alert</b><br/>John Doe has modified the 'Price' column in the 'Products' table. <br/>The price for 'Product X' has been increased from $20.00 to $22.50.</p>
+    <p className="m-0"><b>3: Data Deletion Alert</b><br/>John Doe has modified the 'Price' column in the 'Products' table. <br/>The price for 'Product X' has been increased from $20.00 to $22.50.</p>
+  </div> 
 </OverlayPanel>
 
 
