@@ -8,6 +8,7 @@ import { ProgressSpinner } from "primereact/progressspinner";
 import { useSelector } from "react-redux";
 import authFetch from "../../axios";
 import salesDataJson from "../../salesdboard.json";
+import './style.css';
 
 export const SalesDashboard = () => {
   const [loading, setLoading] = useState(true);
@@ -405,190 +406,187 @@ const salesDetails = [
     </div>
   </div>
   <div className="card m-2 h-full"></div>
-
-{typeData?.map((type: any, i: any) => {
-        return (
-          <div key={i}>
-            <TabView
-              className="border-2"
-              pt={{
-                navContainer: {
-                  className: "flex h-10 justify-end px-6  text-xs",
-                },
-                panelContainer: { className: "p-1" },
-                inkbar: { className: "bg-purple-700" },
-              }}
-            >
-              <TabPanel headerTemplate={tab1HeaderTemplate} header="Chart">
-                <SalesCardPie
-                   dataForLineChart={formatSeriesDataLinechart(
-                    separateOrderChannels(type?.chartSeries.series)
-                  )}
-                  dataForPieChart={formatSeriesData(
-                    type?.salesCategories.ORDER_CAPTURE_CHANNEL_GROUPED
-                  )}
-                  
-                  dataForBarChart={separateOrderChannels(
-                    type?.chartSeries.series
-                  )}
-                  dataForTable={type?.chartSeries.series}
-                  brandName={type?.name}
-                  progressbarValue={
-                    type?.salesCategories?.original_order_total_amount
-                  }
-                  logo={logos[i] as any}
-                  leftLegend={"Order Amount ($)"}
-                />
-              </TabPanel>
-              <TabPanel headerTemplate={tab2HeaderTemplate} header="By Type">
-                <h3 className="flex text-sm font-semibold ml-1 mb-1  px-4">
-                  {type?.name}
-                </h3>
-                <div className="card flex gap-2  m-2 h-full py-1 px-2  align-center justify-center">
-                  <div className="card border border-gray-200 shadow-lg rounded-lg  py-1 px-2 m-2 flex-1">
-                    <h3 className="flex items-center text-sm font-semibold ml-1 mb-1 py-2">
-                      By Channel
-                    </h3>
-                    <CustomDataTable
-                      data={formatCustomDataTableData(
-                        type?.salesCategories.ORDER_CAPTURE_CHANNEL_GROUPED ||
-                          [],
-                        ["original_order_total_amount", "line_ordered_qty"]
-                      )}
-                      columns={[
-                        { field: "name", header: "Name" },
-                        {
-                          field: "original_order_total_amount",
-                          header: "Units",
-                          format: true,
-                        },
-                        {
-                          field: "line_ordered_qty",
-                          header: "Total",
-                          format: true,
-                          prependDollar: true,
-                        },
-                      ]}
-                    />
-                  </div>
-                  <div className="card border border-gray-200 shadow-lg rounded-lg  py-1 px-2 m-2 flex-1 ">
-                    <h3 className="flex items-center text-sm font-semibold ml-1 mb-1 py-2">
-                      By Fulfillment
-                    </h3>
-                    <CustomDataTable
-                      data={formatCustomDataTableData(
-                        type?.salesCategories.LINE_FULFILLMENT_TYPE_GROUPED ||
-                          [],
-                        ["original_order_total_amount", "line_ordered_qty"]
-                      )}
-                      columns={[
-                        { field: "name", header: "Name" },
-                        {
-                          field: "original_order_total_amount",
-                          header: "Units",
-                          format: true,
-                        },
-                        {
-                          field: "line_ordered_qty",
-                          header: "Total",
-                          format: true,
-                          prependDollar: true,
-                        },
-                      ]}
-                    />
-                  </div>
-                  <div className=" card border border-gray-200 shadow-lg rounded-lg  py-1 px-2 m-2 flex-1 ">
-                    <h3 className="flex items-center text-sm font-semibold ml-1 mb-1 py-2">
-                      By Item
-                    </h3>
-                    <CustomDataTable
-                      data={formatCustomDataTableData(
-                        type?.salesCategories.ITEM_INFO_GROUPED || [],
-                        ["original_order_total_amount", "line_ordered_qty"]
-                      )}
-                      columns={[
-                        { field: "name", header: "Name" },
-                        {
-                          field: "original_order_total_amount",
-                          header: "Units",
-                          format: true,
-                        },
-                        {
-                          field: "line_ordered_qty",
-                          header: "Total",
-                          format: true,
-                          prependDollar: true,
-                        },
-                      ]}
-                    />
-                  </div>
-                </div>
-              </TabPanel>
-              <TabPanel
-                headerTemplate={tab3HeaderTemplate}
-                header="Volume-Value"
-              >
-                <h3 className="flex text-sm font-semibold ml-1 mb-1  px-4">
-                  {type?.name}
-                </h3>
-                <div className="card flex gap-2  m-2 h-full py-1 px-2  align-center justify-center">
-                  <div className="card  border border-gray-200 shadow-lg rounded-lg  py-1 px-2 m-2 flex-1 w-1/2">
-                    <h3 className="flex items-center text-sm font-semibold ml-1 mb-1 py-2">
-                      By Volume
-                    </h3>
-                    <CustomDataTable
-                      data={formatCustomDataTableData(
-                        type?.topItemsData?.byVolume || [],
-                        ["line_ordered_qty"]
-                      )}
-                      columns={[
-                        { field: "item_id", header: "Item Id" },
-                        {
-                          field: "web_category",
-                          header: "Web Category",
-                        },
-                        { field: "brand_name", header: "Brand Name" },
-                        {
-                          field: "line_ordered_qty",
-                          header: "Total",
-                          format: true,
-                          
-                        },
-                      ]}
-                    />
-                  </div>
-                  <div className="card border border-gray-200 shadow-lg rounded-lg  py-1 px-2 m-2 flex-1 w-1/2">
-                    <h3 className="flex items-center text-sm font-semibold ml-1 mb-1 py-2">
-                      By Value
-                    </h3>
-                    <CustomDataTable
-                      data={formatCustomDataTableData(
-                        type?.topItemsData?.byValue || [],
-                        ["original_order_total_amount"]
-                      )}
-                      columns={[
-                        { field: "item_id", header: "Item Id" },
-                        {
-                          field: "web_category",
-                          header: "Web Category",
-                        },
-                        { field: "brand_name", header: "Brand Name" },
-                        {
-                          field: "original_order_total_amount",
-                          header: "Total",
-                          format: true,
-                          prependDollar: true,
-                        },
-                      ]}
-                    />
-                  </div>
-                </div>
-              </TabPanel>
-            </TabView>
+  {typeData?.map((type: any, i: any) => {
+  return (
+    <div key={i}>
+      <TabView
+        className="border-2"
+        pt={{
+          navContainer: {
+            className: "flex h-10 justify-end px-6 text-xs",
+          },
+          panelContainer: { className: "p-1" },
+          inkbar: { className: "bg-purple-700" },
+        }}
+      >
+        <TabPanel headerTemplate={tab1HeaderTemplate} header="Chart">
+        <div className="sales-dashboard-chart-card-container">
+  <div className="sales-dashboard-chart-card">
+    <div className="sales-dashboard-chart-card-table">
+          <SalesCardPie
+            dataForLineChart={formatSeriesDataLinechart(
+              separateOrderChannels(type?.chartSeries.series)
+            )}
+            dataForPieChart={formatSeriesData(
+              type?.salesCategories.ORDER_CAPTURE_CHANNEL_GROUPED
+            )}
+            dataForBarChart={separateOrderChannels(
+              type?.chartSeries.series
+            )}
+            dataForTable={type?.chartSeries.series}
+            brandName={type?.name}
+            progressbarValue={
+              type?.salesCategories?.original_order_total_amount
+            }
+            logo={logos[i] as any}
+            leftLegend={"Order Amount ($)"}
+          />
           </div>
-        );
-      })}
+          </div>
+          </div>
+        </TabPanel>
+        <TabPanel headerTemplate={tab2HeaderTemplate} header="By Type">
+          <h3 className="flex text-sm font-semibold ml-1 mb-1 px-4">
+            {type?.name}
+          </h3>
+          <div className="sales-dashboard-card-container card flex gap-2 m-2 py-1 px-2 align-center justify-center">
+            <div className="sales-dashboard-card border border-gray-200 shadow-lg rounded-lg py-1 px-2 m-2 flex-1">
+              <h3 className="flex items-center text-sm font-semibold ml-1 mb-1 py-2">
+                By Channel
+              </h3>
+              <CustomDataTable
+                data={formatCustomDataTableData(
+                  type?.salesCategories.ORDER_CAPTURE_CHANNEL_GROUPED ||
+                    [],
+                  ["original_order_total_amount", "line_ordered_qty"]
+                )}
+                columns={[
+                  { field: "name", header: "Name" },
+                  {
+                    field: "original_order_total_amount",
+                    header: "Units",
+                    format: true,
+                  },
+                  {
+                    field: "line_ordered_qty",
+                    header: "Total",
+                    format: true,
+                    prependDollar: true,
+                  },
+                ]}
+              />
+            </div>
+            <div className="sales-dashboard-card border border-gray-200 shadow-lg rounded-lg py-1 px-2 m-2 flex-1">
+              <h3 className="flex items-center text-sm font-semibold ml-1 mb-1 py-2">
+                By Fulfillment
+              </h3>
+              <CustomDataTable
+                data={formatCustomDataTableData(
+                  type?.salesCategories.LINE_FULFILLMENT_TYPE_GROUPED ||
+                    [],
+                  ["original_order_total_amount", "line_ordered_qty"]
+                )}
+                columns={[
+                  { field: "name", header: "Name" },
+                  {
+                    field: "original_order_total_amount",
+                    header: "Units",
+                    format: true,
+                  },
+                  {
+                    field: "line_ordered_qty",
+                    header: "Total",
+                    format: true,
+                    prependDollar: true,
+                  },
+                ]}
+                />
+            </div>
+            <div className="sales-dashboard-card border border-gray-200 shadow-lg rounded-lg py-1 px-2 m-2 flex-1">
+              <h3 className="flex items-center text-sm font-semibold ml-1 mb-1 py-2">
+                By Item
+              </h3>
+              <CustomDataTable
+                data={formatCustomDataTableData(
+                  type?.salesCategories.ITEM_INFO_GROUPED || [],
+                  ["original_order_total_amount", "line_ordered_qty"]
+                )}
+                columns={[
+                  { field: "name", header: "Name" },
+                  {
+                    field: "original_order_total_amount",
+                    header: "Units",
+                    format: true,
+                  },
+                  {
+                    field: "line_ordered_qty",
+                    header: "Total",
+                    format: true,
+                    prependDollar: true,
+                  },
+                ]}
+              />
+            </div>
+          </div>
+        </TabPanel>
+        <TabPanel headerTemplate={tab3HeaderTemplate} header="Volume-Value">
+          <h3 className="flex text-sm font-semibold ml-1 mb-1 px-4">
+            {type?.name}
+          </h3>
+          <div className="sales-dashboard-card-container card flex gap-2 m-2 py-1 px-2 align-center justify-center">
+            <div className="sales-dashboard-card border border-gray-200 shadow-lg rounded-lg py-1 px-2 m-2 flex-1 w-1/2">
+              <h3 className="flex items-center text-sm font-semibold ml-1 mb-1 py-2">
+                By Volume
+              </h3>
+              <CustomDataTable
+                data={formatCustomDataTableData(
+                  type?.topItemsData?.byVolume || [],
+                  ["line_ordered_qty"]
+                )}
+                columns={[
+                  { field: "item_id", header: "Item Id" },
+                  {
+                    field: "web_category",
+                    header: "Web Category",
+                  },
+                  { field: "brand_name", header: "Brand Name" },
+                  {
+                    field: "line_ordered_qty",
+                    header: "Total",
+                    format: true,
+                  },
+                ]}
+              />
+            </div>
+            <div className="sales-dashboard-card border border-gray-200 shadow-lg rounded-lg py-1 px-2 m-2 flex-1 w-1/2">
+              <h3 className="flex items-center text-sm font-semibold ml-1 mb-1 py-2">
+                By Value
+              </h3>
+              <CustomDataTable
+                data={formatCustomDataTableData(
+                  type?.topItemsData?.byValue || [],
+                  ["original_order_total_amount"]
+                )}
+                columns={[
+                  { field: "item_id", header: "Item Id" },
+                  {
+                    field: "web_category",
+                    header: "Web Category",
+                  },
+                  { field: "brand_name", header: "Brand Name" },
+                  {
+                    field: "original_order_total_amount",
+                    header: "Total",
+                    format: true,
+                    prependDollar: true,
+                  },
+                ]}
+              />
+            </div>
+          </div>
+        </TabPanel>
+      </TabView>
     </div>
   );
-};
-
+})};
+</div>)};

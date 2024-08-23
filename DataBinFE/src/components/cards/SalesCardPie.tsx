@@ -75,12 +75,12 @@ export const SalesCardPie = (props: any) => {
         />
       </div>
       {chart === "Pie Chart" && (
-        <div className="w-[62%] min-h-56">
+        <div className="w-[62%] min-h-80 mt-10">
           <PieChart data={props.dataForPieChart} logo={props.logo} />
         </div>
       )}
       {chart === "Line Chart" && (
-        <div className="w-[62%] min-h-56">
+        <div className="w-[62%] min-h-80 mt-10">
           <LineChart
             data={props.dataForLineChart}
             length={props.length}
@@ -90,16 +90,16 @@ export const SalesCardPie = (props: any) => {
         </div>
       )}
       {chart === "Bar Chart" && (
-        <div className="w-[62%] min-h-56">
+        <div className="w-[62%] min-h-80">
           <BarChart chartData={chartData} />
         </div>
       )}
       {chart === "Table View" && (
-        <div className="w-[62%] min-h-56">
+        <div className="w-[62%] min-h-80 mt-10">
           <DataTable
             showGridlines
             scrollable
-            scrollHeight="200px"
+            scrollHeight="300px"
             value={props.dataForTable}
             size="small"
             className="text-xs"

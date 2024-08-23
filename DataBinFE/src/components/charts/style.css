@@ -111,3 +111,8 @@
 .d3-node-rect {
   fill: #d9bbfb;
 }
+@media (min-width: 1024px) {
+  .chart-container {
+    height: 350px; 
+  }
+}

@@ -23,3 +23,16 @@
 .p-toast {
   z-index: 9999; 
 }
+@media (min-width: 1024px) {
+  .sales-dashboard-card-container {
+    height: 350px;
+  }
+  .sales-dashboard-chart-card-container {
+    height: 400px !important; 
+}
+}
+
+
+
+
+
