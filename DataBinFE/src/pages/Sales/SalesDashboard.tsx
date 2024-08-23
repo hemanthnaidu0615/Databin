@@ -81,17 +81,24 @@ const calculateSalesSummary = (
   endDate: string,
   data: any[]
 ): SalesSummary => {
-  // Convert the string dates into moment.js dates for comparison
   const formattedStartDate = moment(startDate, 'YYYY-MM-DD');
   const formattedEndDate = moment(endDate, 'YYYY-MM-DD');
-
-  // Filter the data to include only the dates within the specified range
-  const filteredData = data.filter((item) => {
-    const itemDate = moment(item.date, 'YYYY-MM-DD');
-    return itemDate.isBetween(formattedStartDate, formattedEndDate, null, "[]");
-  });
-
-  // Calculate the summary based on the filtered data
+ 
+    // Filter data to only include items within the specified date range
+    const filteredData = data.filter((item) => {
+      // Create a full date for each item
+      const fullItemDate = moment(item.date, 'DD')
+        .month(formattedStartDate.month())
+        .year(formattedStartDate.year());
+  
+      // Adjust the month and year to correctly reflect the actual date
+      if (fullItemDate.isBefore(formattedStartDate)) {
+        fullItemDate.add(1, 'months');
+      }
+  
+      return fullItemDate.isBetween(formattedStartDate, formattedEndDate, undefined, '[]');
+    });
+ 
   const summary = filteredData.reduce(
     (acc, item) => {
       acc.linePriceTotal += item.linePriceTotal || 0;
@@ -113,10 +120,17 @@ const calculateSalesSummary = (
       ROI: 0,
     } as SalesSummary
   );
-
-  // Average the ROI over the filtered data
-  summary.ROI = filteredData.length ? summary.ROI / filteredData.length : 0;
-
+  // Calculate the month difference for adjustment
+  const monthDifference = formattedEndDate.diff(formattedStartDate, 'months', true) + 1;
+  summary.linePriceTotal *= monthDifference;
+  summary.shippingCharges *= monthDifference;
+  summary.discount *= monthDifference;
+  summary.taxCharges *= monthDifference;
+  summary.totalUnits *= monthDifference;
+  summary.margin *= monthDifference;
+    // Average the ROI instead of multiplying it by the month difference
+    summary.ROI = filteredData.length ? summary.ROI / filteredData.length : 0;
+ 
   return summary;
 };
 const salesData = salesDataJson.data;
