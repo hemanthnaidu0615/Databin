@@ -154,7 +154,7 @@ export const Navbar = () => {
       <div className="flex items-center gap-2">
         {!hideDropdown && (
           <>
-            {/* <label htmlFor="enterpriseKey" className="mr-2 text-xl font-semibold text-violet-800">Seller:</label> */}
+            
             <select
               id="enterpriseKey"
               value={enterpriseKey}
