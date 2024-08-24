@@ -1,9 +1,7 @@
 import { Menubar } from "primereact/menubar";
 import { Button } from "primereact/button";
 import { Avatar } from "primereact/avatar";
-import { Badge } from "primereact/badge";
 import { ContextMenu } from "primereact/contextmenu";
-import { OverlayPanel } from "primereact/overlaypanel";
 import { useRef, useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
@@ -14,7 +12,8 @@ import authFetch from "../../axios";
 import { RootState } from "../../store/store";
 import "primeicons/primeicons.css";
 import logo from "../../images/logo.png";
-import "@fortawesome/fontawesome-free/css/all.min.css"; 
+import "@fortawesome/fontawesome-free/css/all.min.css";
+import NotificationIcon from "./Notificationicon";
 
 export const Navbar = () => {
   const [datesT, setDatesT] = useState<Date[]>([
@@ -50,7 +49,6 @@ export const Navbar = () => {
   const { username } = useSelector((store: any) => store.user);
   const enterpriseKey = useSelector((store: any) => store.enterprise.key);
   const cm = useRef<any>(null);
-  const op = useRef<any>(null); // Reference for OverlayPanel
 
   const items = [
     {
@@ -115,12 +113,6 @@ export const Navbar = () => {
     return initials;
   };
 
-
-  const messages = [
-    "1: Unauthorized Data Access Alert\nJohn Doe has updated the 'Order Status' column in the 'Orders' table.\nThe status has been changed from 'Pending' to 'Shipped'.",
-    "2: Sudden Data Spike Alert\nJohn Doe has modified the 'Price' column in the 'Products' table.\nThe price for 'Product X' has been increased from $20.00 to $22.50.",
-    "3: Data Deletion Alert\nJohn Doe has modified the 'Price' column in the 'Products' table.\nThe price for 'Product X' has been increased from $20.00 to $22.50."
-  ];
   const start = (
     <div className="flex align-items-center items-center gap-1 divide-x divide-gray-400">
       <div className="flex mr-1 items-center">
@@ -179,38 +171,7 @@ export const Navbar = () => {
         )}
       </div>
 
-      <div className="relative flex items-center group">
-        <i
-          className="fas fa-bell text-2xl text-gray-700 hover:text-gray-900 transition-transform duration-300 transform hover:scale-110 cursor-pointer"
-          onClick={(e) => op.current.toggle(e)}
-        ></i>{" "}
-      
-        <Badge
-          value="3"
-          severity="danger"
-          className="absolute -top-2 -right-2"
-          style={{
-            fontSize: "0.6rem", 
-            width: "1rem", 
-            height: "1rem", 
-            borderRadius: "50%", 
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            boxShadow: "0 0 3px rgba(0,0,0,0.3)", 
-          }}
-        />
-      </div>
-
-      <OverlayPanel ref={op} dismissable>
-  <div>
-    <p className="m-0"><b>1: Unauthorized Data Access Alert</b> <br/>John Doe has updated the 'Order Status' column in the 'Orders' table. <br/> The status has been changed from 'Pending' to 'Shipped'</p>
-    <p className="m-0"><b>2: Sudden Data Spike Alert</b><br/>John Doe has modified the 'Price' column in the 'Products' table. <br/>The price for 'Product X' has been increased from $20.00 to $22.50.</p>
-    <p className="m-0"><b>3: Data Deletion Alert</b><br/>John Doe has modified the 'Price' column in the 'Products' table. <br/>The price for 'Product X' has been increased from $20.00 to $22.50.</p>
-  </div> 
-</OverlayPanel>
-
-
+      <NotificationIcon />
 
       {userRole === "admin" || userRole === "manager" ? (
         <Link to="/user-management">
