@@ -39,13 +39,15 @@ export const SalesDashboard = () => {
   
   type SalesData = SalesDataItem[];
 
-  function separateOrderChannels(data: SalesData): SalesData[] {
+  function separateOrderChannels(data: SalesData, dateRange: [string, string]): SalesData[] {
   const result: SalesData[] = [[], [], [], []];
+  const start = moment(dateRange[0]);
+  const end = moment(dateRange[1]);
+  const isSingleMonth = start.isSame(end, 'month');
 
   data.forEach((item) => {
     const orderDate = moment(item.datetime);
-    const now = moment();
-    const format = now.diff(orderDate, 'hours') < 24 ? 'DD-MM HH:mm:ss' : 'DD-MM';
+    const format = isSingleMonth ? 'DD-MM' : 'MMM';
     const formattedDate = orderDate.format(format);
     
     const formattedItem = {
@@ -203,8 +205,8 @@ if (loading) {
             x: order.datetime,
             y: order.original_order_total_amount,
           }));
-      });
-  
+        });
+
       return {
         id: channel === "AWDSTORE" ? "Store" : channel,
         color: colors[channel],
@@ -422,14 +424,14 @@ const salesDetails = [
               <TabPanel headerTemplate={tab1HeaderTemplate} header="Chart">
                 <SalesCardPie
                    dataForLineChart={formatSeriesDataLinechart(
-                    separateOrderChannels(type?.chartSeries.series)
+                    separateOrderChannels(type?.chartSeries.series, dates)
                   )}
                   dataForPieChart={formatSeriesData(
                     type?.salesCategories.ORDER_CAPTURE_CHANNEL_GROUPED
                   )}
                   
                   dataForBarChart={separateOrderChannels(
-                    type?.chartSeries.series
+                    type?.chartSeries.series, dates
                   )}
                   dataForTable={type?.chartSeries.series}
                   brandName={type?.name}
