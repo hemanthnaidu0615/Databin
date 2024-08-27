@@ -87,8 +87,8 @@ const SalesFlow = () => {
   };
 
   const buttonData = [
-    { name: "Order Capture Channel", value: "order_capture_channel" },
     { name: "Item Info", value: "item-info" },
+    { name: "Order Capture Channel", value: "order_capture_channel" },
     { name: "Fulfillment", value: "fulfillment" },
   ];
 
