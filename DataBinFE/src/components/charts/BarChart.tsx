@@ -3,15 +3,17 @@ import { Bar } from "react-chartjs-2";
 
 Chart.register(...registerables);
 Chart.register(CategoryScale);
+
 export const BarChart = ({ chartData }: any) => {
   const formatValue = (value: number) => {
     if (value >= 1_000_000) {
-      return `${(value / 1_000_000).toFixed(1)}M`;
+      return `$${(value / 1_000_000).toFixed(1)}M`;
     } else if (value >= 1_000) {
-      return `${(value / 1_000_000).toFixed(1)}M`;
+      return `$${(value / 1_000_000).toFixed(1)}M`;
     }
-    return `${value.toLocaleString()}`;
+    return `$${value.toLocaleString()}`;
   };
+
   return (
     <div className="chart-container h-48 w-full">
       <Bar
@@ -25,13 +27,20 @@ export const BarChart = ({ chartData }: any) => {
             legend: {
               display: true,
             },
+            tooltip: {
+              callbacks: {
+                label: function (context: any) {
+                  return `${context.dataset.label}: ${formatValue(context.raw)}`;
+                },
+              },
+            },
           },
           scales: {
             x: {
               ticks: {
                 display: true,
               },
-              title : {
+              title: {
                 display: true,
                 text: 'Dates',
               },
@@ -42,11 +51,19 @@ export const BarChart = ({ chartData }: any) => {
                   return formatValue(value);
                 },
               },
-              title : {
+              title: {
                 display: true,
                 text: 'Order Amount ($)',
               },
             },
+          },
+          interaction: {
+            mode: 'nearest',
+            intersect: false,
+          },
+          hover: {
+            mode: 'index',
+            intersect: true,
           },
         }}
       />
