@@ -22,7 +22,6 @@ export const DeliveriesCard = ({ deliveries }: any) => {
     <div className="h-full bg-white flex flex-col justify-center">
       <div className="flex items-center p-2">
         <h3 className="font-bold ">Deliveries </h3>
-        <span className="text-xs text-black font-light "> - Last 7 days</span>
       </div>
 
       <div className="flex-1 flex items-center">

@@ -40,7 +40,6 @@ export const HalfpieCard = ({ trendYOY }: any) => {
       <div className="flex justify-between my-1">
         <div className="flex items-center p-2">
           <h3 className="font-bold ">Trend</h3>
-          <span className="text-xs text-black font-light "> - Last 7 days</span>
         </div>
       </div>
       <div className="flex flex-1 justify-between pt-1 overflow-hidden">
