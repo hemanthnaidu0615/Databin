@@ -17,9 +17,9 @@ const CustomTooltip = ({ point }:any) => (
   >
     <strong>{point.serieId}</strong>
     <br />
-    Custom Date: {point.data.xFormatted}
+    Date: {point.data.xFormatted}
     <br />
-    Custom Revenue: ${abbrvalue(point.data.yFormatted)}
+    Revenue: ${abbrvalue(point.data.yFormatted)}
   </div>
 );
 

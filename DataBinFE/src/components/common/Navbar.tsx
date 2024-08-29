@@ -11,7 +11,9 @@ import { Calendar } from "primereact/calendar";
 import { setDates } from "../../store/dateRangeSlice";
 import { setEnterpriseKey } from "../../store/enterpriseSlice";
 import authFetch from "../../axios";
-import { RootState } from '../../store/store';
+import NotificationIcon from "./Notificationicon";
+import { OverlayPanel } from "primereact/overlaypanel";
+import alerts from "../common/Notificationicon"
 
 export const Navbar = () => {
   const [datesT, setDatesT] = useState<Date[]>([
@@ -22,8 +24,7 @@ export const Navbar = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
-  const [userRole, setUserRole] = useState('');
-  const userEmail = useSelector((state: RootState) => state.user.useremail);
+  const notificationRef = useRef<OverlayPanel>(null);
 
   const hideCalendarRoutes = [
     "/home-dashboard",
@@ -47,14 +48,13 @@ export const Navbar = () => {
   const { username } = useSelector((store: any) => store.user);
   const enterpriseKey = useSelector((store: any) => store.enterprise.key);
   const cm = useRef<any>(null);
+
   const items = [
     {
       label: "Logout",
       icon: "pi pi-sign-out",
       command: () => {
         localStorage.removeItem("accessToken");
-        localStorage.removeItem('userRole');
-        setUserRole('');
         navigate("/");
       },
     },
@@ -63,10 +63,7 @@ export const Navbar = () => {
   useEffect(() => {
     const fetchEnterpriseKeys = async () => {
       try {
-        const response = await authFetch(
-          "/tables/enterprise-keys"
-        );
-        console.log(response.data);
+        const response = await authFetch("/tables/enterprise-keys");
         setEnterpriseKeys(response.data);
       } catch (error) {
         console.error("Error fetching enterprise keys:", error);
@@ -76,41 +73,25 @@ export const Navbar = () => {
     fetchEnterpriseKeys();
   }, []);
 
-  useEffect(() => {
-    if (userEmail) {
-      fetch(`/tables/user-role?email=${userEmail}`)
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.role) {
-            setUserRole(data.role.toLowerCase());
-          }
-        })
-        .catch((error) => {
-          console.error('Error fetching user role:', error);
-        });
-    }
-  }, [userEmail]);
-
   function handleDateChange(newDates: any) {
     setDatesT(newDates);
     dispatch(setDates(newDates));
   }
 
   useEffect(() => {
-    console.log("Selected enterprise key:", enterpriseKey);
+    // console.log("Selected enterprise key:", enterpriseKey);
   }, [enterpriseKeys, enterpriseKey]);
 
   function handleEnterpriseChange(event: React.ChangeEvent<HTMLSelectElement>) {
-    console.log("Selected enterprise key:", event.target.value);
     dispatch(setEnterpriseKey(event.target.value));
   }
+
   const getInitials = (name: string) => {
     if (!name) return ""; 
     const nameArray = name.split(" ").filter(Boolean);
     const initials = nameArray.map(n => n[0].toUpperCase()).join("");
     return initials;
   };
-  
 
   const start = (
     <div className="flex align-items-center items-center gap-1 divide-x divide-gray-400">
@@ -121,7 +102,7 @@ export const Navbar = () => {
           <span className="text-violet-800"> Bin</span>
         </h3>
       </div>
-      <p className="pl-2">Hi, Welcome, {username}</p>
+      <p className="pl-2">Welcome, {username}</p>
     </div>
   );
 
@@ -151,39 +132,50 @@ export const Navbar = () => {
           />
         )}
       </div>
+      
       <div className="flex items-center gap-2">
         {!hideDropdown && (
-          <>
-            {/* <label htmlFor="enterpriseKey" className="mr-2 text-xl font-semibold text-violet-800">Seller:</label> */}
-            <select
-              id="enterpriseKey"
-              value={enterpriseKey}
-              onChange={handleEnterpriseChange}
-              className="p-inputtext p-component ml-2 h-12 text-sm"
-            >
-              {enterpriseKeys.map(key => (
-                <option key={key} value={key}>{key}</option>
-              ))}
-            </select>
-          </>
+          <select
+            id="enterpriseKey"
+            value={enterpriseKey}
+            onChange={handleEnterpriseChange}
+            className="p-inputtext p-component ml-2 h-12 text-sm"
+          >
+            {enterpriseKeys.map(key => (
+              <option key={key} value={key}>{key}</option>
+            ))}
+          </select>
         )}
       </div>
-      {userRole === 'admin' || userRole === 'manager' ? (
-        <Link to="/user-management">
-          <Button
-            icon="pi pi-cog"
-            className="custom-icon-size"
-            style={{
-              color: "black",
-              background: "none",
-              border: "none",
-            }}
-            onClick={(e) => e.currentTarget.blur()}
-          />
-        </Link>
-      ) : (
-        ""
-      )}
+
+      <Link to="/user-management">
+        <Button
+          icon="pi pi-cog"
+          className="custom-icon-size"
+          style={{
+            color: "black",
+            background: "none",
+            border: "none",
+          }}
+        ></Button>
+      </Link>
+      <div className="relative pr-2">
+        <Button
+          icon="pi pi-bell"
+          className="custom-icon-size"
+          onClick={(e) => notificationRef.current?.toggle(e)}
+          style={{
+            color: "black",
+            background: "none",
+            border: "none",
+          }}
+        />
+        <NotificationIcon ref={notificationRef} />
+        {/* Badge */}
+        {alerts.length > 0 && (
+          <span className="badge">{alerts.length}</span>
+        )}
+      </div>
       <div>
         <ContextMenu model={items} ref={cm} breakpoint="767px" />
         <Avatar

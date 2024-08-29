@@ -37,7 +37,7 @@ export const InventoryCard = ({ dashboardData }: any) => {
       <div className="flex justify-between pt-1">
         <div className="flex items-center p-2">
           <h3 className="font-bold ">Top Sellers </h3>
-          <span className="text-xs text-black font-light "> - Last 7 days</span>
+          {/* <span className="text-xs text-black font-light "> - Last 7 days</span> */}
         </div>
       </div>
       <div className="flex ">

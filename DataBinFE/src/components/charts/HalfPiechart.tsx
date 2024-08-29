@@ -57,6 +57,32 @@ export const HalfPiechart = (props: any) => {
           "legends",
           CenteredMetric,
         ]}
+        tooltip={({ datum }) => (
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              padding: "5px 10px",
+              background: "white",
+              border: "1px solid #ccc",
+              borderRadius: "3px",
+              whiteSpace: "nowrap",
+            }}
+          >
+            <div
+              style={{
+                width: "12px",
+                height: "12px",
+                backgroundColor: datum.color,
+                marginRight: "10px",
+                borderRadius: "2px",
+              }}
+            />
+            <div style={{ color: "black" }}>
+              <strong>{datum.label}:</strong> ${(datum.value / 1_000_000).toFixed(2)}M
+            </div>
+          </div>
+        )}
       />
     </div>
   );

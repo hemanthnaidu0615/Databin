@@ -7,6 +7,7 @@ import authFetch from "../../axios";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { ProgressSpinner } from "primereact/progressspinner";
+import { setCache,getCache } from "../../utils/cacheByRegion";
 
 interface Marker {
   color: string;
@@ -79,6 +80,7 @@ export const SalesByRegion = () => {
   const { dates } = useSelector((store: any) => store.dateRange);
   const enterpriseKey = useSelector((store: any) => store.enterprise.key);
   const [tooltipData, setTooltipData] = useState<{ [key: string]: string }>({});
+  const cacheKey = `${moment(dates[0]).format("YYYY-MM-DD")}_${moment(dates[1]).format("YYYY-MM-DD")}_${enterpriseKey}`;
 
   const formatter = new Intl.NumberFormat("en-US", {
     notation: "compact",
@@ -92,10 +94,17 @@ export const SalesByRegion = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      const cachedItem = getCache(cacheKey);
+
+      if (cachedItem) {
+        setMapData(cachedItem.data);
+        setTooltipData(cachedItem.tooltipData);
+        return;
+      }
+
       const formattedStartDate = moment(dates[0]).format("YYYY-MM-DD 00:00:00");
       const formattedEndDate = moment(dates[1]).format("YYYY-MM-DD 00:00:00");
       try {
-        console.log(`Fetching data with start_date=${formattedStartDate}, end_date=${formattedEndDate}, enterprise_key=${enterpriseKey}`);
         const response = await authFetch(
           `/tables/map?start_date=${formattedStartDate}&end_date=${formattedEndDate}&enterprise_key=${enterpriseKey}`,{
             headers: {
@@ -104,21 +113,20 @@ export const SalesByRegion = () => {
             }
           }
         );
-        console.log("API response:", response.data);
-        setMapData(response.data);
-        const tooltipMap: { [key: string]: string } = response.data.reduce((acc: any, item: any) => {
+        const data = response.data;
+        setMapData(data);
 
+        const tooltipMap: { [key: string]: string } = data.reduce((acc: any, item: any) => {
           const stateAbbreviation = item[0].split("-")[1].toUpperCase();
           const stateName = statess[stateAbbreviation];
           const revenue = formatterUSD.format(item[1]);
-
-          const quantity = item[3];
-          
+          const quantity = new Intl.NumberFormat('en-US').format(item[3]);
           acc[stateName] = `Revenue: ${revenue} + Quantity: ${quantity}`;
           return acc;
         }, {});
        
         setTooltipData(tooltipMap);
+        setCache(cacheKey, data, tooltipMap);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -127,8 +135,8 @@ export const SalesByRegion = () => {
     fetchData();
   }, [dates, enterpriseKey]);
 
-  console.log("Dates from Redux:", dates); 
-  console.log("Enterprise Key from Redux:", enterpriseKey); 
+  // console.log("Dates from Redux:", dates); 
+  // console.log("Enterprise Key from Redux:", enterpriseKey); 
   
   if (!mapData) {
     return (
@@ -152,7 +160,7 @@ export const SalesByRegion = () => {
       state: innerArr[0],
       totalDollar: `${formatterUSD.format(innerArr[1])}`,
       percentage: `${innerArr[2]} %`,
-      quantity: innerArr[3], 
+      quantity: new Intl.NumberFormat('en-US').format(innerArr[3]),
     }));
 
   }
@@ -176,7 +184,7 @@ export const SalesByRegion = () => {
         return "#d6d4d0";
     }
   };
-  console.log(topStates)
+  // console.log(topStates)
   const markersList = topStates.map((state: any) => ({
     legend: state[0].split('-')[1].toUpperCase(),
     color: colorScale(state[0].toUpperCase().substring(3)),

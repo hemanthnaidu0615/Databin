@@ -2,7 +2,7 @@ import { ResponsivePie } from "@nivo/pie";
 import { abbrvalue } from "../../helpers/helpers";
 
 export const PieChart = (props: any) => {
-  console.log("pie chart data", props.data);
+  // console.log("pie chart data", props.data);
   return (
     <div className="h-full w-full">
       <ResponsivePie

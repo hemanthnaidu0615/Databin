@@ -55,6 +55,11 @@
  text-align: center;
 }
 
+.p-organizationchart .p-organizationchart-node-content.p-highlight {
+  color:#4B5563;
+  background-color: #E9D5FF;
+}
+
 /* Vertical Flowchart  */
 :root {
   --padding: 200px;

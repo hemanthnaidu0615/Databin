@@ -30,7 +30,7 @@ interface MapChartProps {
   markers4: any[];
   markers5: any[];
   colorScale: (idValue: string) => string;
-  revenueData: { [key: string]: string };
+  revenueData?: { [key: string]: string };
 }
 
 
@@ -108,14 +108,13 @@ const MapChart: React.FC<MapChartProps> = ({
   const [tooltip, setTooltip] = useState<{ display: boolean, content: string, x: number, y: number }>({ display: false, content: '', x: 0, y: 0 });
   const handleMouseEnter = (e: React.MouseEvent<SVGGeometryElement, MouseEvent>, stateName: string) => {
     const { clientX, clientY } = e;
-    console.log(revenueData);
-     // Extract the string for the given state
-     const dataString = revenueData[stateName] || 'No data';
+    // console.log(revenueData);
+     
+     const dataString = revenueData?.[stateName] || 'No data';
 
-     // Split the dataString to get revenue and quantity
+     
      const [revenuePart, quantityPart] = dataString.split(' + ');
  
-     // Construct the tooltip content
      const content = `${stateName}\n----------------------- \n${revenuePart || 'No data'}\n${quantityPart || 'No data'}`;
  
     setTooltip({

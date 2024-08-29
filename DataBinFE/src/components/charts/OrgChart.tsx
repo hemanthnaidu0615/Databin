@@ -19,7 +19,7 @@ export default function OrgChart({ data, orientation = "horizontal", zoom = 50 }
       data = data.replace("100.00%", "");
     }
     const [value, percentage] = data.trim().split(' '); 
-    console.log(value+" is"+percentage)
+    // console.log(value+" is"+percentage)
     return (
       <div className="node-container">
         <div className="node-content">

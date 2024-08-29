@@ -24,9 +24,15 @@
 }
 
 .custom-icon-size .pi {
-  font-size: 1.2rem; 
+  font-size: 1.2rem; /* Adjust the font size as needed */
 }
 
 .p-submenu-list {
   z-index: 9999 !important;
+}
+
+.p-datatable .p-column-header-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

@@ -98,6 +98,13 @@ export const LineChart = (props: any) => {
             ],
           },
         ]}
+        tooltip={({ point }) => (
+          <div style={{ background: 'white', padding: '5px', border: '1px solid black' }}>
+            <strong>Order Date:</strong> {formatXAxis(point.data.x)}
+            <br />
+            <strong>Order Amount:</strong> ${formatYAxis(point.data.y)}
+          </div>
+        )}
       />
     </div>
   );
