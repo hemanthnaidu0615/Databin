@@ -1,8 +1,7 @@
 import axios from "axios";
 
 const authFetch = axios.create({
-  baseURL: "http://13.233.98.14:3000/v2",
+  baseURL: "https://databin-meridianit.com/backend/v2",
 });
 
 export default authFetch;
-// http://13.233.98.14:3000

@@ -5,7 +5,7 @@ import moment from "moment";
 
 export const BrandInfo = (props: any) => {
   // const normalizedValue = Math.min(100, Math.max(0, props.progressbarValue));
-  const maxPossibleValue = 100000000; 
+  const maxPossibleValue = 100000000; // Adjust this to your maximum possible value
   const normalizedValue = (props.progressbarValue / maxPossibleValue) * 100;
   const { dates } = useSelector((store: any) => store.dateRange);
 

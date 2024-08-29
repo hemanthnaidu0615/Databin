@@ -6,6 +6,7 @@ import authFetch from "../../axios";
 import { abbrvalue } from "../../helpers/helpers";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { Paginator } from 'primereact/paginator';
+import { setCache,getCache } from "../../utils/timeseries";
 
 const Timeseries = () => {
   const [milestonesData, setMilestonesData] = useState<any>();
@@ -30,25 +31,31 @@ const Timeseries = () => {
   ];
 
   useEffect(() => {
+    const cacheKey = moment(date).format("YYYY-MM-DD");
+
+    const cachedData = getCache(cacheKey);
+    if (cachedData) {
+      setMilestonesData(cachedData.data.milestonesData);
+      setTimeseriesData(cachedData.data.timeseriesData);
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     authFetch
-      .get(
-        `/tables/getDataForTimeSeries?date=${moment(date).format(
-          "YYYY-MM-DD"
-        )}&userid=78`
-      )
+      .get(`/tables/getDataForTimeSeries?date=${moment(date).format("YYYY-MM-DD")}&userid=78`)
       .then((res) => {
-        setMilestonesData(res?.data);
-        setLoading(false);
-      });
-    authFetch
-      .get(
-        `/tables/timeSeriesData?date=${moment(date).format(
-          "YYYY-MM-DD"
-        )}&userid=78`
-      )
-      .then((res) => {
-        setTimeseriesData(res?.data);
+        const milestonesData = res?.data;
+        authFetch
+          .get(`/tables/timeSeriesData?date=${moment(date).format("YYYY-MM-DD")}&userid=78`)
+          .then((res) => {
+            const timeseriesData = res?.data;
+            setMilestonesData(milestonesData);
+            setTimeseriesData(timeseriesData);
+            setLoading(false);
+
+            setCache(cacheKey, { milestonesData, timeseriesData });
+          });
       });
   }, [date]);
 
@@ -148,7 +155,7 @@ const Timeseries = () => {
                     </div>
                     <div className="cursor-pointer timeseries-status flex-1 text-center border-l-[1px] border-purple-400 flex items-center justify-between px-2">
                       <div className="line-total-sum text-center w-full">
-                        {abbrvalue(status?.lineTotalSumTotal)}
+                        ${abbrvalue(status?.lineTotalSumTotal)}
                       </div>
                     </div>
                     {status?.lineTotalSum?.map((sum: any, i: number) => (
@@ -170,13 +177,14 @@ const Timeseries = () => {
                             notation: "compact",
                             compactDisplay: "short",
                           }).format(sum)}{" "}
-                          | {status?.QtySum[i]}
+                          | {Intl.NumberFormat("en-US").format(status?.QtySum[i])}
                         </div>
                       </div>
                     ))}
                   </div>
                 ))}
             </div>
+            {/* Footer Row with Note */}
             <div className="flex items-center border-t-[1px] border-purple-400 p-4 text-sm text-gray-600">
               <div className="flex-[2]">
                 Note: Hover over percentage values to see the amount and the quantity.
@@ -222,7 +230,8 @@ const Timeseries = () => {
                       key={i}
                       className={`border-l-[1px] border-purple-400 flex-1 flex justify-center ${dynamicColumnWidth}`}
                     >
-                      {dv}
+                      {/* {dv} */}
+                      {Intl.NumberFormat("en-US").format(dv)}
                     </div>
                   ))}
                 </div>

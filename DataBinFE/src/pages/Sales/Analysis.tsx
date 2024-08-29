@@ -17,6 +17,8 @@ import { InputNumber, InputNumberChangeEvent } from "primereact/inputnumber";
 import { Dialog } from 'primereact/dialog';
 import { Calendar } from 'primereact/calendar';
 import { Toast } from 'primereact/toast';
+import { setCache,getCache } from "../../utils/analysiscache";
+
 interface SchedulerData {
   startDate: Date | null;
   recurrencePattern: string;
@@ -52,17 +54,31 @@ export const Analysis = () => {
   const fetchData = async (tablename: string) => {
     const formattedStartDate = moment(dates[0]).format("YYYY-MM-DD HH:mm:ss");
     const formattedEndDate = moment(dates[1]).format("YYYY-MM-DD HH:mm:ss");
+    const cacheKey = `${tablename}_${formattedStartDate}_${formattedEndDate}`;
+  
+    const cachedData = getCache(cacheKey);
+    if (cachedData) {
+      setData(cachedData.data);
+      initializeFilters(cachedData.filters);
+      setLoading(false);
+      return;
+    }
+  
     setLoading(true);
     try {
       const response = await authFetch(
         `/tables?table=${tablename}&startDate=${formattedStartDate}&endDate=${formattedEndDate}`
       );
-
+  
       setData(response.data);
       initializeFilters(response.data);
+  
+      setCache(cacheKey, response.data, response.data); 
+  
       setLoading(false);
     } catch (error) {
       console.error("Error fetching data:", error);
+      setLoading(false);
     }
   };
 
@@ -70,7 +86,8 @@ export const Analysis = () => {
     try {
       const { tableSelection, columnSelection, startDate, recurrencePattern, emailAddress, timeFrame } = schedulerData;
   
-      const formattedStartDate = moment(startDate).format('YYYY-MM-DDTHH:mm:ss');
+      const formattedStartDate = moment.utc(startDate).format('YYYY-MM-DD HH:mm:ss');
+
   
       if (!schedulerData.startDate || !schedulerData.recurrencePattern || !schedulerData.emailAddress || !schedulerData.columnSelection.length || !schedulerData.timeFrame) {
         toast.current?.show({
@@ -81,7 +98,7 @@ export const Analysis = () => {
         });
         return;
       }
-  
+
       const payload = {
         email: emailAddress,
         recurrencePattern,
@@ -91,7 +108,7 @@ export const Analysis = () => {
         timeFrame,
       };
   
-      const response = await authFetch('http://localhost:3000/v2/tables/scheduler', {
+      const response = await authFetch('/tables/scheduler', {
         method: 'POST',
         data: payload, 
         headers: {
@@ -99,8 +116,8 @@ export const Analysis = () => {
         }
       });
   
-      console.log('Response object:', response);
-      console.log('Response status:', response.status);
+      // console.log('Response object:', response);
+      // console.log('Response status:', response.status);
   
       if (response.status !== 200) {
         throw new Error(`HTTP error! Status: ${response.status}, Message: ${response.statusText}`);
@@ -129,6 +146,7 @@ export const Analysis = () => {
       console.error('Error saving scheduler data:', error);
     }
   };
+  
   
   function getTimeFrames(recurrencePattern: string): { label: string; value: string }[] {
     const timeFrames: Record<string, { label: string; value: string }[]> = {
@@ -350,7 +368,7 @@ if (tableName === "order_book_line") {
   const handleBarChart = () => {
     fetchData("order_book_line");
     setShowBarChart(true);
-    console.log(groupedData);
+    // console.log(groupedData);
   };
 
   const handleTableView = () => {
@@ -358,6 +376,15 @@ if (tableName === "order_book_line") {
   };
 
 const exportExcel = () => {
+  if (selectedColumns.length === 0) {
+    toast.current?.show({
+      severity: 'error',
+      summary: 'Error',
+      detail: 'Select all fields',
+      life: 3000
+    });
+    return;
+  }
   import("xlsx").then((xlsx) => {
     const selectedColumnsData: Record<string, any>[] = data.map((row: any) => {
       const newRow: Record<string, any> = {};
@@ -383,7 +410,8 @@ const exportExcel = () => {
       type: "array",
     });
 
-    saveAsExcelFile(excelBuffer, "data");
+    // saveAsExcelFile(excelBuffer, "data");
+    saveAsExcelFile(excelBuffer, tableName);
   });
 };
 
@@ -424,7 +452,7 @@ const exportExcel = () => {
         value={options.value || null}
         onChange={(e: InputNumberChangeEvent) => {
           options.filterCallback(e.value, options.index);
-          console.log(e.value);
+          // console.log(e.value);
         }}
         mode="currency"
         currency="USD"
@@ -507,7 +535,7 @@ const exportExcel = () => {
         onClick={() => setShowSchedulerDialog(true)}
         data-pr-tooltip="Schedule"
         className="bg-purple-500 border-0 h-10 w-10"
-        tooltipOptions={{ position: "top" }}
+        tooltipOptions={{ position: "top", className:"text-xs" }}
         tooltip="Schedule"
       />
 
@@ -637,7 +665,7 @@ const exportExcel = () => {
         }
         footer={
           <div className="flex justify-end">
-            <Button className="bg-purple-500 border-none" label="Save" icon="pi pi-check" onClick={handleSaveScheduler} />
+            <Button className="bg-purple-500 border-none" label="Schedule" icon="pi pi-check" onClick={handleSaveScheduler} />
             <Button className="text-purple-700 bg-white border-none" label="Cancel" icon="pi pi-times" onClick={() => setShowSchedulerDialog(false)}  />
           </div>
         }
@@ -696,8 +724,7 @@ const exportExcel = () => {
                 { label: 'Order Book Line', value: 'order_book_line' },
                 { label: 'Order Book Taxes', value: 'order_book_taxes' },
                 { label: 'Return Order Header', value: 'return_order_header' },
-                { label: 'Return order line', value: 'return_order_line' }
-
+                // { label: 'Return order line', value: 'return_order_line' }
               ]}
               onChange={(e) => setSchedulerData({ ...schedulerData, tableSelection: e.value })}
             />
@@ -708,6 +735,8 @@ const exportExcel = () => {
               id="columnSelection"
               value={schedulerData.columnSelection}
               options={getTableColumns(data).slice(1)}
+              selectAll={true}
+              selectAllLabel={selectedColumns.length === getTableColumns(data).slice(1).length ? "Deselect All" : "Select All"}
               onChange={(e) => setSchedulerData({ ...schedulerData, columnSelection: e.value })}
               optionLabel="header"
               display="chip"

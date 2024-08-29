@@ -5,6 +5,7 @@ import CustomDataTable from "../components/common/CustomDataTable";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { useSelector } from "react-redux";
 import moment from "moment";
+import { setReturnsCache,getReturnsCache  }from '../utils/returnscache';
 
 export const Returns = () => {
   const [returnData, setReturnData] = useState<any>();
@@ -14,15 +15,26 @@ export const Returns = () => {
   const fetchData = async () => {
     setLoading(true);
     if (!dates[0] || !dates[1]) return;
+  
     try {
       const formattedStartDate = moment(dates[0]).format("YYYY-MM-DD");
       const formattedEndDate = moment(dates[1]).format("YYYY-MM-DD");
-      const response = await authFetch(
-        `/returns/getReturnsData?startDate=${formattedStartDate}&endDate=${formattedEndDate}`
-      );
-      console.log("API response:", response.data);
-      setReturnData(response.data);
-      setLoading(false);
+      const cacheKey = `${formattedStartDate}_${formattedEndDate}`;
+      const cachedData = getReturnsCache(cacheKey);
+  
+      if (cachedData) {
+        // console.log("Using cached data:", cachedData);
+        setReturnData(cachedData.data);
+        setLoading(false);
+      } else {
+        const response = await authFetch(
+          `/returns/getReturnsData?startDate=${formattedStartDate}&endDate=${formattedEndDate}`
+        );
+        // console.log("API response:", response.data);
+        setReturnData(response.data);
+        setReturnsCache(cacheKey, response.data);
+        setLoading(false);
+      }
     } catch (error) {
       console.error("Error fetching data:", error);
       setLoading(false);
