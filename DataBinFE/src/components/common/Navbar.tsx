@@ -147,10 +147,20 @@ export const Navbar = () => {
           </select>
         )}
       </div>
-
-      <Link to="/user-management">
+        <Link to="/user-management">
         <Button
           icon="pi pi-cog"
+          className="custom-icon-size"
+          style={{
+            color: "black",
+            background: "none",
+            border: "none",
+          }}
+        ></Button>
+      </Link>
+      <Link to="/custamizable-dashboard">
+        <Button
+          icon="pi pi-home"
           className="custom-icon-size"
           style={{
             color: "black",

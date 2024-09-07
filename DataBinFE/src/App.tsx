@@ -15,6 +15,7 @@ import Timeseries from "./pages/Timeseries/Timeseries";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { setUser } from "./store/userSlice";
+import DynamicDashboard from "./pages/DynamicDashboard";
 
 function App() {
   const dispatch = useDispatch();
@@ -31,6 +32,7 @@ function App() {
 
       <Route path="/" element={<AppLayout />}>
         <Route path="/home-dashboard" element={<Dashboard />} />
+        <Route path="/custamizable-dashboard" element={<DynamicDashboard />} />
         <Route path="/sales/dashboard" element={<SalesDashboard />} />
         <Route path="/sales/sales-by-region" element={<SalesByRegion />} />
         <Route path="/sales/analysis" element={<Analysis />} />
