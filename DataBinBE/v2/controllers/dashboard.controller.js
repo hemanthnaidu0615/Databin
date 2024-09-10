@@ -14,7 +14,7 @@ const GetDashboardData = async (req, res) => {
     FETCH ALL IN "Ref6";
     `;
     const result = await client.query(dashboardWidgetDataQuery);
-    console.log(result);
+    // console.log(result);
 
     const resultObj = {
       revenueTrend: result[1]?.rows,

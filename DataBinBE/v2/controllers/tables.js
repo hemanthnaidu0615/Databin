@@ -56,7 +56,7 @@ const scheduleTask = async (req, res) => {
       return res.status(400).json({ error: 'All fields are required' });
     }
 
-    console.log('Received data:', req.body);
+    // console.log('Received data:', req.body);
 
     const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,
@@ -86,7 +86,7 @@ const scheduleTask = async (req, res) => {
 
       if (recurrencePattern !== 'once') {
         const recurringJob = schedule.scheduleJob(cronPattern, async function () {
-          console.log('Recurring job executed at:', new Date());
+          // console.log('Recurring job executed at:', new Date());
           await executeTask(email, startDate, recurrencePattern, tableSelection, columnSelection, timeFrame, transporter);
         });
 
@@ -166,11 +166,11 @@ const executeTask = async (email, startDate, recurrencePattern, tableSelection, 
         break;
     }
 
-    console.log('Fetching data for table:', tableSelection);
-    console.log('Columns:', columnSelection);
-    console.log('Data Range:', formattedStartDate.format(), 'to', formattedEndDate.format());
+    // console.log('Fetching data for table:', tableSelection);
+    // console.log('Columns:', columnSelection);
+    // console.log('Data Range:', formattedStartDate.format(), 'to', formattedEndDate.format());
 
-    const response = await axios.get(`http://localhost:3000/v2/tables`, {
+    const response = await axios.get(`https://databin-meridianit.com/backend/v2/tables`, {
       params: {
         table: tableSelection,
         startDate: formattedStartDate.format('YYYY-MM-DDTHH:mm:ss'),
@@ -197,13 +197,14 @@ const executeTask = async (email, startDate, recurrencePattern, tableSelection, 
 
     const filePath = path.join(__dirname, 'temp.xlsx');
     fs.writeFileSync(filePath, Buffer.from(excelBuffer));
-    console.log('Excel file created at path:', filePath);
+    // console.log('Excel file created at path:', filePath);
 
     const tableLabel = tableLabels[tableSelection] || tableSelection;
 
     await transporter.sendMail({
-      from: "guitarcenter.xit@gmail.com",
+      from: "databin.meridianit@gmail.com",
       to: email,
+      cc: ["abrar.ali@meridianit.com"],
       subject: `Your Scheduled Report for ${tableLabel}`,
       html: `
             <p>Hi,</p>
@@ -216,15 +217,15 @@ const executeTask = async (email, startDate, recurrencePattern, tableSelection, 
             </ul>
             <p>Please find the attached report for your reference.</p>
             <p>Thank you,</p>
-            <p>Guitar Center Admin</p>
+            <p>Meridian Admin</p>
           `,
-      attachments: [{ filename: 'report.xlsx', path: filePath }],
+          attachments: [{ filename: `${tableLabel}.xlsx`, path: filePath }],
     });
 
     console.log('Email sent successfully to:', email);
 
     fs.unlinkSync(filePath);
-    console.log('Temporary file deleted');
+    // console.log('Temporary file deleted');
 
   } catch (error) {
     console.error('Error in executeTask:', error);
@@ -297,7 +298,7 @@ const getFullSalesData = (req, res) => {
         const groupedChartSeries = result[2].rows.reduce((acc, order, i) => {
           const enterpriseKey = order.enterprise_key;
 
-          console.log(result[2].rows);
+          // console.log(result[2].rows);
           if (!acc[enterpriseKey]) {
             acc[enterpriseKey] = {
               enterprise_key: enterpriseKey,
@@ -639,7 +640,7 @@ const getFullSalesDataTEST = (req, res) => {
   FETCH ALL IN "Ref8";
   `;
 
-  console.log(query);
+  // console.log(query);
   try {
     client.query(query, (err, result) => {
       if (err) {
@@ -957,7 +958,7 @@ const getFullSalesDataTEST = (req, res) => {
 };
 
 const UserRegistration = async (req, res) => {
-  console.log("Registering");
+  // console.log("Registering");
   const { firstname, lastname, username, password, role } = req.body;
   try {
     const query = "SELECT * FROM users WHERE username = $1";
@@ -1008,7 +1009,7 @@ const sendVerifyMail = async (firstname, lastname, username, password) => {
         firstname +
         " " +
         lastname +
-        ',<br><br>Welcome to guitar center, please find below credentials.<br><br><a href="http://3.111.38.149/">http://3.111.38.149/login</a><br><br>Username : ' +
+        ',<br><br>Welcome to guitar center, please find below credentials.<br><br><a href="https://databin-meridianit.com">http://databin-meridianit.com</a><br><br>Username : ' +
         username +
         " <br> password : " +
         password +
@@ -1019,7 +1020,7 @@ const sendVerifyMail = async (firstname, lastname, username, password) => {
       if (err) {
         console.log(err);
       } else {
-        console.log("Email has been sent :- ", info.response);
+        // console.log("Email has been sent :- ", info.response);
       }
     });
   } catch (error) {
@@ -1113,14 +1114,14 @@ const getMapData = async (req, res) => {
     GROUP BY ship_to_state
   `;
 
-  console.log('Query:', query);
-  console.log('Parameters:', [start_date_formatted, end_date_formatted, enterprise_key]);
+  // console.log('Query:', query);
+  // console.log('Parameters:', [start_date_formatted, end_date_formatted, enterprise_key]);
 
   try {
     const result = await client.query(query, [start_date_formatted, end_date_formatted, enterprise_key]);
 
     if (result.rows.length === 0) {
-      console.log('No data found for the given parameters');
+      // console.log('No data found for the given parameters');
       return res.status(404).json({ message: 'No data found' });
     }
 
@@ -1132,7 +1133,7 @@ const getMapData = async (req, res) => {
       Math.round((+item.sum / totalSum) * 10000) / 100,
       +item.quantity_sum
     ]);
-    console.log(output)
+    // console.log(output)
     const uniqueEntries = output.reduce((acc, item) => {
       const existingEntry = acc.find(entry => entry[0] === item[0]);
       if (!existingEntry) {
@@ -1146,7 +1147,7 @@ const getMapData = async (req, res) => {
 
     const sortedArray = uniqueEntries.sort((a, b) => b[1] - a[1]);
 
-    console.log('Sorted Data:', sortedArray);
+    // console.log('Sorted Data:', sortedArray);
     
     res.status(200).json(sortedArray);
   } catch (error) {
@@ -1178,7 +1179,7 @@ const getEnterpriseKeys = async (req, res) => {
 const updateUsers = async (req, res) => {
   const { username } = req.body;
   const { firstname, lastname, role } = req.body;
-  console.log(username);
+  // console.log(username);
   try {
     const result = await client.query(
       'UPDATE users SET firstname = $1, lastname = $2, role = $3 WHERE username = $4',
@@ -1197,7 +1198,7 @@ const updateUsers = async (req, res) => {
 
 const deleteUser = async (req, res) => {
   const { id } = req.params; 
-  console.log(id);
+  // console.log(id);
   try {
     
     const result = await client.query(
@@ -1237,18 +1238,18 @@ const getUserRoleByEmail = async (req, res) => {
 
 const getAllUser = async (req, res) => {
   try {
-    console.log("Users");
+    // console.log("Users");
     const query = `SELECT * FROM users`;
     client.query(query, (err, result) => {
       res.status(200).json(result?.rows);
-      console.log(result?.rows)
+      // console.log(result?.rows)
     });
   } catch (error) {}
 };
 
 const getTimeSeriesData = async (req, res) => {
   const date = req.query.date;
-  console.log(date);
+  // console.log(date);
 
   try {
     const query = `SELECT * FROM order_status_time_series WHERE actual_order_date = '${date}' ORDER BY status,actual_status_date;`;
@@ -1321,10 +1322,10 @@ const getCityData = async (req, res) => {
 
   const city = req.query.city.split("-")[1].toUpperCase();
 
-  console.log();
+  // console.log();
 
   const query = `select TRIM(ship_to_city) as city,sum(original_order_total_amount) as original_order_total_amount,sum(line_ordered_qty) as line_ordered_qty  from order_book_line where  TRIM(ship_to_state) ='${city}' group by ship_to_city ;`;
-  console.log(query);
+  // console.log(query);
   try {
     client.query(query, (err, result) => {
       res.status(200).json(result?.rows);
@@ -1338,7 +1339,7 @@ const getDataForTimeSeries = async (req, res) => {
   const orderDate = req.query.date;
   const userid = [Number(req.query.userid)];
 
-  console.log(userid);
+  // console.log(userid);
   try {
     const timeLineDates = [];
     const mileStoneQuery = `SELECT * FROM configuremilestone WHERE userid=$1`;
@@ -1531,7 +1532,7 @@ const getThresholdInfo = async (req, res) => {
       const insertQuery = `INSERT INTO configurethreshold(userid, tsone, tstwo,tsthree) VALUES($1, $2, $3,$4)`;
       const values = [+userid, 10, 20, 21];
       const result = await client.query(insertQuery, values);
-      console.log(result);
+      // console.log(result);
       return res.status(201).json({
         result: [
           {
@@ -1568,7 +1569,7 @@ const sendSMS = async (req, res) => {
         to: phoneNumber.trim(),
       });
 
-      console.log(`SMS sent to ${phoneNumber}: ${response.sid}`);
+      // console.log(`SMS sent to ${phoneNumber}: ${response.sid}`);
     }
     res.status(200).json({ success: true, message: "SMS sent successfully" });
   } catch (error) {
@@ -1584,8 +1585,8 @@ const sendSMS = async (req, res) => {
 const getSalesAvgData = async (req, res) => {
   try {
     const { timeInterval, startDate, endDate } = req.query;
-    console.log(req.body);
-    console.log(startDate, endDate);
+    // console.log(req.body);
+    // console.log(startDate, endDate);
     const start_date_formatted = moment(startDate, "YYYY-MM-DD HH:mm").format(
       "YYYY-MM-DD HH:mm:ss"
     );

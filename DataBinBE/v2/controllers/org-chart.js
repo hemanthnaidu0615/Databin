@@ -165,7 +165,7 @@ const getOrgChartDataRange = async (req, res) => {
     where order_date_parsed>='${start_date}' and order_date_parsed<='${end_date}' group by item_info,
     enterprise_key;`;
 
-    console.log(query)
+    // console.log(query)
       await client.query(query, (err, result) => {
         if (err) {
           res.status(500).json(err);

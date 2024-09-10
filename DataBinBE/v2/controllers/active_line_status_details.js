@@ -82,7 +82,7 @@ const getSalesDataByRange = async (req, res) => {
 
   let query = `SELECT DATE(order_date_parsed) AS datetime, SUM(original_order_total_amount) AS original_order_total_amount, SUM(status_quantity) AS status_quantity FROM active_line_status where order_date_parsed BETWEEN '${start_date}' AND '${end_date}' GROUP BY datetime order by datetime;`;
 
-  console.log(differenceInDays, "differenceInDays ");
+  // console.log(differenceInDays, "differenceInDays ");
   // start_date = 2023-01-01
   // end_date = 2023-02-15
   if (differenceInDays > 31 && differenceInDays < 365) {
@@ -103,7 +103,7 @@ const getSalesDataByRange = async (req, res) => {
              ORDER BY datetime`;
   }
 
-  console.log(query);
+  // console.log(query);
 
   connection.query(query, (err, result) => {
     if (err) {
@@ -226,7 +226,7 @@ const getFullSalesData1 = async (req, res) => {
   ) {
     interval = 60 * 60;
   } else {
-    console.log("first");
+    // console.log("first");
     interval =
       differenceInDays === 1
         ? 15 * 60
@@ -237,15 +237,15 @@ const getFullSalesData1 = async (req, res) => {
         : 24 * 60 * 60 * 365;
   }
 
-  console.log(`CALL getData('${start_date}','${end_date}',${interval})`)
+  // console.log(`CALL getData('${start_date}','${end_date}',${interval})`)
 
   const query = `CALL getData('${start_date}','${end_date}',${interval})`;
-  console.log(interval);
+  // console.log(interval);
   connection.query(query, (err, result) => {
     if (err) {
       res.status(500).json({ error: err });
     } else {
-      console.log(result[1]);
+      // console.log(result[1]);
       const groupedChartSeries = result[1].reduce((acc, order) => {
         const enterpriseKey = order.enterprise_key;
 
@@ -337,7 +337,7 @@ const getFullSalesData1 = async (req, res) => {
 
       const topItemsData = result[3].reduce((acc, curr) => {
         // Group by enterprise key
-        console.log(curr.enterprise_key);
+        // console.log(curr.enterprise_key);
         if (!acc[curr.enterprise_key]) {
           acc[curr.enterprise_key] = {
             name: curr.enterprise_key,

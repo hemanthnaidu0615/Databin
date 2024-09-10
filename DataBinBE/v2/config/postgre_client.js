@@ -2,12 +2,15 @@ const { Client } = require("pg");
 
 const credentials = {
   user: "postgres",
-  host: "13.233.98.14",
+  host: "uatdatabase.cttfpf5l1rt6.ap-south-1.rds.amazonaws.com",
   database: "postgres_new",
-  password: "postgres",
+  password: "Admin_2024",
   port: 5432,
   keepAlive:true,
   idle_timeout:7200,
+  ssl:{
+    rejectUnauthorized:false,
+  }
 };
 
 // Create a connection pool

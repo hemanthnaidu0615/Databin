@@ -13,7 +13,7 @@ const getTotalStats = async (req, res) => {
   const end_date_formatted = moment(end_date, "YYYY-MM-DD HH:mm").format(
     "YYYY-MM-DD HH:mm:ss"
   );
-  console.log(new Date() + " initial ");
+  // console.log(new Date() + " initial ");
   const query = `select enterprise_key,sum(original_order_total_amount) as original_order_total_amount,
   sum(line_unit_price * line_ordered_qty) as line_price_total
   ,sum(line_ordered_qty) as line_ordered_qty,
@@ -32,7 +32,7 @@ const getTotalStats = async (req, res) => {
         console.log(err);
         res.status(500).send(err);
       } else {
-        console.log(new Date() + " res ");
+        // console.log(new Date() + " res ");
         const shippingCost = {
           gc: result[1].rows.filter(
             (item) => item.enterprise_key === "GC" && item.is_discount === "N"
@@ -60,7 +60,7 @@ const getTotalStats = async (req, res) => {
           totalStats: result[0].rows,
         };
 
-        console.log(new Date() + " return ");
+        // console.log(new Date() + " return ");
 
         res.status(200).json({
           MFData: {
@@ -122,7 +122,7 @@ const getChartData = async (req, res) => {
   let query = "";
 
   if (+intervaltime === 15 * 60) {
-    console.log(15 * 60);
+    // console.log(15 * 60);
     // 15 minutes
     query = `
     SELECT 
@@ -139,7 +139,7 @@ const getChartData = async (req, res) => {
     date_trunc('hour', order_date_parsed) + 
       (date_part('minute', order_date_parsed)::int / 15) * interval '15 minutes';`;
   } else if (+intervaltime === 3600) {
-    console.log(3600);
+    // console.log(3600);
     // 1 hour
     query = `
 SELECT 
@@ -153,7 +153,7 @@ FROM
 GROUP BY 
   enterprise_key, date_trunc('hour', order_date_parsed);`;
   } else if (+intervaltime === 86400) {
-    console.log(86400);
+    // console.log(86400);
     // 1 day
     query = `
     SELECT
@@ -167,7 +167,7 @@ FROM
     enterprise_key,
     DATE_TRUNC('day', order_date_parsed); `;
   } else if (+intervaltime === 172800) {
-    console.log(17400);
+    // console.log(17400);
     query = `
     SELECT
     enterprise_key,
@@ -362,7 +362,7 @@ const getTopItems = async (req, res) => {
       if (err) {
         res.status(500).send(err);
       } else {
-        console.log(result[0].rows)
+        // console.log(result[0].rows)
         const groupedTopItemsDataByVolume = result[0].rows.reduce(
           (result, item) => {
             const { enterprise_key, ...rest } = item;
