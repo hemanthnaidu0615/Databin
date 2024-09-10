@@ -18,6 +18,8 @@ import { Dialog } from 'primereact/dialog';
 import { Calendar } from 'primereact/calendar';
 import { Toast } from 'primereact/toast';
 import { setCache,getCache } from "../../utils/analysiscache";
+import { useCallback, useMemo } from "react";
+import debounce from 'lodash.debounce';
 
 interface SchedulerData {
   startDate: Date | null;
@@ -99,6 +101,13 @@ export const Analysis = () => {
         return;
       }
 
+      toast.current?.show({ 
+        severity: 'success', 
+        summary: 'Success', 
+        detail: 'Your report is being scheduled', 
+        life: 3000 
+      });
+
       const payload = {
         email: emailAddress,
         recurrencePattern,
@@ -135,54 +144,70 @@ export const Analysis = () => {
       });
       setShowSchedulerDialog(false);
   
-      toast.current?.show({ 
-        severity: 'success', 
-        summary: 'Success', 
-        detail: 'Scheduler saved successfully!', 
-        life: 3000 
-      });
-  
     } catch (error) {
       console.error('Error saving scheduler data:', error);
     }
   };
   
+  const handleDropdownChange = useCallback((e) => {
+  setSchedulerData((prevData) => ({
+    ...prevData,
+    recurrencePattern: e.value,
+    timeFrame: getTimeFrames(e.value)[0]?.value || ''
+  }));
+}, [setSchedulerData]);
+
+function getTimeFrames(recurrencePattern: string): { label: string; value: string }[] {
   
-  function getTimeFrames(recurrencePattern: string): { label: string; value: string }[] {
-    const timeFrames: Record<string, { label: string; value: string }[]> = {
-      daily: [
-        { label: 'Today', value: 'Today' },
-        { label: 'Past Week Data', value: 'Past Week' },
-        { label: 'Past Month Data', value: 'Past Month' },
-        { label: 'Past 3 Months Data', value: 'Past 3 Months' },
-        { label: 'Past 6 Months Data', value: 'Past 6 Months' },
-        { label: 'Past Year Data', value: 'Past Year' },
-      ],
-      weekly: [
-        { label: 'Past Week Data', value: 'Past Week' },
-        { label: 'Past Month Data', value: 'Past Month' },
-        { label: 'Past 3 Months Data', value: 'Past 3 Months' },
-        { label: 'Past 6 Months Data', value: 'Past 6 Months' },
-        { label: 'Past Year Data', value: 'Past Year' },
-      ],
-      monthly: [
-        { label: 'Past Month Data', value: 'Past Month' },
-        { label: 'Past 3 Months Data', value: 'Past 3 Months' },
-        { label: 'Past 6 Months Data', value: 'Past 6 Months' },
-        { label: 'Past Year Data', value: 'Past Year' },
-        { label: 'Past 2 Years Data', value: 'Past 2 Years' },
-        { label: 'Past 5 Years Data', value: 'Past 5 Years' },
-        { label: 'Past 10 Years Data', value: 'Past 10 Years' },
-      ],
-      yearly: [
-        { label: 'Past Year Data', value: 'Past Year' },
-        { label: 'Past 2 Years Data', value: 'Past 2 Years' },
-        { label: 'Past 5 Years Data', value: 'Past 5 Years' },
-        { label: 'Past 10 Years Data', value: 'Past 10 Years' },
-      ],
-    };
-    return timeFrames[recurrencePattern] || [];
-  }
+  const commonTimeFrames = {
+    pastWeek: { label: 'Past Week Data', value: 'Past Week' },
+    pastMonth: { label: 'Past Month Data', value: 'Past Month' },
+    past3Months: { label: 'Past 3 Months Data', value: 'Past 3 Months' },
+    past6Months: { label: 'Past 6 Months Data', value: 'Past 6 Months' },
+    pastYear: { label: 'Past Year Data', value: 'Past Year' },
+    past2Years: { label: 'Past 2 Years Data', value: 'Past 2 Years' },
+    past5Years: { label: 'Past 5 Years Data', value: 'Past 5 Years' },
+    past10Years: { label: 'Past 10 Years Data', value: 'Past 10 Years' }
+  };
+
+  
+  const timeFrames: Record<string, { label: string; value: string }[]> = {
+    daily: [
+      { label: 'Today', value: 'Today' },
+      commonTimeFrames.pastWeek,
+      commonTimeFrames.pastMonth,
+      commonTimeFrames.past3Months,
+      commonTimeFrames.past6Months,
+      commonTimeFrames.pastYear
+    ],
+    weekly: [
+      commonTimeFrames.pastWeek,
+      commonTimeFrames.pastMonth,
+      commonTimeFrames.past3Months,
+      commonTimeFrames.past6Months,
+      commonTimeFrames.pastYear
+    ],
+    monthly: [
+      commonTimeFrames.pastMonth,
+      commonTimeFrames.past3Months,
+      commonTimeFrames.past6Months,
+      commonTimeFrames.pastYear,
+      commonTimeFrames.past2Years,
+      commonTimeFrames.past5Years,
+      commonTimeFrames.past10Years
+    ],
+    yearly: [
+      commonTimeFrames.pastYear,
+      commonTimeFrames.past2Years,
+      commonTimeFrames.past5Years,
+      commonTimeFrames.past10Years
+    ]
+  };
+
+  
+  return timeFrames[recurrencePattern] || [];
+}
+
     
   
   const initializeFilters = (data: any[]) => {
@@ -209,6 +234,19 @@ export const Analysis = () => {
     fetchData(newTableName);
     setSelectedColumns([]);
   };
+  const handleTableChange = debounce((e) => {
+    setSchedulerData(prevState => ({
+      ...prevState,
+      tableSelection: e.value
+    }));
+  }, 200);
+
+  const tableOptions = useMemo(() => [
+    { label: 'Order Book Header', value: 'order_book_header' },
+    { label: 'Order Book Line', value: 'order_book_line' },
+    { label: 'Order Book Taxes', value: 'order_book_taxes' },
+    { label: 'Return Order Header', value: 'return_order_header' },
+  ], []);
 
   const formatHeaderKey = (key: string) => {
     return key
@@ -368,7 +406,6 @@ if (tableName === "order_book_line") {
   const handleBarChart = () => {
     fetchData("order_book_line");
     setShowBarChart(true);
-    // console.log(groupedData);
   };
 
   const handleTableView = () => {
@@ -695,13 +732,7 @@ const exportExcel = () => {
                 { label: 'Get emails Monthly', value: 'monthly' },
                 { label: 'Get emails Yearly', value: 'yearly' }
               ]}
-              onChange={(e) => {
-                setSchedulerData({
-                  ...schedulerData,
-                  recurrencePattern: e.value,
-                  timeFrame: getTimeFrames(e.value)[0]?.value || ''
-                });
-              }}
+              onChange={handleDropdownChange}
             />
           </div>
           <div className="p-field">
@@ -719,14 +750,8 @@ const exportExcel = () => {
               id="tableSelection"
               value={schedulerData.tableSelection}
               placeholder="Select Table"
-              options={[
-                { label: 'Order Book Header', value: 'order_book_header' },
-                { label: 'Order Book Line', value: 'order_book_line' },
-                { label: 'Order Book Taxes', value: 'order_book_taxes' },
-                { label: 'Return Order Header', value: 'return_order_header' },
-                // { label: 'Return order line', value: 'return_order_line' }
-              ]}
-              onChange={(e) => setSchedulerData({ ...schedulerData, tableSelection: e.value })}
+              options={tableOptions}
+              onChange={(e) => handleTableChange(e)}
             />
           </div>
           <div className="p-field">
